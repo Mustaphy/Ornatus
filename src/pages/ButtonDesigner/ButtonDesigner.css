@@ -1,0 +1,30 @@
+#button-preview {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  margin: 0 0 16px 0;
+}
+
+#button-options {
+  margin: 0 0 16px 0;
+}
+
+#button-options * {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 8px;
+  font-size: 16px;
+}
+
+.code-container {
+  font-family: monospace;
+  padding: 8px;
+  background: #000000;
+  color: #ffffff;
+  border-radius: 8px;
+  width: fit-content;
+}
+
+.option-name {
+  font-family: monospace;
+}

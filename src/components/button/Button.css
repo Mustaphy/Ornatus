@@ -5,4 +5,9 @@
   border-radius: 8px;
   border: 1px solid #2E4F4F;
   cursor: pointer;
+  transition: 0.2s filter;
+}
+
+#button-element:hover {
+  filter: brightness(1.2);
 }
