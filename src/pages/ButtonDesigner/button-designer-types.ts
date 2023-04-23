@@ -12,12 +12,17 @@ export interface LinearGradient {
   colors: string[]
 }
 
-export interface Fontsize {
+export interface FontSize {
   value: number,
   unit: string
 }
 
 export interface BorderRadius {
+  value: number,
+  unit: string
+}
+
+export interface Padding {
   value: number,
   unit: string
 }

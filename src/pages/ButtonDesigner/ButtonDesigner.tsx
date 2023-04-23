@@ -1,5 +1,6 @@
 import { ChangeEvent, useState } from 'react';
 import './ButtonDesigner.css'
+import { Background, BorderRadius, FontSize, Padding } from './button-designer-types';
 
 function ButtonDesigner() {
   const [text, setText] = useState('Design your own button!');
@@ -7,16 +8,21 @@ function ButtonDesigner() {
     selected: 'color',
     color: { color: '#000000' },
     linearGradient: { colors: ['#000000', '#ffffff'] }
-  });
+  } as Background);
   const [color, setColor] = useState('#ffffff');
   const [fontSize, setFontSize] = useState({
     value: 16,
     unit: 'px'
-  });
+  } as FontSize);
   const [borderRadius, setBorderRadius] = useState({
     value: 8,
     unit: 'px'
-  });
+  } as BorderRadius);
+  const [padding, setPadding] = useState({
+    value: 8,
+    unit: 'px'
+  } as Padding);
+  const [cursor, setCursor] = useState('pointer');
 
   const handleLinearGradientBackgroundChanged = (event: ChangeEvent<HTMLInputElement>, index: number): void => {
     const colors = background.linearGradient.colors;
@@ -50,6 +56,8 @@ function ButtonDesigner() {
         color: ${color};
         font-size: ${fontSize.value + fontSize.unit};
         border-radius: ${borderRadius.value + borderRadius.unit};
+        padding: ${padding.value + padding.unit};
+        cursor: ${cursor}
       }
     `;
   }
@@ -63,7 +71,9 @@ function ButtonDesigner() {
               background: getBackground(),
               color: color,
               fontSize: `${fontSize.value + fontSize.unit}`,
-              borderRadius: `${borderRadius.value + borderRadius.unit}`
+              borderRadius: `${borderRadius.value + borderRadius.unit}`,
+              padding: `${padding.value + padding.unit}`,
+              cursor: cursor
             }
           }
         >
@@ -127,6 +137,62 @@ function ButtonDesigner() {
             <option>in</option>
             <option>pc</option>
             <option>pt</option>
+          </select>
+        </div>
+
+        <div id="padding-container">
+          <label className="option-name">padding</label>
+          <input type="number" defaultValue={padding.value} onChange={(event) => setPadding({ ...padding, value: Number(event.target.value) })}></input>
+          <select id="padding-unit" value={padding.unit} onChange={(event) => setPadding({ ...padding, unit: event.target.value })}>
+            <option>px</option>
+            <option>cm</option>
+            <option>mm</option>
+            <option>Q</option>
+            <option>in</option>
+            <option>pc</option>
+            <option>pt</option>
+          </select>
+        </div>
+
+        <div id="cursor-container">
+          <label htmlFor="cursor" className="option-name">cursor</label>
+          <select id="cursor" value={cursor} onChange={(event) => setCursor(event.target.value)}>
+            <option>auto</option>
+            <option>default</option>
+            <option>none</option>
+            <option>context-menu</option>
+            <option>help</option>
+            <option>pointer</option>
+            <option>progress</option>
+            <option>wait</option>
+            <option>cell</option>
+            <option>crosshair</option>
+            <option>text</option>
+            <option>vertical-text</option>
+            <option>alias</option>
+            <option>copy</option>
+            <option>move</option>
+            <option>no-drop</option>
+            <option>not-allowed</option>
+            <option>grab</option>
+            <option>grabbing</option>
+            <option>all-scroll</option>
+            <option>col-resize</option>
+            <option>row-resize</option>
+            <option>n-resize</option>
+            <option>e-resize</option>
+            <option>s-resize</option>
+            <option>w-resize</option>
+            <option>ne-resize</option>
+            <option>nw-resize</option>
+            <option>se-resize</option>
+            <option>sw-resize</option>
+            <option>ew-resize</option>
+            <option>ns-resize</option>
+            <option>nesw-resize</option>
+            <option>nwse-resize</option>
+            <option>zoom-in</option>
+            <option>zoom-out</option>
           </select>
         </div>
       </div>
