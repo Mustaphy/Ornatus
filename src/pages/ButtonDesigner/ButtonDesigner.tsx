@@ -2,25 +2,35 @@ import { ChangeEvent, useState } from 'react';
 import './ButtonDesigner.css'
 
 function ButtonDesigner() {
+  const [text, setText] = useState('Design your own button!');
   const [backgroundType, setBackgroundType] = useState('color');
-  const [background, setBackground] = useState({ color: '#000000' });
+  const [background, setBackground] = useState({
+    color: { color: '#000000' },
+    linearGradient: { colors: ['#000000', '#ffffff'] }
+  });
+  const [color, setColor] = useState('#ffffff');
 
-  const handleBackgroundTypeChanged = (event: ChangeEvent<HTMLSelectElement>): void => {
-    setBackgroundType(event.target.value);
+  const handleLinearGradientBackgroundChanged = (event: ChangeEvent<HTMLInputElement>, index: number): void => {
+    const colors = background.linearGradient.colors;
+    colors[index] = event.target.value;
+    setBackground({ ...background, linearGradient: { colors: colors } });
   }
 
-  const handleBackgroundChanged = (event: ChangeEvent<HTMLInputElement>): void => {
+  const getBackground = (): string => {
     switch (backgroundType) {
       case 'color':
-        setBackground({ color: event.target.value })
-        break;
+        return background.color.color;
+      case 'linear-gradient':
+        return `linear-gradient(${background.linearGradient.colors[0]}, ${background.linearGradient.colors[1]})`;
+      default:
+        return '';
     }
   }
 
   const generateHTML = (): string => {
     return `
       <button id="styleface-button">
-        Example
+        ${text}
       </button>
     `;
   }
@@ -39,24 +49,37 @@ function ButtonDesigner() {
         <button
           style={
             {
-              background: background.color,
+              background: getBackground(),
             }
           }
         >
-          Example
+          {text}
         </button>
       </div>
 
       <div id="button-options">
+        <div id="text">
+          <label htmlFor="text" className="option-name">text</label>
+          <input id="text" type="text" defaultValue={text} onChange={(event) => setText(event.target.value)}></input>
+        </div>
+
         <div id="background">
           <label htmlFor="background-type" className="option-name">background</label>
-          <select value={backgroundType} onChange={(event) => handleBackgroundTypeChanged(event)}>
+          <select id="background-type" value={backgroundType} onChange={(event) => setBackgroundType(event.target.value)}>
             <option>color</option>
+            <option>linear-gradient</option>
           </select>
   
           {
             backgroundType == 'color' &&
-              <input type="color" value={background.color} onChange={(event) => handleBackgroundChanged(event)} />
+              <input type="color" value={background.color.color} onChange={(event) => setBackground({ ...background, color: { color: event.target.value } })} />
+          }
+          {
+            backgroundType == 'linear-gradient' &&
+              <>
+                <input type="color" value={background.linearGradient.colors[0]} onChange={(event) => handleLinearGradientBackgroundChanged(event, 0)} />
+                <input type="color" value={background.linearGradient.colors[1]} onChange={(event) => handleLinearGradientBackgroundChanged(event, 1)} />
+              </>
           }
         </div>
       </div>
