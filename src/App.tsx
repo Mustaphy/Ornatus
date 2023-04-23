@@ -10,7 +10,7 @@ function App() {
     <>
       <div id="title">
         <h1>Styleface</h1>
-        <p>Your interface to create CSS styles!</p>
+        <p>Your interface to design CSS styles!</p>
       </div>
 
       <Routes>

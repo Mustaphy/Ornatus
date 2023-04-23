@@ -9,6 +9,8 @@ function ButtonDesigner() {
     linearGradient: { colors: ['#000000', '#ffffff'] }
   });
   const [color, setColor] = useState('#ffffff');
+  const [fontSizeUnit, setFontSizeUnit] = useState('px');
+  const [fontSize, setFontSize] = useState(16);
 
   const handleLinearGradientBackgroundChanged = (event: ChangeEvent<HTMLInputElement>, index: number): void => {
     const colors = background.linearGradient.colors;
@@ -40,6 +42,7 @@ function ButtonDesigner() {
       #styleface-button {
         background: ${getBackground()};
         color: ${color};
+        font-size: ${fontSize + fontSizeUnit}
       }
     `;
   }
@@ -51,7 +54,8 @@ function ButtonDesigner() {
           style={
             {
               background: getBackground(),
-              color: color
+              color: color,
+              fontSize: `${fontSize + fontSizeUnit}`
             }
           }
         >
@@ -86,8 +90,23 @@ function ButtonDesigner() {
         </div>
 
         <div id="color">
-        <label htmlFor="color" className="option-name">color</label>
+          <label htmlFor="color" className="option-name">color</label>
           <input id="color" type="color" defaultValue={color} onChange={(event) => setColor(event.target.value)}></input>
+        </div>
+
+        <div id="font-size">
+          <label htmlFor="font-size" className="option-name">font-size</label>
+          <input id="font-size" type="number" defaultValue={fontSize} onChange={(event) => setFontSize(Number(event.target.value))}></input>
+          <select id="font-size-unit" value={fontSizeUnit} onChange={(event) => setFontSizeUnit(event.target.value)}>
+            <option>px</option>
+            <option>cm</option>
+            <option>mm</option>
+            <option>Q</option>
+            <option>in</option>
+            <option>pc</option>
+            <option>pt</option>
+          </select>
+
         </div>
       </div>
 

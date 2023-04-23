@@ -2,14 +2,19 @@
   display: grid;
   align-content: center;
   justify-items: center;
+  background: #d3d3d3;
+  width: 100%;
+  height: 150px;
+  border-radius: 8px;
   margin: 0 0 16px 0;
+  overflow: scroll;
 }
 
 #button-options {
   margin: 0 0 16px 0;
 }
 
-#button-options * {
+#button-options > * {
   display: grid;
   grid-auto-flow: column;
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -29,4 +34,8 @@
 .option-name {
   font-family: monospace;
   font-weight: 800;
+}
+
+input[type="color"] {
+  width: 100%;
 }
