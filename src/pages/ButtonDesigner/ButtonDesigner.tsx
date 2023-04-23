@@ -38,7 +38,8 @@ function ButtonDesigner() {
   const generateCSS = (): string => {
     return `
       #styleface-button {
-        background: ${background.color};
+        background: ${getBackground()};
+        color: ${color};
       }
     `;
   }
@@ -50,6 +51,7 @@ function ButtonDesigner() {
           style={
             {
               background: getBackground(),
+              color: color
             }
           }
         >
@@ -81,6 +83,11 @@ function ButtonDesigner() {
                 <input type="color" value={background.linearGradient.colors[1]} onChange={(event) => handleLinearGradientBackgroundChanged(event, 1)} />
               </>
           }
+        </div>
+
+        <div id="color">
+        <label htmlFor="color" className="option-name">color</label>
+          <input id="color" type="color" defaultValue={color} onChange={(event) => setColor(event.target.value)}></input>
         </div>
       </div>
 
