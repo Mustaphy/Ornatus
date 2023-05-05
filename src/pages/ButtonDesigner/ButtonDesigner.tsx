@@ -3,6 +3,7 @@ import './ButtonDesigner.css'
 import { Background, BorderRadius, FontSize, Padding } from './button-designer-types';
 import Input from '../../components/Input/Input'
 import { InputType } from '../../components/Input/input-types';
+import UnitSelect from '../../components/UnitSelect/UnitSelect';
 
 function ButtonDesigner() {
   const [text, setText] = useState('Design your own button!');
@@ -116,44 +117,35 @@ function ButtonDesigner() {
 
         <div id="font-size-container">
           <label htmlFor="font-size" className="option-name">font-size</label>
-          <Input id="font-size" type={InputType.Number} value={fontSize.value} onChange={(event) => setFontSize({ ...fontSize, value: Number(event.target.value) })} />
-          <select id="font-size-unit" value={fontSize.unit} onChange={(event) => setFontSize({ ...fontSize, unit: event.target.value })}>
-            <option>px</option>
-            <option>cm</option>
-            <option>mm</option>
-            <option>Q</option>
-            <option>in</option>
-            <option>pc</option>
-            <option>pt</option>
-          </select>
+          <UnitSelect
+            id="font-size"
+            value={fontSize.value}
+            unit={fontSize.unit} 
+            valueOnChange={(event) => setFontSize({ ...fontSize, value: Number(event.target.value) })}
+            unitOnChange={(event) => setFontSize({ ...fontSize, unit: event.target.value })}
+          />
         </div>
 
         <div id="border-radius-container">
           <label htmlFor="border-radius" className="option-name">border-radius</label>
-          <Input id="border-radius" type={InputType.Number} value={borderRadius.value} onChange={(event) => setBorderRadius({ ...borderRadius, value: Number(event.target.value) })} />
-          <select id="border-radius-unit" value={borderRadius.unit} onChange={(event) => setBorderRadius({ ...borderRadius, unit: event.target.value })}>
-            <option>px</option>
-            <option>cm</option>
-            <option>mm</option>
-            <option>Q</option>
-            <option>in</option>
-            <option>pc</option>
-            <option>pt</option>
-          </select>
+          <UnitSelect
+            id="border-radius"
+            value={borderRadius.value}
+            unit={borderRadius.unit} 
+            valueOnChange={(event) => setBorderRadius({ ...borderRadius, value: Number(event.target.value) })}
+            unitOnChange={(event) => setBorderRadius({ ...borderRadius, unit: event.target.value })}
+          />
         </div>
 
         <div id="padding-container">
           <label htmlFor="padding" className="option-name">padding</label>
-          <Input id="padding" type={InputType.Number} value={padding.value} onChange={(event) => setPadding({ ...padding, value: Number(event.target.value) })} />
-          <select id="padding-unit" value={padding.unit} onChange={(event) => setPadding({ ...padding, unit: event.target.value })}>
-            <option>px</option>
-            <option>cm</option>
-            <option>mm</option>
-            <option>Q</option>
-            <option>in</option>
-            <option>pc</option>
-            <option>pt</option>
-          </select>
+          <UnitSelect
+            id="padding"
+            value={padding.value}
+            unit={padding.unit} 
+            valueOnChange={(event) => setPadding({ ...padding, value: Number(event.target.value) })}
+            unitOnChange={(event) => setPadding({ ...padding, unit: event.target.value })}
+          />
         </div>
 
         <div id="cursor-container">

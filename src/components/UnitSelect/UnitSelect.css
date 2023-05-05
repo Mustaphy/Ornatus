@@ -1,0 +1,4 @@
+.unit-select {
+  display: grid;
+  grid-auto-flow: column;
+}
