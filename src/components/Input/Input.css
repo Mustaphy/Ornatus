@@ -1,7 +1,11 @@
 .styleface-input {
   color: #ffffff;
   background-color: #000000;
-  border-radius: 4px;
   padding: 4px;
+  border-radius: 4px;
   border: none;
+}
+
+.styleface-color {
+  padding: 0;
 }
