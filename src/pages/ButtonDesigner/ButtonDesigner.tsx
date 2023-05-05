@@ -1,6 +1,8 @@
 import { ChangeEvent, useState } from 'react';
 import './ButtonDesigner.css'
 import { Background, BorderRadius, FontSize, Padding } from './button-designer-types';
+import Input from '../../components/Input/Input'
+import { InputType } from '../../components/Input/input-types';
 
 function ButtonDesigner() {
   const [text, setText] = useState('Design your own button!');
@@ -84,7 +86,7 @@ function ButtonDesigner() {
       <div id="button-options">
         <div id="text-container">
           <label htmlFor="text" className="option-name">text</label>
-          <input id="text" type="text" defaultValue={text} onChange={(event) => setText(event.target.value)}></input>
+          <Input id="text" type={InputType.Text} value={text} onChange={(event) => setText(event.target.value)} />
         </div>
 
         <div id="background-container">
@@ -96,25 +98,25 @@ function ButtonDesigner() {
   
           {
             background.selected == 'color' &&
-              <input type="color" value={background.color.color} onChange={(event) => setBackground({ ...background, color: { color: event.target.value } })} />
+              <Input type={InputType.Color} value={background.color.color} onChange={(event) => setBackground({ ...background, color: { color: event.target.value } })} />
           }
           {
             background.selected == 'linear-gradient' &&
               <>
-                <input type="color" value={background.linearGradient.colors[0]} onChange={(event) => handleLinearGradientBackgroundChanged(event, 0)} />
-                <input type="color" value={background.linearGradient.colors[1]} onChange={(event) => handleLinearGradientBackgroundChanged(event, 1)} />
+                <Input type={InputType.Color} value={background.linearGradient.colors[0]} onChange={(event) => handleLinearGradientBackgroundChanged(event, 0)} />
+                <Input type={InputType.Color} value={background.linearGradient.colors[1]} onChange={(event) => handleLinearGradientBackgroundChanged(event, 1)} />
               </>
           }
         </div>
 
         <div id="color-container">
           <label htmlFor="color" className="option-name">color</label>
-          <input id="color" type="color" defaultValue={color} onChange={(event) => setColor(event.target.value)}></input>
+          <Input id="color" type={InputType.Color} value={color} onChange={(event) => setColor(event.target.value)} />
         </div>
 
         <div id="font-size-container">
           <label htmlFor="font-size" className="option-name">font-size</label>
-          <input id="font-size" type="number" defaultValue={fontSize.value} onChange={(event) => setFontSize({ ...fontSize, value: Number(event.target.value) })}></input>
+          <Input id="font-size" type={InputType.Number} value={fontSize.value} onChange={(event) => setFontSize({ ...fontSize, value: Number(event.target.value) })} />
           <select id="font-size-unit" value={fontSize.unit} onChange={(event) => setFontSize({ ...fontSize, unit: event.target.value })}>
             <option>px</option>
             <option>cm</option>
@@ -128,7 +130,7 @@ function ButtonDesigner() {
 
         <div id="border-radius-container">
           <label htmlFor="border-radius" className="option-name">border-radius</label>
-          <input id="border-radius" type="number" defaultValue={borderRadius.value} onChange={(event) => setBorderRadius({ ...borderRadius, value: Number(event.target.value) })}></input>
+          <Input id="border-radius" type={InputType.Number} value={borderRadius.value} onChange={(event) => setBorderRadius({ ...borderRadius, value: Number(event.target.value) })} />
           <select id="border-radius-unit" value={borderRadius.unit} onChange={(event) => setBorderRadius({ ...borderRadius, unit: event.target.value })}>
             <option>px</option>
             <option>cm</option>
@@ -141,8 +143,8 @@ function ButtonDesigner() {
         </div>
 
         <div id="padding-container">
-          <label className="option-name">padding</label>
-          <input type="number" defaultValue={padding.value} onChange={(event) => setPadding({ ...padding, value: Number(event.target.value) })}></input>
+          <label htmlFor="padding" className="option-name">padding</label>
+          <Input id="padding" type={InputType.Number} value={padding.value} onChange={(event) => setPadding({ ...padding, value: Number(event.target.value) })} />
           <select id="padding-unit" value={padding.unit} onChange={(event) => setPadding({ ...padding, unit: event.target.value })}>
             <option>px</option>
             <option>cm</option>
