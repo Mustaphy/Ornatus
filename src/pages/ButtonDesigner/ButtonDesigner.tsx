@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from 'react';
 import './ButtonDesigner.css'
-import { Background, BorderRadius, FontSize, Padding } from './button-designer-types';
+import { Background, Border, BorderRadius, FontSize, Padding } from './button-designer-types';
 import Input from '../../components/Input/Input'
 import { InputType } from '../../components/Input/input-types';
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
@@ -18,6 +18,11 @@ function ButtonDesigner() {
     unit: 'px'
   } as FontSize);
   const [fontWeight, setFontWeight] = useState('400');
+  const [border, setBorder] = useState({
+    width: { value: 1, unit: 'px' },
+    style: 'solid',
+    color: '#ffffff'
+  } as Border);
   const [borderRadius, setBorderRadius] = useState({
     value: 8,
     unit: 'px'
@@ -60,6 +65,7 @@ function ButtonDesigner() {
         color: ${color};
         font-size: ${fontSize.value + fontSize.unit};
         font-weight: ${fontWeight};
+        border: ${border.width.value + border.width.unit} ${border.style} ${border.color};
         border-radius: ${borderRadius.value + borderRadius.unit};
         padding: ${padding.value + padding.unit};
         cursor: ${cursor}
@@ -77,6 +83,7 @@ function ButtonDesigner() {
               color: color,
               fontSize: `${fontSize.value + fontSize.unit}`,
               fontWeight: fontWeight,
+              border: `${border.width.value + border.width.unit} ${border.style} ${border.color}`,
               borderRadius: `${borderRadius.value + borderRadius.unit}`,
               padding: `${padding.value + padding.unit}`,
               cursor: cursor
@@ -144,6 +151,29 @@ function ButtonDesigner() {
           </select>
         </div>
 
+        <div id="border-container">
+          <label htmlFor="border" className="option-name">border</label>
+          <UnitSelect
+            value={border.width.value}
+            unit={border.width.unit} 
+            valueOnChange={(event) => setBorder({ ...border, width: { ...border.width, value: Number(event.target.value) } })}
+            unitOnChange={(event) => setBorder({ ...border, width: { ...border.width, unit: event.target.value } })}
+          />
+          <select value={border.style} onChange={(event) => setBorder({ ...border, style: event.target.value })} >
+            <option value="none">none</option>
+            <option value="hidden">hidden</option>
+            <option value="dotted">dotted</option>
+            <option value="dashed">dashed</option>
+            <option value="solid">solid</option>
+            <option value="double">double</option>
+            <option value="groove">groove</option>
+            <option value="ridge">ridge</option>
+            <option value="inset">inset</option>
+            <option value="outset">outset</option>
+          </select>
+          <Input type={InputType.Color} value={border.color} onChange={(event) => setBorder({ ...border, color: event.target.value })} />
+        </div>
+
         <div id="border-radius-container">
           <label htmlFor="border-radius" className="option-name">border-radius</label>
           <UnitSelect
@@ -169,42 +199,42 @@ function ButtonDesigner() {
         <div id="cursor-container">
           <label htmlFor="cursor" className="option-name">cursor</label>
           <select id="cursor" value={cursor} onChange={(event) => setCursor(event.target.value)}>
-            <option>auto</option>
-            <option>default</option>
-            <option>none</option>
-            <option>context-menu</option>
-            <option>help</option>
-            <option>pointer</option>
-            <option>progress</option>
-            <option>wait</option>
-            <option>cell</option>
-            <option>crosshair</option>
-            <option>text</option>
-            <option>vertical-text</option>
-            <option>alias</option>
-            <option>copy</option>
-            <option>move</option>
-            <option>no-drop</option>
-            <option>not-allowed</option>
-            <option>grab</option>
-            <option>grabbing</option>
-            <option>all-scroll</option>
-            <option>col-resize</option>
-            <option>row-resize</option>
-            <option>n-resize</option>
-            <option>e-resize</option>
-            <option>s-resize</option>
-            <option>w-resize</option>
-            <option>ne-resize</option>
-            <option>nw-resize</option>
-            <option>se-resize</option>
-            <option>sw-resize</option>
-            <option>ew-resize</option>
-            <option>ns-resize</option>
-            <option>nesw-resize</option>
-            <option>nwse-resize</option>
-            <option>zoom-in</option>
-            <option>zoom-out</option>
+            <option value="auto">auto</option>
+            <option value="default">default</option>
+            <option value="none">none</option>
+            <option value="context-menu">context-menu</option>
+            <option value="help">help</option>
+            <option value="pointer">pointer</option>
+            <option value="progress">progress</option>
+            <option value="wait">wait</option>
+            <option value="cell">cell</option>
+            <option value="crosshair">crosshair</option>
+            <option value="text">text</option>
+            <option value="vertical-text">vertical-text</option>
+            <option value="alias">alias</option>
+            <option value="copy">copy</option>
+            <option value="move">move</option>
+            <option value="no-drop">no-drop</option>
+            <option value="not-allowed">not-allowed</option>
+            <option value="grab">grab</option>
+            <option value="grabbing">grabbing</option>
+            <option value="all-scroll">all-scroll</option>
+            <option value="col-resize">col-resize</option>
+            <option value="row-resize">row-resize</option>
+            <option value="n-resize">n-resize</option>
+            <option value="e-resize">e-resize</option>
+            <option value="s-resize">s-resize</option>
+            <option value="w-resize">w-resize</option>
+            <option value="ne-resize">ne-resize</option>
+            <option value="nw-resize">nw-resize</option>
+            <option value="se-resize">se-resize</option>
+            <option value="sw-resize">sw-resize</option>
+            <option value="ew-resize">ew-resize</option>
+            <option value="ns-resize">ns-resize</option>
+            <option value="nesw-resize">nesw-resize</option>
+            <option value="nwse-resize">nwse-resize</option>
+            <option value="zoom-in">zoom-in</option>
+            <option value="zoom-out">zoom-out</option>
           </select>
         </div>
       </div>

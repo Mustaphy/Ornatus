@@ -8,13 +8,13 @@ function UnitSelect(props: UnitSelectProperties) {
     <div id={props.id} className="unit-select">
       <Input type={InputType.Number} value={props.value} onChange={props.valueOnChange} />
       <select value={props.unit} onChange={props.unitOnChange}>
-        <option>px</option>
-        <option>cm</option>
-        <option>mm</option>
-        <option>Q</option>
-        <option>in</option>
-        <option>pc</option>
-        <option>pt</option>
+        <option value="px">px</option>
+        <option value="cm">cm</option>
+        <option value="mm">mm</option>
+        <option value="Q">Q</option>
+        <option value="in">in</option>
+        <option value="pc">pc</option>
+        <option value="pt">pt</option>
       </select>
     </div>
   )

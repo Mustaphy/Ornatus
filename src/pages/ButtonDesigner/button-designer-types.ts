@@ -17,6 +17,17 @@ export interface FontSize {
   unit: string
 }
 
+export interface Border {
+  width: BorderWidth,
+  style: string,
+  color: string,
+}
+
+export interface BorderWidth {
+  value: number,
+  unit: string
+}
+
 export interface BorderRadius {
   value: number,
   unit: string
