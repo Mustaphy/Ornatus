@@ -17,6 +17,7 @@ function ButtonDesigner() {
     value: 16,
     unit: 'px'
   } as FontSize);
+  const [fontWeight, setFontWeight] = useState('400');
   const [borderRadius, setBorderRadius] = useState({
     value: 8,
     unit: 'px'
@@ -58,6 +59,7 @@ function ButtonDesigner() {
         background: ${getBackground()};
         color: ${color};
         font-size: ${fontSize.value + fontSize.unit};
+        font-weight: ${fontWeight};
         border-radius: ${borderRadius.value + borderRadius.unit};
         padding: ${padding.value + padding.unit};
         cursor: ${cursor}
@@ -74,6 +76,7 @@ function ButtonDesigner() {
               background: getBackground(),
               color: color,
               fontSize: `${fontSize.value + fontSize.unit}`,
+              fontWeight: fontWeight,
               borderRadius: `${borderRadius.value + borderRadius.unit}`,
               padding: `${padding.value + padding.unit}`,
               cursor: cursor
@@ -124,6 +127,21 @@ function ButtonDesigner() {
             valueOnChange={(event) => setFontSize({ ...fontSize, value: Number(event.target.value) })}
             unitOnChange={(event) => setFontSize({ ...fontSize, unit: event.target.value })}
           />
+        </div>
+
+        <div id="font-weight-container">
+          <label htmlFor="font-weight" className="option-name">font-weight</label>
+          <select id="font-weight" value={fontWeight} onChange={(event) => setFontWeight(event.target.value)}>
+            <option value="100">100</option>
+            <option value="200">200</option>
+            <option value="300">300</option>
+            <option value="400">400</option>
+            <option value="500">500</option>
+            <option value="600">600</option>
+            <option value="700">700</option>
+            <option value="800">800</option>
+            <option value="900">900</option>
+          </select>
         </div>
 
         <div id="border-radius-container">
