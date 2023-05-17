@@ -1,12 +1,12 @@
 import { useRef } from 'react';
 import Button from '../../components/Button/Button';
 import Typewriter from '../../components/Typewriter/Typewriter';
-import welcomeImage from '../../assets/welcome-image.png';
+import designingImage from '../../assets/designing-image.png';
 import './Home.css'
 
 function Home() {
   const elements = useRef([
-    { id: 1, name: 'Button', path: 'button' }
+    { id: 1, name: '<button>', path: 'button' }
   ]);
   const textsToType = useRef([
     'buttons'
@@ -18,18 +18,26 @@ function Home() {
         <div id="welcome-text">
           <h1>Styleface</h1>
           <Typewriter
-            staticText="Your user-friendly user interface to design and generate HTML/CSS code for "
+            staticText="Your user-friendly user interface to design and generate HTML and CSS code for "
             textsToType={textsToType.current}
-        />
+          />
         </div>
-        { /* Source: https://publicdomainvectors.org/en/free-clipart/Guy-working-with-a-laptop/90490.html */ }
-        <img id="welcome-image" src={welcomeImage} alt="Man holding a laptop" />
+
+        { /* Source: https://publicdomainvectors.org/en/free-clipart/Graphic-designer/90584.html */ }
+        <div id="welcome-image-container">
+          <img src={designingImage} alt="Man holding a laptop" />
+        </div>
       </div>
 
       <div id="elements-section">
-        {
-          elements.current.map(element => <Button key={element.id} text={element.name} path={element.path}></Button>)
-        }
+        <h2>Choose an element to design</h2>
+        <p>We currently only support buttons</p>
+        
+        <div id="elements">
+          {
+            elements.current.map(element => <Button key={element.id} text={element.name} path={element.path}></Button>)
+          }
+        </div>
       </div>
     </>
   )

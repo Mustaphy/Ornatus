@@ -1,0 +1,57 @@
+.navigation-bar {
+  display: flex;
+  position: fixed;
+  justify-content: space-between;
+  align-items: center;
+  height: 72px;
+  transition: 1s;
+  width: calc(100% - 32px);
+  padding: 0 16px;
+  z-index: 2;
+}
+
+#navigation-name {
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 800;
+  text-shadow: 2px 2px 1px #0E8388;
+}
+
+#navigation-links li {
+  display: inline-block;
+  padding: 0 0 0 20px;
+  font-size: 24px;
+}
+
+.navigation-text {
+  color: white;
+  font-weight: 600;
+}
+
+.navigation-text:hover {
+  transition: 0.5s;
+  color: #66c0f4;
+}
+
+/* Sticky Navigation Bar */
+.navigation-bar.sticky {
+  height: 64px;
+  background: #ffffff;
+}
+
+.navigation-bar.sticky #navigation-name {
+  color: #0E8388;
+}
+
+.navigation-bar.sticky #navigation-links li .navigation-link .navigation-text {
+  color: #000000;
+}
+
+.navigation-bar.sticky #navigation-links li .navigation-link .navigation-text:hover {
+  color: #0E8388;
+}
+
+.filler {
+  position: relative;
+  visibility: hidden;
+}

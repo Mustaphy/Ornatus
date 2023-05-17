@@ -2,6 +2,7 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1;
   text-decoration: none;
+  list-style: none;
 
   margin: 0;
   padding: 0;
@@ -17,6 +18,6 @@
 }
 
 body {
-  background: linear-gradient(#2C3333, #000000);
-  overflow-x: hidden;
+  background: linear-gradient(#006666, #000000);
+  background-attachment: fixed;
 }
