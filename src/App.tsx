@@ -8,11 +8,6 @@ function App() {
 
   return (
     <>
-      <div id="title">
-        <h1>Styleface</h1>
-        <p>Your interface to design CSS styles!</p>
-      </div>
-
       <Routes>
         <Route path={BASE_URL} element={<Home />}></Route>
         <Route path={`${BASE_URL}/button`} element={<ButtonDesigner />}></Route>

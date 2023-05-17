@@ -4,6 +4,7 @@
   font-weight: 400;
 
   color-scheme: light dark;
+  color: #CBE4DE;
   background-color: #2C3333;
 
   font-synthesis: none;
@@ -15,5 +16,4 @@
 
 * {
   text-decoration: none;
-  color: #CBE4DE;
 }

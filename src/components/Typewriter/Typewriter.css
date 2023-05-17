@@ -1,0 +1,16 @@
+.typewriter-cursor:after {
+  content: '|';
+  color: #0E8388;
+  animation: blinking 1s linear infinite;
+  font-size: 28px;
+}
+
+@keyframes blinking {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
