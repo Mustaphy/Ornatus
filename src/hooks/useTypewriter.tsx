@@ -69,7 +69,6 @@ export const useTypewriter = (textsToType: string[]) => {
 
   return {
     currentTypingText,
-    currentText: textsToType[selectedIndex],
-    status,
+    currentText: textsToType[selectedIndex]
   };
 };

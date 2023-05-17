@@ -1,11 +1,13 @@
-:root {
+* {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1;
-  font-weight: 400;
+  text-decoration: none;
+
+  margin: 0;
+  padding: 0;
 
   color-scheme: light dark;
   color: #CBE4DE;
-  background-color: #2C3333;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -14,6 +16,7 @@
   -webkit-text-size-adjust: 100%;
 }
 
-* {
-  text-decoration: none;
+body {
+  background: linear-gradient(#2C3333, #000000);
+  overflow-x: hidden;
 }

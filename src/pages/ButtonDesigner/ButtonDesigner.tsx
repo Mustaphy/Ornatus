@@ -68,13 +68,13 @@ function ButtonDesigner() {
         border: ${border.width.value + border.width.unit} ${border.style} ${border.color};
         border-radius: ${borderRadius.value + borderRadius.unit};
         padding: ${padding.value + padding.unit};
-        cursor: ${cursor}
+        cursor: ${cursor};
       }
     `;
   }
 
   return (
-    <>
+    <div id="button-designer">
       <div id="button-preview">
         <button
           style={
@@ -248,7 +248,7 @@ function ButtonDesigner() {
           {generateCSS()}
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

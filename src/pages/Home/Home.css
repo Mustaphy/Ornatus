@@ -1,8 +1,31 @@
-#title {
-  text-align: center;
+#welcome-section {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+  height: 75vh;
+  width: calc(100vw - 62px);
+  padding: 32px;
 }
 
-#title h1 {
+#welcome-image {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  height: fit-content;
+  padding: 32px;
+}
+
+#welcome-text {
+  display: grid;
+  align-content: center;
+  text-align: left;
+  padding: 32px;
+  font-size: 24px;
+}
+
+#welcome-text h1 {
   color: #0E8388;
-  font-size: 48px;
+  font-size: 64px;
+  margin: 16px 0;
 }

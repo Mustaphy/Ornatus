@@ -1,8 +1,12 @@
+.typewriter-cursor {
+  color: #0E8388;
+}
+
 .typewriter-cursor:after {
   content: '|';
-  color: #0E8388;
+  color: #ffffff;
   animation: blinking 1s linear infinite;
-  font-size: 28px;
+  font-size: 36px;
 }
 
 @keyframes blinking {
