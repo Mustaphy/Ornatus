@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import Button from '../../components/Button/Button';
 import Typewriter from '../../components/Typewriter/Typewriter';
+import welcomeImage from '../../assets/welcome-image.png';
 import './Home.css'
 
 function Home() {
@@ -22,7 +23,7 @@ function Home() {
         />
         </div>
         { /* Source: https://publicdomainvectors.org/en/free-clipart/Guy-working-with-a-laptop/90490.html */ }
-        <img id="welcome-image" src="src/assets/welcome-image.png" />
+        <img id="welcome-image" src={welcomeImage} alt="Man holding a laptop" />
       </div>
 
       <div id="elements-section">
