@@ -45,6 +45,7 @@
 }
 
 .code-container {
+  position: relative;
   font-family: monospace;
   background: #000000;
   color: #ffffff;
@@ -52,4 +53,19 @@
   padding: 8px;
   border-radius: 8px;
   box-shadow: 1px 1px 2px #0E8388;
+}
+
+.copy-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #0E8388;
+  border-radius: 4px;
+  padding: 8px;
+  cursor: pointer;
+  transition: 0.2s filter;
+}
+
+.copy-button:hover {
+  filter: brightness(1.2);
 }

@@ -1,10 +1,11 @@
-import {ChangeEvent, useRef, useState} from 'react';
+import { ChangeEvent, useState } from 'react';
 import './ButtonDesigner.css'
 import { Background, Border, BorderRadius, FontSize, Padding } from './button-designer-types';
 import Input from '../../components/Input/Input'
 import { InputType } from '../../components/Input/input-types';
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
 import Select from "../../components/Select/Select";
+import { MdContentCopy } from "react-icons/all";
 
 function ButtonDesigner() {
   const [text, setText] = useState('Design your own button!');
@@ -34,15 +35,15 @@ function ButtonDesigner() {
   } as Padding);
   const [cursor, setCursor] = useState('pointer');
 
-  const backgroundOptions = useRef(['color', 'linear-gradient']);
-  const fontWeightOptions = useRef(['100', '200', '300', '400', '500', '600', '700', '800', '900']);
-  const borderOptions = useRef(['solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset']);
-  const cursorOptions = useRef([
+  const backgroundOptions = ['color', 'linear-gradient'];
+  const fontWeightOptions = ['100', '200', '300', '400', '500', '600', '700', '800', '900'];
+  const borderOptions = ['solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset'];
+  const cursorOptions = [
     'pointer', 'default', 'none', 'context-menu', 'help', 'progress', 'wait', 'cell', 'crosshair', 'text',
     'vertical-text', 'alias', 'copy', 'move', 'no-drop', 'not-allowed', 'grab', 'grabbing', 'all-scroll', 'col-resize',
     'row-resize', 'n-resize', 'e-resize', 's-resize', 'w-resize', 'ne-resize', 'nw-resize', 'se-resize', 'sw-resize',
     'ew-resize', 'ns-resize', 'nesw-resize', 'nwse-resize', 'zoom-in', 'zoom-out'
-  ]);
+  ];
 
   const handleLinearGradientBackgroundChanged = (event: ChangeEvent<HTMLInputElement>, index: number): void => {
     const colors = background.linearGradient.colors;
@@ -113,7 +114,7 @@ function ButtonDesigner() {
 
         <div id="background-container">
           <label htmlFor="background-type" className="option-name">background</label>
-          <Select id="background-type" value={background.selected} options={backgroundOptions.current} onChange={(event) => setBackground({ ...background, selected: event.target.value })} />
+          <Select id="background-type" value={background.selected} options={backgroundOptions} onChange={(event) => setBackground({ ...background, selected: event.target.value })} />
   
           {
             background.selected == 'color' &&
@@ -146,7 +147,7 @@ function ButtonDesigner() {
 
         <div id="font-weight-container">
           <label htmlFor="font-weight" className="option-name">font-weight</label>
-          <Select id="font-weight" value={fontWeight} options={fontWeightOptions.current} onChange={(event) => setFontWeight(event.target.value)} />
+          <Select id="font-weight" value={fontWeight} options={fontWeightOptions} onChange={(event) => setFontWeight(event.target.value)} />
         </div>
 
         <div id="border-container">
@@ -157,7 +158,7 @@ function ButtonDesigner() {
             valueOnChange={(event) => setBorder({ ...border, width: { ...border.width, value: Number(event.target.value) } })}
             unitOnChange={(event) => setBorder({ ...border, width: { ...border.width, unit: event.target.value } })}
           />
-          <Select value={border.style} options={borderOptions.current} onChange={(event) => setBorder({ ...border, style: event.target.value })} />
+          <Select value={border.style} options={borderOptions} onChange={(event) => setBorder({ ...border, style: event.target.value })} />
           <Input type={InputType.Color} value={border.color} onChange={(event) => setBorder({ ...border, color: event.target.value })} />
         </div>
 
@@ -185,17 +186,19 @@ function ButtonDesigner() {
 
         <div id="cursor-container">
           <label htmlFor="cursor" className="option-name">cursor</label>
-          <Select id="cursor" value={cursor} options={cursorOptions.current} onChange={(event) => setCursor(event.target.value)} />
+          <Select id="cursor" value={cursor} options={cursorOptions} onChange={(event) => setCursor(event.target.value)} />
         </div>
       </div>
 
       <div id="button-code">
         <pre id="button-html" className="code-container">
           {generateHTML()}
+          <MdContentCopy className="copy-button" onClick={() => navigator.clipboard.writeText(generateHTML())} />
         </pre>
 
         <pre id="button-css" className="code-container">
           {generateCSS()}
+          <MdContentCopy className="copy-button" onClick={() => navigator.clipboard.writeText(generateCSS())} />
         </pre>
       </div>
     </div>

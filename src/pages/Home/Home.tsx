@@ -1,16 +1,15 @@
-import { useRef } from 'react';
 import Button from '../../components/Button/Button';
 import Typewriter from '../../components/Typewriter/Typewriter';
 import designingImage from '../../assets/designing-image.png';
 import './Home.css'
 
 function Home() {
-  const elements = useRef([
+  const elements = [
     { id: 1, name: '<button>', path: 'button' }
-  ]);
-  const textsToType = useRef([
+  ];
+  const textsToType = [
     'buttons'
-  ]);
+  ];
 
   return (
     <>
@@ -19,7 +18,7 @@ function Home() {
           <h1>Styleface</h1>
           <Typewriter
             staticText="Your user-friendly user interface to design and generate HTML and CSS code for "
-            textsToType={textsToType.current}
+            textsToType={textsToType}
           />
         </div>
 
@@ -35,7 +34,7 @@ function Home() {
         
         <div id="elements">
           {
-            elements.current.map(element => <Button key={element.id} text={element.name} path={element.path}></Button>)
+            elements.map(element => <Button key={element.id} text={element.name} path={element.path}></Button>)
           }
         </div>
       </div>
