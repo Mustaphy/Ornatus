@@ -9,7 +9,7 @@ function UnitSelect(props: UnitSelectProperties) {
   const units = useRef(['px', 'cm', 'mm', 'Q', 'in', 'pc', 'pt', '%']);
 
   return (
-    <div id={props.id} className="unit-select">
+    <div id={props.id} className="styleface-unit-select">
       <Input type={InputType.Number} value={props.value} onChange={props.valueOnChange} />
       <Select value={props.unit} options={units.current} onChange={props.unitOnChange} />
     </div>

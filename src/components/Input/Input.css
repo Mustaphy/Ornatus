@@ -1,3 +1,4 @@
+/* General */
 .styleface-input {
   color: #ffffff;
   background-color: #000000;
@@ -10,8 +11,5 @@
 
 .styleface-color {
   padding: 0;
-}
-
-.styleface-input[type="color"], .styleface-input[type="button"] {
   cursor: pointer;
 }

@@ -4,13 +4,11 @@ import { ButtonProperties } from './button-types';
 
 function Button(props: ButtonProperties) {
   return (
-    <>
-      <Link to={props.path}>
-        <button id="button-element">
-          {props.text}
-        </button>
-      </Link>
-    </>
+    <Link to={props.path}>
+      <button className="styleface-button">
+        {props.text}
+      </button>
+    </Link>
   )
 }
 

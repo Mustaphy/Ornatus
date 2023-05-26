@@ -14,7 +14,9 @@ function App() {
 
   return (
     <>
-      <NavigationBar navigationLinks={navigationLinks.current} />
+      <header>
+        <NavigationBar navigationLinks={navigationLinks.current} />
+      </header>
       <Routes>
         <Route path={BASE_URL} element={<Home />}></Route>
         <Route path={`${BASE_URL}/button`} element={<ButtonDesigner />}></Route>

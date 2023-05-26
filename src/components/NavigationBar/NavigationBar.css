@@ -1,4 +1,5 @@
-.navigation-bar {
+/* General */
+.styleface-navigation-bar {
   display: flex;
   position: fixed;
   justify-content: space-between;
@@ -10,13 +11,15 @@
   z-index: 2;
 }
 
+/* App Name */
 #navigation-name {
   color: #ffffff;
   font-size: 32px;
   font-weight: 700;
-  text-shadow: 2px 2px 1px #0E8388;
+  text-shadow: 1px 1px 1px #0E8388;
 }
 
+/* Links */
 #navigation-links li {
   display: inline-block;
   padding: 0 0 0 20px;
@@ -30,25 +33,25 @@
 
 .navigation-text:hover {
   transition: 0.5s;
-  color: #66c0f4;
+  color: #CBE4DE;
 }
 
 /* Sticky Navigation Bar */
-.navigation-bar.sticky {
+.styleface-navigation-bar.sticky {
   height: 64px;
   background: #ffffff;
 }
 
-.navigation-bar.sticky #navigation-name {
+.styleface-navigation-bar.sticky #navigation-name {
   color: #0E8388;
   text-shadow: 2px 2px 1px #000000;
 }
 
-.navigation-bar.sticky #navigation-links li .navigation-link .navigation-text {
+.styleface-navigation-bar.sticky #navigation-links li .navigation-link .navigation-text {
   color: #000000;
 }
 
-.navigation-bar.sticky #navigation-links li .navigation-link .navigation-text:hover {
+.styleface-navigation-bar.sticky #navigation-links li .navigation-link .navigation-text:hover {
   color: #0E8388;
 }
 

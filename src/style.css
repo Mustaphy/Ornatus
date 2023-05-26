@@ -18,6 +18,5 @@
 }
 
 body {
-  background: linear-gradient(#006666, #000000);
-  background-attachment: fixed;
+  background: linear-gradient(#006666, #000000) fixed;
 }
