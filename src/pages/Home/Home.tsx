@@ -16,10 +16,9 @@ function Home() {
       <div id="welcome-section">
         <div id="welcome-text">
           <h1>Styleface</h1>
-          <Typewriter
-            staticText="Your user-friendly user interface to design and generate HTML and CSS code for "
-            textsToType={textsToType}
-          />
+          <h2>
+            Your user-friendly user interface to design and generate HTML and CSS code for <Typewriter textsToType={textsToType} />
+          </h2>
         </div>
 
         { /* Source: https://publicdomainvectors.org/en/free-clipart/Graphic-designer/90584.html */ }

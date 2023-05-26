@@ -6,15 +6,12 @@ function Typewriter(props: TypewriterProperties) {
   const { currentTypingText, currentText } = useTypewriter(props.textsToType);
 
   return (
-    <h2>
-      <span>{props.staticText}</span>{' '}
-      <span
-        className="typewriter-cursor"
-        aria-label={currentText}
-      >
-        {currentTypingText}
-      </span>
-    </h2>
+    <span
+      className="typewriter-cursor"
+      aria-label={currentText}
+    >
+      {currentTypingText}
+    </span>
   )
 }
 
