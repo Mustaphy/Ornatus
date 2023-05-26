@@ -41,8 +41,8 @@ function ButtonDesigner() {
     'pointer', 'default', 'none', 'context-menu', 'help', 'progress', 'wait', 'cell', 'crosshair', 'text',
     'vertical-text', 'alias', 'copy', 'move', 'no-drop', 'not-allowed', 'grab', 'grabbing', 'all-scroll', 'col-resize',
     'row-resize', 'n-resize', 'e-resize', 's-resize', 'w-resize', 'ne-resize', 'nw-resize', 'se-resize', 'sw-resize',
-    'ew-resize', 'ns-resize', 'nesw-resize', 'nwse-resize', 'zoom-in', 'zoom-out']
-  );
+    'ew-resize', 'ns-resize', 'nesw-resize', 'nwse-resize', 'zoom-in', 'zoom-out'
+  ]);
 
   const handleLinearGradientBackgroundChanged = (event: ChangeEvent<HTMLInputElement>, index: number): void => {
     const colors = background.linearGradient.colors;
@@ -62,26 +62,26 @@ function ButtonDesigner() {
   }
 
   const generateHTML = (): string => {
-    return `
-      <button id="styleface-button">
-        ${text}
-      </button>
-    `;
+    return (
+      `<button id="styleface-button">` +
+      `\n  ${text}\n` +
+      `</button>`
+    );
   }
 
   const generateCSS = (): string => {
-    return `
-      #styleface-button {
-        background: ${getBackground()};
-        color: ${color};
-        font-size: ${fontSize.value + fontSize.unit};
-        font-weight: ${fontWeight};
-        border: ${border.width.value + border.width.unit} ${border.style} ${border.color};
-        border-radius: ${borderRadius.value + borderRadius.unit};
-        padding: ${padding.value + padding.unit};
-        cursor: ${cursor};
-      }
-    `;
+    return (
+      `#styleface-button {\n` +
+        `  background: ${getBackground()};\n` +
+        `  color: ${color};\n` +
+        `  font-size: ${fontSize.value + fontSize.unit};\n` +
+        `  font-weight: ${fontWeight};\n` +
+        `  border: ${border.width.value + border.width.unit} ${border.style} ${border.color};\n` +
+        `  border-radius: ${borderRadius.value + borderRadius.unit};\n` +
+        `  padding: ${padding.value + padding.unit};\n` +
+        `  cursor: ${cursor};\n` +
+      `}`
+    );
   }
 
   return (
@@ -190,13 +190,13 @@ function ButtonDesigner() {
       </div>
 
       <div id="button-code">
-        <div id="button-html" className="code-container">
+        <pre id="button-html" className="code-container">
           {generateHTML()}
-        </div>
+        </pre>
 
-        <div id="button-css" className="code-container">
+        <pre id="button-css" className="code-container">
           {generateCSS()}
-        </div>
+        </pre>
       </div>
     </div>
   )

@@ -1,19 +1,22 @@
+/* General */
 #button-designer {
-  margin: 0 32px;
+  margin: 0 16px;
 }
 
+/* Button Preview */
 #button-preview {
   display: grid;
   align-content: center;
   justify-items: center;
-  background: #d3d3d3;
+  background: #afafaf;
   width: 100%;
-  height: 150px;
+  height: 200px;
   border-radius: 8px;
   margin: 0 0 16px 0;
   overflow: scroll;
 }
 
+/* Inputs */
 #button-options {
   margin: 0 0 16px 0;
 }
@@ -27,24 +30,26 @@
   gap: 8px;
 }
 
-.code-container {
-  font-family: monospace;
-  padding: 8px;
-  background: #000000;
-  color: #ffffff;
-  border-radius: 8px;
-  width: fit-content;
-}
-
 .option-name {
   font-family: monospace;
   font-weight: 800;
 }
 
-#padding-container > * > {
-  padding: 8px;
+/* Code Preview */
+#button-code {
+  display: grid;
+  grid-auto-columns: max-content;
+  grid-auto-flow: column;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
-input[type="color"] {
-  width: 100%;
+.code-container {
+  font-family: monospace;
+  background: #000000;
+  color: #ffffff;
+  font-size: 16px;
+  padding: 8px;
+  border-radius: 8px;
+  box-shadow: 1px 1px 2px #0E8388;
 }
