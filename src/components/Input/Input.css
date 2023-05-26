@@ -4,8 +4,13 @@
   padding: 4px;
   border-radius: 4px;
   border: none;
+  box-shadow: 1px 1px 2px #0E8388;
 }
 
 .styleface-color {
   padding: 0;
+}
+
+.styleface-input[type="color"], .styleface-input[type="button"] {
+  cursor: pointer;
 }

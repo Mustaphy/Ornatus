@@ -1,9 +1,10 @@
-import { ChangeEvent, useState } from 'react';
+import {ChangeEvent, useRef, useState} from 'react';
 import './ButtonDesigner.css'
 import { Background, Border, BorderRadius, FontSize, Padding } from './button-designer-types';
 import Input from '../../components/Input/Input'
 import { InputType } from '../../components/Input/input-types';
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
+import Select from "../../components/Select/Select";
 
 function ButtonDesigner() {
   const [text, setText] = useState('Design your own button!');
@@ -32,6 +33,16 @@ function ButtonDesigner() {
     unit: 'px'
   } as Padding);
   const [cursor, setCursor] = useState('pointer');
+
+  const backgroundOptions = useRef(['color', 'linear-gradient']);
+  const fontWeightOptions = useRef(['100', '200', '300', '400', '500', '600', '700', '800', '900']);
+  const borderOptions = useRef(['solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset']);
+  const cursorOptions = useRef([
+    'pointer', 'default', 'none', 'context-menu', 'help', 'progress', 'wait', 'cell', 'crosshair', 'text',
+    'vertical-text', 'alias', 'copy', 'move', 'no-drop', 'not-allowed', 'grab', 'grabbing', 'all-scroll', 'col-resize',
+    'row-resize', 'n-resize', 'e-resize', 's-resize', 'w-resize', 'ne-resize', 'nw-resize', 'se-resize', 'sw-resize',
+    'ew-resize', 'ns-resize', 'nesw-resize', 'nwse-resize', 'zoom-in', 'zoom-out']
+  );
 
   const handleLinearGradientBackgroundChanged = (event: ChangeEvent<HTMLInputElement>, index: number): void => {
     const colors = background.linearGradient.colors;
@@ -102,10 +113,7 @@ function ButtonDesigner() {
 
         <div id="background-container">
           <label htmlFor="background-type" className="option-name">background</label>
-          <select id="background-type" value={background.selected} onChange={(event) => setBackground({ ...background, selected: event.target.value })}>
-            <option>color</option>
-            <option>linear-gradient</option>
-          </select>
+          <Select id="background-type" value={background.selected} options={backgroundOptions.current} onChange={(event) => setBackground({ ...background, selected: event.target.value })} />
   
           {
             background.selected == 'color' &&
@@ -138,17 +146,7 @@ function ButtonDesigner() {
 
         <div id="font-weight-container">
           <label htmlFor="font-weight" className="option-name">font-weight</label>
-          <select id="font-weight" value={fontWeight} onChange={(event) => setFontWeight(event.target.value)}>
-            <option value="100">100</option>
-            <option value="200">200</option>
-            <option value="300">300</option>
-            <option value="400">400</option>
-            <option value="500">500</option>
-            <option value="600">600</option>
-            <option value="700">700</option>
-            <option value="800">800</option>
-            <option value="900">900</option>
-          </select>
+          <Select id="font-weight" value={fontWeight} options={fontWeightOptions.current} onChange={(event) => setFontWeight(event.target.value)} />
         </div>
 
         <div id="border-container">
@@ -159,18 +157,7 @@ function ButtonDesigner() {
             valueOnChange={(event) => setBorder({ ...border, width: { ...border.width, value: Number(event.target.value) } })}
             unitOnChange={(event) => setBorder({ ...border, width: { ...border.width, unit: event.target.value } })}
           />
-          <select value={border.style} onChange={(event) => setBorder({ ...border, style: event.target.value })} >
-            <option value="none">none</option>
-            <option value="hidden">hidden</option>
-            <option value="dotted">dotted</option>
-            <option value="dashed">dashed</option>
-            <option value="solid">solid</option>
-            <option value="double">double</option>
-            <option value="groove">groove</option>
-            <option value="ridge">ridge</option>
-            <option value="inset">inset</option>
-            <option value="outset">outset</option>
-          </select>
+          <Select value={border.style} options={borderOptions.current} onChange={(event) => setBorder({ ...border, style: event.target.value })} />
           <Input type={InputType.Color} value={border.color} onChange={(event) => setBorder({ ...border, color: event.target.value })} />
         </div>
 
@@ -198,44 +185,7 @@ function ButtonDesigner() {
 
         <div id="cursor-container">
           <label htmlFor="cursor" className="option-name">cursor</label>
-          <select id="cursor" value={cursor} onChange={(event) => setCursor(event.target.value)}>
-            <option value="auto">auto</option>
-            <option value="default">default</option>
-            <option value="none">none</option>
-            <option value="context-menu">context-menu</option>
-            <option value="help">help</option>
-            <option value="pointer">pointer</option>
-            <option value="progress">progress</option>
-            <option value="wait">wait</option>
-            <option value="cell">cell</option>
-            <option value="crosshair">crosshair</option>
-            <option value="text">text</option>
-            <option value="vertical-text">vertical-text</option>
-            <option value="alias">alias</option>
-            <option value="copy">copy</option>
-            <option value="move">move</option>
-            <option value="no-drop">no-drop</option>
-            <option value="not-allowed">not-allowed</option>
-            <option value="grab">grab</option>
-            <option value="grabbing">grabbing</option>
-            <option value="all-scroll">all-scroll</option>
-            <option value="col-resize">col-resize</option>
-            <option value="row-resize">row-resize</option>
-            <option value="n-resize">n-resize</option>
-            <option value="e-resize">e-resize</option>
-            <option value="s-resize">s-resize</option>
-            <option value="w-resize">w-resize</option>
-            <option value="ne-resize">ne-resize</option>
-            <option value="nw-resize">nw-resize</option>
-            <option value="se-resize">se-resize</option>
-            <option value="sw-resize">sw-resize</option>
-            <option value="ew-resize">ew-resize</option>
-            <option value="ns-resize">ns-resize</option>
-            <option value="nesw-resize">nesw-resize</option>
-            <option value="nwse-resize">nwse-resize</option>
-            <option value="zoom-in">zoom-in</option>
-            <option value="zoom-out">zoom-out</option>
-          </select>
+          <Select id="cursor" value={cursor} options={cursorOptions.current} onChange={(event) => setCursor(event.target.value)} />
         </div>
       </div>
 
