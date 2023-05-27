@@ -1,10 +1,10 @@
 /* General */
-#button-designer {
+#element-designer {
   margin: 0 16px;
 }
 
 /* Button Preview */
-#button-preview {
+#element-preview {
   display: grid;
   align-content: center;
   justify-items: center;
@@ -16,12 +16,12 @@
   overflow: scroll;
 }
 
-/* Inputs */
-#button-options {
+/* Styling Options */
+#styling-options {
   margin: 0 0 16px 0;
 }
 
-#button-options > * {
+#styling-options > * {
   display: grid;
   grid-auto-flow: column;
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -36,7 +36,7 @@
 }
 
 /* Code Preview */
-#button-code {
+#element-code {
   display: grid;
   grid-auto-columns: max-content;
   grid-auto-flow: column;

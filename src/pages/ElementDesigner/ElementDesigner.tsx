@@ -1,14 +1,16 @@
 import { ChangeEvent, useState } from 'react';
-import './ButtonDesigner.css'
-import { Background, Border, BorderRadius, FontSize, Padding } from './button-designer-types';
+import './ElementDesigner.css'
+import { Background, Border, BorderRadius, FontSize, Padding } from './element-designer-types';
 import Input from '../../components/Input/Input'
 import { InputType } from '../../components/Input/input-types';
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
 import Select from "../../components/Select/Select";
 import { MdContentCopy } from "react-icons/all";
+import PreviewElement from '../../components/PreviewElement/PreviewElement';
 
-function ButtonDesigner() {
-  const [text, setText] = useState('Design your own button!');
+function ElementDesigner() {
+  const [element, setElement] = useState('button');
+  const [innerText, setInnerText] = useState('Design your own element!');
   const [background, setBackground] = useState({
     selected: 'color',
     color: { color: '#000000' },
@@ -35,6 +37,12 @@ function ButtonDesigner() {
   } as Padding);
   const [cursor, setCursor] = useState('pointer');
 
+  const elementOptions = [
+    'a', 'abbr', 'address', 'article', 'aside', 'b', 'bdi', 'bdo', 'blockquote', 'button',
+    'cite', 'code', 'div', 'em', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'i', 'input', 'ins', 'kbd',
+    'label', 'main', 'mark', 'nav', 'output', 'p', 'param', 'pre', 'q', 's', 'samp', 'section', 'small', 'span',
+    'strong', 'sub', 'sup', 'textarea', 'time', 'u', 'var'
+  ];
   const backgroundOptions = ['color', 'linear-gradient'];
   const fontWeightOptions = ['100', '200', '300', '400', '500', '600', '700', '800', '900'];
   const borderOptions = ['solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset'];
@@ -63,16 +71,23 @@ function ButtonDesigner() {
   }
 
   const generateHTML = (): string => {
-    return (
-      `<button id="styleface-button">` +
-      `\n  ${text}\n` +
-      `</button>`
-    );
+    switch (element) {
+      case 'input':
+      case 'textarea':
+        return `<${element}\n` +
+               `  id="styleface-element"\n` +
+               `  value="${innerText}"\n` +
+               `/>`;
+      default:
+        return `<${element} id="styleface-element">\n` +
+               `  ${innerText}\n` +
+               `</${element}>`;
+    }
   }
 
   const generateCSS = (): string => {
     return (
-      `#styleface-button {\n` +
+      `#styleface-element {\n` +
         `  background: ${getBackground()};\n` +
         `  color: ${color};\n` +
         `  font-size: ${fontSize.value + fontSize.unit};\n` +
@@ -86,9 +101,11 @@ function ButtonDesigner() {
   }
 
   return (
-    <div id="button-designer">
-      <div id="button-preview">
-        <button
+    <div id="element-designer">
+      <div id="element-preview">
+        <PreviewElement
+          element={element}
+          innerText={innerText}
           style={
             {
               background: getBackground(),
@@ -98,18 +115,20 @@ function ButtonDesigner() {
               border: `${border.width.value + border.width.unit} ${border.style} ${border.color}`,
               borderRadius: `${borderRadius.value + borderRadius.unit}`,
               padding: `${padding.value + padding.unit}`,
-              cursor: cursor
+              cursor: cursor,
             }
-          }
-        >
-          {text}
-        </button>
+          } />
       </div>
 
-      <div id="button-options">
-        <div id="text-container">
-          <label htmlFor="text" className="option-name">text</label>
-          <Input id="text" type={InputType.Text} value={text} onChange={(event) => setText(event.target.value)} />
+      <div id="styling-options">
+        <div id="element-container">
+          <label htmlFor="element" className="option-name">element</label>
+          <Select id="element" value={element} options={elementOptions} onChange={(event) => setElement(event.target.value)} />
+        </div>
+
+        <div id="innerText-container">
+          <label htmlFor="innerText" className="option-name">innerText</label>
+          <Input id="innerText" type={InputType.Text} value={innerText} onChange={(event) => setInnerText(event.target.value)} />
         </div>
 
         <div id="background-container">
@@ -190,7 +209,7 @@ function ButtonDesigner() {
         </div>
       </div>
 
-      <div id="button-code">
+      <div id="element-code">
         <pre id="button-html" className="code-container">
           {generateHTML()}
           <MdContentCopy className="copy-button" onClick={() => navigator.clipboard.writeText(generateHTML())} />
@@ -205,4 +224,4 @@ function ButtonDesigner() {
   )
 }
 
-export default ButtonDesigner;
+export default ElementDesigner;

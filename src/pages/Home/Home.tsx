@@ -5,7 +5,7 @@ import './Home.css'
 
 function Home() {
   const elements = [
-    { id: 1, name: '<button>', path: 'button' }
+    { id: 1, name: '<button>', path: 'element-designer' }
   ];
   const textsToType = [
     'buttons'
