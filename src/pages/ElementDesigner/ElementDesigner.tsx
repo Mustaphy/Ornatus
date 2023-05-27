@@ -7,25 +7,26 @@ import UnitSelect from '../../components/UnitSelect/UnitSelect';
 import Select from "../../components/Select/Select";
 import { MdContentCopy } from "react-icons/all";
 import PreviewElement from '../../components/PreviewElement/PreviewElement';
+import { capitalizeFirstCharacter } from '../../utilities';
 
 function ElementDesigner() {
   const [element, setElement] = useState('button');
-  const [inputType, setInputType] = useState('text');
+  const [inputType, setInputType] = useState(InputType.Text);
   const [innerText, setInnerText] = useState('Design your own element!');
   const [value, setValue] = useState({
     button: 'Click here!',
     color: '#000000',
-    date: new Date().toString(),
+    date: '2023-01-01',
     email: 'example@domain.com',
     month: 'July',
     number: '1453',
     password: 'admin',
     reset: 'Reset',
-    search: '',
+    search: '...',
     submit: 'Submit',
     tel: '+31 12 3456789',
-    text: 'Type here...',
-    time: new Date().toString(),
+    text: '...',
+    time: "00:00",
     url: 'example.com',
     week: '1',
   } as Value);
@@ -62,8 +63,8 @@ function ElementDesigner() {
     'strong', 'sub', 'sup', 'textarea', 'time', 'u', 'var'
   ];
   const inputTypeOptions = [
-    'button', 'date', 'datetime-local', 'email', 'month', 'number', 'password', 'reset', 'search', 'submit', 'tel',
-    'text', 'time', 'url', 'week'
+    'button', 'date', 'email', 'month', 'number', 'password', 'reset', 'search', 'submit', 'tel', 'text', 'time',
+    'url', 'week'
   ]
   const backgroundOptions = ['color', 'linear-gradient'];
   const fontWeightOptions = ['100', '200', '300', '400', '500', '600', '700', '800', '900'];
@@ -81,10 +82,6 @@ function ElementDesigner() {
     setBackground({ ...background, linearGradient: { colors: colors } });
   }
 
-  const getInputType = () => {
-    return Object.keys(value).find(type => type === inputType) as InputType
-  }
-
   const getBackground = (): string => {
     switch (background.selected) {
       case 'color':
@@ -96,7 +93,7 @@ function ElementDesigner() {
     }
   }
   
-  const getInputTypeForUser = (): InputType => {
+  const getInputTypeForUserInput = (): InputType => {
     switch (inputType) {
       case 'number':
         return InputType.Number;
@@ -115,7 +112,7 @@ function ElementDesigner() {
         return `<${element}\n` +
                `  id="styleface-element"\n` +
                `  type="${inputType}"\n` +
-               `  value="${value[getInputType()]}"\n` +
+               `  value="${value[inputType]}"\n` +
                `/>`;
       case 'textarea':
         return `<${element}\n` +
@@ -176,7 +173,12 @@ function ElementDesigner() {
           element == 'input' &&
             <div id="input-type-container">
               <label htmlFor="input-type" className="option-name">type</label>
-              <Select id="input-type" value={inputType} options={inputTypeOptions} onChange={(event) => setInputType(event.target.value)} />
+              <Select
+                id="input-type"
+                value={inputType}
+                options={inputTypeOptions}
+                onChange={(event) => setInputType(InputType[capitalizeFirstCharacter(event.target.value) as keyof typeof InputType])}
+              />
             </div>
         }
 
@@ -194,12 +196,12 @@ function ElementDesigner() {
               <label htmlFor="value" className="option-name">value</label>
               <Input
                 id="value"
-                type={getInputTypeForUser()}
-                value={element === 'input' ? value[getInputType()] : value.text}
+                type={getInputTypeForUserInput()}
+                value={element === 'input' ? value[inputType] : value.text}
                 onChange={
                   (event) => setValue((previousValue) => ({
                     ...previousValue,
-                    [element === 'input' ? getInputType() : 'text']: event.target.value,
+                    [element === 'input' ? inputType : 'text']: event.target.value,
                   }))
                 }
               />
