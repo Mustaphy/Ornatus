@@ -1,3 +1,21 @@
+export interface Value {
+  button: string,
+  color: string,
+  date: string,
+  email: string,
+  month: string,
+  number: string,
+  password: string,
+  reset: string,
+  search: string,
+  submit: string,
+  tel: string,
+  text: string,
+  time: string,
+  url: string,
+  week: string,
+}
+
 export interface Background {
   selected: string,
   color: Color,

@@ -8,7 +8,19 @@ export interface InputProperties {
 }
 
 export enum InputType {
-  Text = 'text',
+  Button = 'button',
   Color = 'color',
-  Number = 'number'
+  Date = 'date',
+  Email = 'email',
+  Month = 'month',
+  Number = 'number',
+  Password = 'password',
+  Reset = 'reset',
+  Search = 'search',
+  Submit = 'submit',
+  Tel = 'tel',
+  Text = 'text',
+  Time = 'time',
+  Url = 'url',
+  Week = 'week'
 }

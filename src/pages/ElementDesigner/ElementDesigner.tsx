@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from 'react';
 import './ElementDesigner.css'
-import { Background, Border, BorderRadius, FontSize, Padding } from './element-designer-types';
+import { Background, Border, BorderRadius, FontSize, Padding, Value } from './element-designer-types';
 import Input from '../../components/Input/Input'
 import { InputType } from '../../components/Input/input-types';
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
@@ -10,7 +10,25 @@ import PreviewElement from '../../components/PreviewElement/PreviewElement';
 
 function ElementDesigner() {
   const [element, setElement] = useState('button');
+  const [inputType, setInputType] = useState('text');
   const [innerText, setInnerText] = useState('Design your own element!');
+  const [value, setValue] = useState({
+    button: 'Click here!',
+    color: '#000000',
+    date: new Date().toString(),
+    email: 'example@domain.com',
+    month: 'July',
+    number: '1453',
+    password: 'admin',
+    reset: 'Reset',
+    search: '',
+    submit: 'Submit',
+    tel: '+31 12 3456789',
+    text: 'Type here...',
+    time: new Date().toString(),
+    url: 'example.com',
+    week: '1',
+  } as Value);
   const [background, setBackground] = useState({
     selected: 'color',
     color: { color: '#000000' },
@@ -43,6 +61,10 @@ function ElementDesigner() {
     'label', 'main', 'mark', 'nav', 'output', 'p', 'param', 'pre', 'q', 's', 'samp', 'section', 'small', 'span',
     'strong', 'sub', 'sup', 'textarea', 'time', 'u', 'var'
   ];
+  const inputTypeOptions = [
+    'button', 'date', 'datetime-local', 'email', 'month', 'number', 'password', 'reset', 'search', 'submit', 'tel',
+    'text', 'time', 'url', 'week'
+  ]
   const backgroundOptions = ['color', 'linear-gradient'];
   const fontWeightOptions = ['100', '200', '300', '400', '500', '600', '700', '800', '900'];
   const borderOptions = ['solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset'];
@@ -59,6 +81,10 @@ function ElementDesigner() {
     setBackground({ ...background, linearGradient: { colors: colors } });
   }
 
+  const getInputType = () => {
+    return Object.keys(value).find(type => type === inputType) as InputType
+  }
+
   const getBackground = (): string => {
     switch (background.selected) {
       case 'color':
@@ -69,14 +95,32 @@ function ElementDesigner() {
         return '';
     }
   }
+  
+  const getInputTypeForUser = (): InputType => {
+    switch (inputType) {
+      case 'number':
+        return InputType.Number;
+      case 'date':
+        return InputType.Date;
+      case 'time':
+        return InputType.Time;
+      default:
+        return InputType.Text;
+    }
+  }
 
   const generateHTML = (): string => {
     switch (element) {
       case 'input':
+        return `<${element}\n` +
+               `  id="styleface-element"\n` +
+               `  type="${inputType}"\n` +
+               `  value="${value[getInputType()]}"\n` +
+               `/>`;
       case 'textarea':
         return `<${element}\n` +
                `  id="styleface-element"\n` +
-               `  value="${innerText}"\n` +
+               `  value="${value.text}"\n` +
                `/>`;
       default:
         return `<${element} id="styleface-element">\n` +
@@ -88,14 +132,14 @@ function ElementDesigner() {
   const generateCSS = (): string => {
     return (
       `#styleface-element {\n` +
-        `  background: ${getBackground()};\n` +
-        `  color: ${color};\n` +
-        `  font-size: ${fontSize.value + fontSize.unit};\n` +
-        `  font-weight: ${fontWeight};\n` +
-        `  border: ${border.width.value + border.width.unit} ${border.style} ${border.color};\n` +
-        `  border-radius: ${borderRadius.value + borderRadius.unit};\n` +
-        `  padding: ${padding.value + padding.unit};\n` +
-        `  cursor: ${cursor};\n` +
+      `  background: ${getBackground()};\n` +
+      `  color: ${color};\n` +
+      `  font-size: ${fontSize.value + fontSize.unit};\n` +
+      `  font-weight: ${fontWeight};\n` +
+      `  border: ${border.width.value + border.width.unit} ${border.style} ${border.color};\n` +
+      `  border-radius: ${borderRadius.value + borderRadius.unit};\n` +
+      `  padding: ${padding.value + padding.unit};\n` +
+      `  cursor: ${cursor};\n` +
       `}`
     );
   }
@@ -106,6 +150,8 @@ function ElementDesigner() {
         <PreviewElement
           element={element}
           innerText={innerText}
+          value={value}
+          inputType={inputType}
           style={
             {
               background: getBackground(),
@@ -126,10 +172,39 @@ function ElementDesigner() {
           <Select id="element" value={element} options={elementOptions} onChange={(event) => setElement(event.target.value)} />
         </div>
 
-        <div id="innerText-container">
-          <label htmlFor="innerText" className="option-name">innerText</label>
-          <Input id="innerText" type={InputType.Text} value={innerText} onChange={(event) => setInnerText(event.target.value)} />
-        </div>
+        {
+          element == 'input' &&
+            <div id="input-type-container">
+              <label htmlFor="input-type" className="option-name">type</label>
+              <Select id="input-type" value={inputType} options={inputTypeOptions} onChange={(event) => setInputType(event.target.value)} />
+            </div>
+        }
+
+        {
+          element !== 'input' && element !== 'textarea' &&
+            <div id="innerText-container">
+              <label htmlFor="innerText" className="option-name">innerText</label>
+              <Input id="innerText" type={InputType.Text} value={innerText} onChange={(event) => setInnerText(event.target.value)} />
+            </div>
+        }
+
+        {
+          (element === 'input' || element === 'textarea') &&
+            <div id="value-container">
+              <label htmlFor="value" className="option-name">value</label>
+              <Input
+                id="value"
+                type={getInputTypeForUser()}
+                value={element === 'input' ? value[getInputType()] : value.text}
+                onChange={
+                  (event) => setValue((previousValue) => ({
+                    ...previousValue,
+                    [element === 'input' ? getInputType() : 'text']: event.target.value,
+                  }))
+                }
+              />
+            </div>
+        }
 
         <div id="background-container">
           <label htmlFor="background-type" className="option-name">background</label>
