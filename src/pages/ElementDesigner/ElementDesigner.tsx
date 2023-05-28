@@ -211,7 +211,7 @@ function ElementDesigner() {
                 onChange={
                   (event) => setValue((previousValue) => ({
                     ...previousValue,
-                    [element === 'input' ? inputType : 'text']: event.target.value,
+                    [element === 'input' ? toCamelCase(inputType) : 'text']: event.target.value,
                   }))
                 }
               />

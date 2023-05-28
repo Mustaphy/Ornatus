@@ -20,6 +20,10 @@
   text-shadow: 4px 4px 1px #0E8388;
 }
 
+#welcome-text h2 {
+  margin: 16px 0;
+}
+
 #welcome-image-container {
   display: grid;
   align-items: center;
@@ -28,21 +32,6 @@
 
 #welcome-image-container img {
   height: 600px;
-}
-
-/* Element Selection */
-#elements-section {
-  text-align: center;
-  margin: 0 0 40px 0;
-}
-
-#elements-section h2 {
-  font-size: 36px;
-}
-
-#elements-section p {
-  font-style: italic;
-  margin: 0 0 24px 0;
 }
 
 @media only screen and (max-width: 1000px) {
