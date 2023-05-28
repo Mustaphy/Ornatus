@@ -169,14 +169,3 @@ export enum CursorOptions {
   ZoomIn = 'zoom-in',
   ZoomOut = 'zoom-out'
 }
-
-export enum UnitOptions {
-  Pixels = 'px',
-  Centimeters ='cm',
-  Milimeters = 'mm',
-  QuarterMilimeters = 'Q',
-  Inches = 'in',
-  Picas = 'pc',
-  Points = 'pt',
-  Percent = '%'
-}
