@@ -4,6 +4,9 @@ export interface InputProperties {
   id?: string,
   type: InputType
   value: string | number,
+  min?: number,
+  max?: number,
+  step?: number,
   onChange: ChangeEventHandler<HTMLInputElement>
 }
 
@@ -11,6 +14,7 @@ export enum InputType {
   Button = 'button',
   Color = 'color',
   Date = 'date',
+  DatetimeLocal = 'datetime-local',
   Email = 'email',
   Month = 'month',
   Number = 'number',

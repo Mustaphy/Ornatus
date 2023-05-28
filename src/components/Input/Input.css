@@ -6,10 +6,10 @@
   border-radius: 4px;
   border: none;
   box-shadow: 1px 1px 2px #0E8388;
-  width: 100%;
 }
 
-.styleface-color {
+.styleface-input[type=color] {
+  width: 100%;
   padding: 0;
   cursor: pointer;
 }

@@ -1,3 +1,4 @@
+import { toCamelCase } from '../../utilities';
 import './PreviewElement.css';
 import { PreviewElementProperties } from './preview-element-types';
 
@@ -9,7 +10,7 @@ function PreviewElement(props: PreviewElementProperties) {
       return (
         <input
           type={props.inputType}
-          value={props.value[props.inputType]}
+          value={props.value[toCamelCase(props.inputType) as keyof typeof props.value]}
           style={props.style} 
           readOnly
         />

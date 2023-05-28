@@ -1,22 +1,23 @@
 import { ChangeEvent, useState } from 'react';
 import './ElementDesigner.css'
-import { Background, Border, BorderRadius, FontSize, Padding, Value } from './element-designer-types';
+import { Background, BackgroundOptions, Border, BorderOptions, BorderRadius, CursorOptions, ElementOptions, FontSize, Padding, Value } from './element-designer-types';
 import Input from '../../components/Input/Input'
 import { InputType } from '../../components/Input/input-types';
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
 import Select from "../../components/Select/Select";
 import { MdContentCopy } from "react-icons/all";
 import PreviewElement from '../../components/PreviewElement/PreviewElement';
-import { capitalizeFirstCharacter } from '../../utilities';
+import { getEnumValues, toCamelCase, toPascalCase } from '../../utilities';
 
 function ElementDesigner() {
-  const [element, setElement] = useState('button');
+  const [element, setElement] = useState(ElementOptions.Button);
   const [inputType, setInputType] = useState(InputType.Text);
   const [innerText, setInnerText] = useState('Design your own element!');
   const [value, setValue] = useState({
     button: 'Click here!',
     color: '#000000',
     date: '2023-01-01',
+    datetimeLocal: '2023-01-01T00:00',
     email: 'example@domain.com',
     month: 'July',
     number: '1453',
@@ -27,11 +28,11 @@ function ElementDesigner() {
     tel: '+31 12 3456789',
     text: '...',
     time: "00:00",
-    url: 'example.com',
+    url: 'https://example.com',
     week: '1',
   } as Value);
   const [background, setBackground] = useState({
-    selected: 'color',
+    selected: BackgroundOptions.Color,
     color: { color: '#000000' },
     linearGradient: { colors: ['#000000', '#ffffff'] }
   } as Background);
@@ -43,7 +44,7 @@ function ElementDesigner() {
   const [fontWeight, setFontWeight] = useState('400');
   const [border, setBorder] = useState({
     width: { value: 1, unit: 'px' },
-    style: 'solid',
+    style: BorderOptions.Solid,
     color: '#ffffff'
   } as Border);
   const [borderRadius, setBorderRadius] = useState({
@@ -54,27 +55,7 @@ function ElementDesigner() {
     value: 8,
     unit: 'px'
   } as Padding);
-  const [cursor, setCursor] = useState('pointer');
-
-  const elementOptions = [
-    'a', 'abbr', 'address', 'article', 'aside', 'b', 'bdi', 'bdo', 'blockquote', 'button',
-    'cite', 'code', 'div', 'em', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'i', 'input', 'ins', 'kbd',
-    'label', 'main', 'mark', 'nav', 'output', 'p', 'param', 'pre', 'q', 's', 'samp', 'section', 'small', 'span',
-    'strong', 'sub', 'sup', 'textarea', 'time', 'u', 'var'
-  ];
-  const inputTypeOptions = [
-    'button', 'date', 'email', 'month', 'number', 'password', 'reset', 'search', 'submit', 'tel', 'text', 'time',
-    'url', 'week'
-  ]
-  const backgroundOptions = ['color', 'linear-gradient'];
-  const fontWeightOptions = ['100', '200', '300', '400', '500', '600', '700', '800', '900'];
-  const borderOptions = ['solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset'];
-  const cursorOptions = [
-    'pointer', 'default', 'none', 'context-menu', 'help', 'progress', 'wait', 'cell', 'crosshair', 'text',
-    'vertical-text', 'alias', 'copy', 'move', 'no-drop', 'not-allowed', 'grab', 'grabbing', 'all-scroll', 'col-resize',
-    'row-resize', 'n-resize', 'e-resize', 's-resize', 'w-resize', 'ne-resize', 'nw-resize', 'se-resize', 'sw-resize',
-    'ew-resize', 'ns-resize', 'nesw-resize', 'nwse-resize', 'zoom-in', 'zoom-out'
-  ];
+  const [cursor, setCursor] = useState(CursorOptions.Pointer);
 
   const handleLinearGradientBackgroundChanged = (event: ChangeEvent<HTMLInputElement>, index: number): void => {
     const colors = background.linearGradient.colors;
@@ -94,13 +75,20 @@ function ElementDesigner() {
   }
   
   const getInputTypeForUserInput = (): InputType => {
+    if (element === 'textarea')
+      return InputType.Text;
+
     switch (inputType) {
       case 'number':
         return InputType.Number;
       case 'date':
         return InputType.Date;
+      case 'datetime-local':
+        return InputType.DatetimeLocal;
       case 'time':
         return InputType.Time;
+      case 'color':
+        return InputType.Color;
       default:
         return InputType.Text;
     }
@@ -110,17 +98,17 @@ function ElementDesigner() {
     switch (element) {
       case 'input':
         return `<${element}\n` +
-               `  id="styleface-element"\n` +
+               `  id="styleface-${element}"\n` +
                `  type="${inputType}"\n` +
-               `  value="${value[inputType]}"\n` +
+               `  value="${value[toCamelCase(inputType) as keyof typeof value]}"\n` +
                `/>`;
       case 'textarea':
         return `<${element}\n` +
-               `  id="styleface-element"\n` +
+               `  id="styleface-${element}"\n` +
                `  value="${value.text}"\n` +
                `/>`;
       default:
-        return `<${element} id="styleface-element">\n` +
+        return `<${element} id="styleface-${element}">\n` +
                `  ${innerText}\n` +
                `</${element}>`;
     }
@@ -128,7 +116,7 @@ function ElementDesigner() {
 
   const generateCSS = (): string => {
     return (
-      `#styleface-element {\n` +
+      `#styleface-${element} {\n` +
       `  background: ${getBackground()};\n` +
       `  color: ${color};\n` +
       `  font-size: ${fontSize.value + fontSize.unit};\n` +
@@ -166,7 +154,12 @@ function ElementDesigner() {
       <div id="styling-options">
         <div id="element-container">
           <label htmlFor="element" className="option-name">element</label>
-          <Select id="element" value={element} options={elementOptions} onChange={(event) => setElement(event.target.value)} />
+          <Select
+            id="element"
+            value={element}
+            options={getEnumValues(ElementOptions)}
+            onChange={(event) => setElement(ElementOptions[toPascalCase(event.target.value) as keyof typeof ElementOptions])}
+          />
         </div>
 
         {
@@ -176,8 +169,8 @@ function ElementDesigner() {
               <Select
                 id="input-type"
                 value={inputType}
-                options={inputTypeOptions}
-                onChange={(event) => setInputType(InputType[capitalizeFirstCharacter(event.target.value) as keyof typeof InputType])}
+                options={getEnumValues(InputType)}
+                onChange={(event) => setInputType(InputType[toPascalCase(event.target.value) as keyof typeof InputType])}
               />
             </div>
         }
@@ -186,7 +179,12 @@ function ElementDesigner() {
           element !== 'input' && element !== 'textarea' &&
             <div id="innerText-container">
               <label htmlFor="innerText" className="option-name">innerText</label>
-              <Input id="innerText" type={InputType.Text} value={innerText} onChange={(event) => setInnerText(event.target.value)} />
+              <Input
+                id="innerText"
+                type={InputType.Text}
+                value={innerText}
+                onChange={(event) => setInnerText(event.target.value)}
+              />
             </div>
         }
 
@@ -197,7 +195,7 @@ function ElementDesigner() {
               <Input
                 id="value"
                 type={getInputTypeForUserInput()}
-                value={element === 'input' ? value[inputType] : value.text}
+                value={element === 'input' ? value[toCamelCase(inputType) as keyof typeof value] : value.text}
                 onChange={
                   (event) => setValue((previousValue) => ({
                     ...previousValue,
@@ -210,24 +208,46 @@ function ElementDesigner() {
 
         <div id="background-container">
           <label htmlFor="background-type" className="option-name">background</label>
-          <Select id="background-type" value={background.selected} options={backgroundOptions} onChange={(event) => setBackground({ ...background, selected: event.target.value })} />
+          <Select
+            id="background-type"
+            value={background.selected}
+            options={getEnumValues(BackgroundOptions)}
+            onChange={(event) => setBackground({ ...background, selected: BackgroundOptions[toPascalCase(event.target.value) as keyof typeof BackgroundOptions] })}
+          />
   
           {
             background.selected == 'color' &&
-              <Input type={InputType.Color} value={background.color.color} onChange={(event) => setBackground({ ...background, color: { color: event.target.value } })} />
+              <Input
+                type={InputType.Color}
+                value={background.color.color}
+                onChange={(event) => setBackground({ ...background, color: { color: event.target.value } })}
+              />
           }
           {
             background.selected == 'linear-gradient' &&
               <>
-                <Input type={InputType.Color} value={background.linearGradient.colors[0]} onChange={(event) => handleLinearGradientBackgroundChanged(event, 0)} />
-                <Input type={InputType.Color} value={background.linearGradient.colors[1]} onChange={(event) => handleLinearGradientBackgroundChanged(event, 1)} />
+                <Input
+                  type={InputType.Color}
+                  value={background.linearGradient.colors[0]}
+                  onChange={(event) => handleLinearGradientBackgroundChanged(event, 0)}
+                />
+                <Input
+                  type={InputType.Color}
+                  value={background.linearGradient.colors[1]}
+                  onChange={(event) => handleLinearGradientBackgroundChanged(event, 1)}
+                />
               </>
           }
         </div>
 
         <div id="color-container">
           <label htmlFor="color" className="option-name">color</label>
-          <Input id="color" type={InputType.Color} value={color} onChange={(event) => setColor(event.target.value)} />
+          <Input
+            id="color"
+            type={InputType.Color}
+            value={color}
+            onChange={(event) => setColor(event.target.value)}
+          />
         </div>
 
         <div id="font-size-container">
@@ -243,7 +263,15 @@ function ElementDesigner() {
 
         <div id="font-weight-container">
           <label htmlFor="font-weight" className="option-name">font-weight</label>
-          <Select id="font-weight" value={fontWeight} options={fontWeightOptions} onChange={(event) => setFontWeight(event.target.value)} />
+          <Input
+            id="font-weight"
+            type={InputType.Number}
+            value={fontWeight}
+            min={100}
+            max={900}
+            step={100}
+            onChange={(event) => setFontWeight(event.target.value)}
+          />
         </div>
 
         <div id="border-container">
@@ -254,8 +282,16 @@ function ElementDesigner() {
             valueOnChange={(event) => setBorder({ ...border, width: { ...border.width, value: Number(event.target.value) } })}
             unitOnChange={(event) => setBorder({ ...border, width: { ...border.width, unit: event.target.value } })}
           />
-          <Select value={border.style} options={borderOptions} onChange={(event) => setBorder({ ...border, style: event.target.value })} />
-          <Input type={InputType.Color} value={border.color} onChange={(event) => setBorder({ ...border, color: event.target.value })} />
+          <Select
+            value={border.style}
+            options={getEnumValues(BorderOptions)}
+            onChange={(event) => setBorder({ ...border, style: BorderOptions[toPascalCase(event.target.value) as keyof typeof BorderOptions] })}
+          />
+          <Input
+            type={InputType.Color}
+            value={border.color}
+            onChange={(event) => setBorder({ ...border, color: event.target.value })}
+          />
         </div>
 
         <div id="border-radius-container">
@@ -282,7 +318,12 @@ function ElementDesigner() {
 
         <div id="cursor-container">
           <label htmlFor="cursor" className="option-name">cursor</label>
-          <Select id="cursor" value={cursor} options={cursorOptions} onChange={(event) => setCursor(event.target.value)} />
+          <Select
+            id="cursor"
+            value={cursor}
+            options={getEnumValues(CursorOptions)}
+            onChange={(event) => setCursor(CursorOptions[toPascalCase(event.target.value) as keyof typeof CursorOptions])} 
+          />
         </div>
       </div>
 
