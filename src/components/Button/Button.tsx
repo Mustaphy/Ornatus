@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import './Button.css'
-import { ButtonProperties } from './button-types';
+import { ButtonProperties } from './ButtonInterfaces';
 
 function Button(props: ButtonProperties) {
   return (

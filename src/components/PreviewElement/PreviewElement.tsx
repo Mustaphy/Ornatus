@@ -1,23 +1,32 @@
 import { toCamelCase } from '../../utilities';
 import './PreviewElement.css';
-import { PreviewElementProperties } from './preview-element-types';
+import { PreviewElementProperties } from './PreviewElementInterfaces';
 
 function PreviewElement(props: PreviewElementProperties) {
   const Element = props.element as keyof JSX.IntrinsicElements;
+
+  const getCurrentValue = (): string => {
+    const formattedInputType = toCamelCase(props.inputType) as keyof typeof props.value;
+    return props.value[formattedInputType];
+  }
 
   switch (props.element) {
     case 'input':
       return (
         <input
           type={props.inputType}
-          value={props.value[toCamelCase(props.inputType) as keyof typeof props.value]}
+          value={getCurrentValue()}
           style={props.style} 
           readOnly
         />
       )
     case 'textarea':
       return (
-        <textarea value={props.value.text} style={props.style} readOnly />
+        <textarea
+          value={props.value.text}
+          style={props.style}
+          readOnly
+        />
       )
     default:
       return ( 

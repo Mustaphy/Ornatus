@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./NavigationBar.css";
 import { Link } from "react-router-dom";
-import { NavigationBarProperties } from "./navigation-bar-types";
+import { NavigationBarProperties } from "./NavigationBarInterfaces";
 
 function NavigationBar(props: NavigationBarProperties) {
   const [sticky, setSticky] = useState(false);

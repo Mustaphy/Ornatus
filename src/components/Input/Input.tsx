@@ -1,4 +1,4 @@
-import { InputProperties } from './input-types';
+import { InputProperties } from './InputInterfaces';
 import './Input.css'
 
 function Input(props: InputProperties) {

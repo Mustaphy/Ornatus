@@ -1,69 +1,71 @@
 import { ChangeEvent, useState } from 'react';
-import './ElementDesigner.css'
-import { Background, BackgroundOptions, Border, BorderOptions, BorderRadius, CursorOptions, ElementOptions, FontSize, Height, Padding, Value } from './element-designer-types';
+import './ElementDesigner.css';
+import { Background, Border, BorderRadius, FontSize, Height, Padding, Value, Width } from './ElementDesignerInterfaces';
+import { BackgroundProperty, BorderStyle, CursorKeyword, ElementSelector, backgroundProperties, borderStyles, cursorKeywords, elementSelectors } from './ElementDesignerTypes';
 import Input from '../../components/Input/Input'
-import { InputType } from '../../components/Input/input-types';
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
 import Select from "../../components/Select/Select";
 import { MdContentCopy } from "react-icons/all";
 import PreviewElement from '../../components/PreviewElement/PreviewElement';
-import { getEnumValues, toCamelCase, toPascalCase } from '../../utilities';
+import { toCamelCase } from '../../utilities';
+import { InputType, inputTypes } from '../../components/Input/InputTypes';
+import { Unit } from '../../components/UnitSelect/UnitSelectTypes';
 
 function ElementDesigner() {
-  const [element, setElement] = useState(ElementOptions.Button);
-  const [inputType, setInputType] = useState(InputType.Text);
+  const [element, setElement] = useState<ElementSelector>('button');
+  const [inputType, setInputType] = useState<InputType>('text');
   const [innerText, setInnerText] = useState('Design your own element!');
-  const [value, setValue] = useState({
+  const [value, setValue] = useState<Value>({
     button: 'Click here!',
     color: '#000000',
     date: '2023-01-01',
     datetimeLocal: '2023-01-01T00:00',
     email: 'example@domain.com',
-    month: 'July',
-    number: '1453',
+    month: 'January',
+    number: '2023',
     password: 'admin',
     reset: 'Reset',
-    search: '...',
+    search: 'Search',
     submit: 'Submit',
     tel: '+31 12 3456789',
-    text: '...',
+    text: 'Text',
     time: "00:00",
     url: 'https://example.com',
     week: '1',
-  } as Value);
-  const [height, setHeight] = useState({
+  });
+  const [height, setHeight] = useState<Height>({
     value: 100,
     unit: '%'
-  } as Height);
-  const [width, setWidth] = useState({
+  });
+  const [width, setWidth] = useState<Width>({
     value: 160,
     unit: 'px'
-  } as Height);
-  const [background, setBackground] = useState({
-    selected: BackgroundOptions.Color,
+  });
+  const [background, setBackground] = useState<Background>({
+    selected: 'color',
     color: { color: '#000000' },
     linearGradient: { colors: ['#000000', '#ffffff'] }
-  } as Background);
+  });
   const [color, setColor] = useState('#ffffff');
-  const [fontSize, setFontSize] = useState({
+  const [fontSize, setFontSize] = useState<FontSize>({
     value: 16,
     unit: 'px'
-  } as FontSize);
+  });
   const [fontWeight, setFontWeight] = useState('400');
-  const [border, setBorder] = useState({
+  const [border, setBorder] = useState<Border>({
     width: { value: 1, unit: 'px' },
-    style: BorderOptions.Solid,
+    style: 'solid',
     color: '#ffffff'
-  } as Border);
-  const [borderRadius, setBorderRadius] = useState({
+  });
+  const [borderRadius, setBorderRadius] = useState<BorderRadius>({
     value: 8,
     unit: 'px'
-  } as BorderRadius);
-  const [padding, setPadding] = useState({
+  });
+  const [padding, setPadding] = useState<Padding>({
     value: 8,
     unit: 'px'
-  } as Padding);
-  const [cursor, setCursor] = useState(CursorOptions.Pointer);
+  });
+  const [cursor, setCursor] = useState<CursorKeyword>('pointer');
 
   const handleLinearGradientBackgroundChanged = (event: ChangeEvent<HTMLInputElement>, index: number): void => {
     const colors = background.linearGradient.colors;
@@ -81,24 +83,22 @@ function ElementDesigner() {
         return '';
     }
   }
-  
-  const getInputTypeForUserInput = (): InputType => {
-    if (element === 'textarea')
-      return InputType.Text;
 
+  const getCurrentValue = (): string => {
+    const formattedInputType = toCamelCase(inputType) as keyof typeof value;
+    return value[formattedInputType];
+  }
+
+  const getInputTypeForUserInput = (): InputType => {
     switch (inputType) {
-      case 'number':
-        return InputType.Number;
-      case 'date':
-        return InputType.Date;
-      case 'datetime-local':
-        return InputType.DatetimeLocal;
-      case 'time':
-        return InputType.Time;
-      case 'color':
-        return InputType.Color;
+      case 'button':
+      case 'email':
+      case 'password':
+      case 'reset':
+      case 'search':
+        return 'text';
       default:
-        return InputType.Text;
+        return inputType;
     }
   }
 
@@ -108,7 +108,7 @@ function ElementDesigner() {
         return `<${element}\n` +
                `  id="styleface-${element}"\n` +
                `  type="${inputType}"\n` +
-               `  value="${value[toCamelCase(inputType) as keyof typeof value]}"\n` +
+               `  value="${getCurrentValue()}"\n` +
                `/>`;
       case 'textarea':
         return `<${element}\n` +
@@ -169,8 +169,8 @@ function ElementDesigner() {
           <Select
             id="element"
             value={element}
-            options={getEnumValues(ElementOptions)}
-            onChange={(event) => setElement(ElementOptions[toPascalCase(event.target.value) as keyof typeof ElementOptions])}
+            options={elementSelectors.slice()}
+            onChange={(event) => setElement(event.target.value as ElementSelector)}
           />
         </div>
 
@@ -181,8 +181,10 @@ function ElementDesigner() {
               <Select
                 id="input-type"
                 value={inputType}
-                options={getEnumValues(InputType)}
-                onChange={(event) => setInputType(InputType[toPascalCase(event.target.value) as keyof typeof InputType])}
+                options={inputTypes.slice()}
+                onChange={
+                  (event) => setInputType(event.target.value as InputType)
+                }
               />
             </div>
         }
@@ -193,7 +195,7 @@ function ElementDesigner() {
               <label htmlFor="innerText" className="option-name">innerText</label>
               <Input
                 id="innerText"
-                type={InputType.Text}
+                type="text"
                 value={innerText}
                 onChange={(event) => setInnerText(event.target.value)}
               />
@@ -206,12 +208,12 @@ function ElementDesigner() {
               <label htmlFor="value" className="option-name">value</label>
               <Input
                 id="value"
-                type={getInputTypeForUserInput()}
-                value={element === 'input' ? value[toCamelCase(inputType) as keyof typeof value] : value.text}
+                type={element === 'input' ? getInputTypeForUserInput() : 'text'}
+                value={element === 'input' ? getCurrentValue() : value.text}
                 onChange={
                   (event) => setValue((previousValue) => ({
                     ...previousValue,
-                    [element === 'input' ? toCamelCase(inputType) : 'text']: event.target.value,
+                    [element === 'input' ? inputType : 'text']: event.target.value,
                   }))
                 }
               />
@@ -225,7 +227,7 @@ function ElementDesigner() {
             value={height.value}
             unit={height.unit} 
             valueOnChange={(event) => setHeight({ ...height, value: Number(event.target.value) })}
-            unitOnChange={(event) => setHeight({ ...height, unit: event.target.value })}
+            unitOnChange={(event) => setHeight({ ...height, unit: event.target.value as Unit })}
           />
         </div>
 
@@ -236,23 +238,23 @@ function ElementDesigner() {
             value={width.value}
             unit={width.unit} 
             valueOnChange={(event) => setWidth({ ...width, value: Number(event.target.value) })}
-            unitOnChange={(event) => setWidth({ ...width, unit: event.target.value })}
+            unitOnChange={(event) => setWidth({ ...width, unit: event.target.value as Unit })}
           />
         </div>
 
         <div id="background-container">
-          <label htmlFor="background-type" className="option-name">background</label>
+          <label htmlFor="background-property" className="option-name">background</label>
           <Select
-            id="background-type"
+            id="background-property"
             value={background.selected}
-            options={getEnumValues(BackgroundOptions)}
-            onChange={(event) => setBackground({ ...background, selected: BackgroundOptions[toPascalCase(event.target.value) as keyof typeof BackgroundOptions] })}
+            options={backgroundProperties.slice()}
+            onChange={(event) => setBackground({ ...background, selected: event.target.value as BackgroundProperty})}
           />
   
           {
             background.selected == 'color' &&
               <Input
-                type={InputType.Color}
+                type="color"
                 value={background.color.color}
                 onChange={(event) => setBackground({ ...background, color: { color: event.target.value } })}
               />
@@ -261,12 +263,12 @@ function ElementDesigner() {
             background.selected == 'linear-gradient' &&
               <>
                 <Input
-                  type={InputType.Color}
+                  type="color"
                   value={background.linearGradient.colors[0]}
                   onChange={(event) => handleLinearGradientBackgroundChanged(event, 0)}
                 />
                 <Input
-                  type={InputType.Color}
+                  type="color"
                   value={background.linearGradient.colors[1]}
                   onChange={(event) => handleLinearGradientBackgroundChanged(event, 1)}
                 />
@@ -278,7 +280,7 @@ function ElementDesigner() {
           <label htmlFor="color" className="option-name">color</label>
           <Input
             id="color"
-            type={InputType.Color}
+            type="color"
             value={color}
             onChange={(event) => setColor(event.target.value)}
           />
@@ -291,7 +293,7 @@ function ElementDesigner() {
             value={fontSize.value}
             unit={fontSize.unit} 
             valueOnChange={(event) => setFontSize({ ...fontSize, value: Number(event.target.value) })}
-            unitOnChange={(event) => setFontSize({ ...fontSize, unit: event.target.value })}
+            unitOnChange={(event) => setFontSize({ ...fontSize, unit: event.target.value as Unit })}
           />
         </div>
 
@@ -299,7 +301,7 @@ function ElementDesigner() {
           <label htmlFor="font-weight" className="option-name">font-weight</label>
           <Input
             id="font-weight"
-            type={InputType.Number}
+            type="number"
             value={fontWeight}
             min={100}
             max={900}
@@ -314,15 +316,15 @@ function ElementDesigner() {
             value={border.width.value}
             unit={border.width.unit} 
             valueOnChange={(event) => setBorder({ ...border, width: { ...border.width, value: Number(event.target.value) } })}
-            unitOnChange={(event) => setBorder({ ...border, width: { ...border.width, unit: event.target.value } })}
+            unitOnChange={(event) => setBorder({ ...border, width: { ...border.width, unit: event.target.value as Unit } })}
           />
           <Select
             value={border.style}
-            options={getEnumValues(BorderOptions)}
-            onChange={(event) => setBorder({ ...border, style: BorderOptions[toPascalCase(event.target.value) as keyof typeof BorderOptions] })}
+            options={borderStyles.slice()}
+            onChange={(event) => setBorder({ ...border, style: event.target.value as BorderStyle })}
           />
           <Input
-            type={InputType.Color}
+            type="color"
             value={border.color}
             onChange={(event) => setBorder({ ...border, color: event.target.value })}
           />
@@ -335,7 +337,7 @@ function ElementDesigner() {
             value={borderRadius.value}
             unit={borderRadius.unit} 
             valueOnChange={(event) => setBorderRadius({ ...borderRadius, value: Number(event.target.value) })}
-            unitOnChange={(event) => setBorderRadius({ ...borderRadius, unit: event.target.value })}
+            unitOnChange={(event) => setBorderRadius({ ...borderRadius, unit: event.target.value as Unit })}
           />
         </div>
 
@@ -346,7 +348,7 @@ function ElementDesigner() {
             value={padding.value}
             unit={padding.unit} 
             valueOnChange={(event) => setPadding({ ...padding, value: Number(event.target.value) })}
-            unitOnChange={(event) => setPadding({ ...padding, unit: event.target.value })}
+            unitOnChange={(event) => setPadding({ ...padding, unit: event.target.value as Unit })}
           />
         </div>
 
@@ -355,8 +357,8 @@ function ElementDesigner() {
           <Select
             id="cursor"
             value={cursor}
-            options={getEnumValues(CursorOptions)}
-            onChange={(event) => setCursor(CursorOptions[toPascalCase(event.target.value) as keyof typeof CursorOptions])} 
+            options={cursorKeywords.slice()}
+            onChange={(event) => setCursor(event.target.value as CursorKeyword)} 
           />
         </div>
       </div>

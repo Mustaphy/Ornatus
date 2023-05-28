@@ -1,5 +1,5 @@
 import './Typewriter.css';
-import { TypewriterProperties } from './typewriter-types';
+import { TypewriterProperties } from './TypewriterInterfaces';
 import { useTypewriter } from '../../hooks/useTypewriter';
 
 function Typewriter(props: TypewriterProperties) {
