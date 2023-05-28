@@ -17,6 +17,16 @@ export interface Value {
   week: string,
 }
 
+export interface Height {
+  value: number,
+  unit: string
+}
+
+export interface Width {
+  value: number,
+  unit: string
+}
+
 export interface Background {
   selected: BackgroundOptions,
   color: Color,
@@ -158,4 +168,15 @@ export enum CursorOptions {
   NwseResize = 'nwse-resize',
   ZoomIn = 'zoom-in',
   ZoomOut = 'zoom-out'
+}
+
+export enum UnitOptions {
+  Pixels = 'px',
+  Centimeters ='cm',
+  Milimeters = 'mm',
+  QuarterMilimeters = 'Q',
+  Inches = 'in',
+  Picas = 'pc',
+  Points = 'pt',
+  Percent = '%'
 }

@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from 'react';
 import './ElementDesigner.css'
-import { Background, BackgroundOptions, Border, BorderOptions, BorderRadius, CursorOptions, ElementOptions, FontSize, Padding, Value } from './element-designer-types';
+import { Background, BackgroundOptions, Border, BorderOptions, BorderRadius, CursorOptions, ElementOptions, FontSize, Height, Padding, Value } from './element-designer-types';
 import Input from '../../components/Input/Input'
 import { InputType } from '../../components/Input/input-types';
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
@@ -31,6 +31,14 @@ function ElementDesigner() {
     url: 'https://example.com',
     week: '1',
   } as Value);
+  const [height, setHeight] = useState({
+    value: 100,
+    unit: '%'
+  } as Height);
+  const [width, setWidth] = useState({
+    value: 160,
+    unit: 'px'
+  } as Height);
   const [background, setBackground] = useState({
     selected: BackgroundOptions.Color,
     color: { color: '#000000' },
@@ -117,6 +125,8 @@ function ElementDesigner() {
   const generateCSS = (): string => {
     return (
       `#styleface-${element} {\n` +
+      `  height: ${height.value + height.unit};\n` +
+      `  width: ${width.value + width.unit};\n` +
       `  background: ${getBackground()};\n` +
       `  color: ${color};\n` +
       `  font-size: ${fontSize.value + fontSize.unit};\n` +
@@ -139,6 +149,8 @@ function ElementDesigner() {
           inputType={inputType}
           style={
             {
+              height: `${height.value + height.unit}`,
+              width: `${width.value + width.unit}`,
               background: getBackground(),
               color: color,
               fontSize: `${fontSize.value + fontSize.unit}`,
@@ -205,6 +217,28 @@ function ElementDesigner() {
               />
             </div>
         }
+
+        <div id="height-container">
+          <label htmlFor="height" className="option-name">height</label>
+          <UnitSelect
+            id="height"
+            value={height.value}
+            unit={height.unit} 
+            valueOnChange={(event) => setHeight({ ...height, value: Number(event.target.value) })}
+            unitOnChange={(event) => setHeight({ ...height, unit: event.target.value })}
+          />
+        </div>
+
+        <div id="width-container">
+          <label htmlFor="width" className="option-name">width</label>
+          <UnitSelect
+            id="width"
+            value={width.value}
+            unit={width.unit} 
+            valueOnChange={(event) => setWidth({ ...width, value: Number(event.target.value) })}
+            unitOnChange={(event) => setWidth({ ...width, unit: event.target.value })}
+          />
+        </div>
 
         <div id="background-container">
           <label htmlFor="background-type" className="option-name">background</label>
