@@ -63,7 +63,7 @@
   background: #0E8388;
   border-radius: 4px;
   padding: 8px;
-  cursor: pointer;
+  cursor: copy;
   transition: 0.2s filter;
 }
 

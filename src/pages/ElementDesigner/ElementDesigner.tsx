@@ -8,12 +8,12 @@ import Select from "../../components/Select/Select";
 import { MdContentCopy } from "react-icons/all";
 import PreviewElement from '../../components/PreviewElement/PreviewElement';
 import { toCamelCase } from '../../utilities';
-import { InputType, inputTypes } from '../../components/Input/InputTypes';
+import { Type as Type, types } from '../../components/Input/InputTypes';
 import { Unit } from '../../components/UnitSelect/UnitSelectTypes';
 
 function ElementDesigner() {
   const [element, setElement] = useState<ElementSelector>('button');
-  const [inputType, setInputType] = useState<InputType>('text');
+  const [type, setType] = useState<Type>('text');
   const [innerText, setInnerText] = useState('Design your own element!');
   const [value, setValue] = useState<Value>({
     button: 'Click here!',
@@ -73,7 +73,7 @@ function ElementDesigner() {
     setBackground({ ...background, linearGradient: { colors: colors } });
   }
 
-  const getBackground = (): string => {
+  const getCurrentBackground = (): string => {
     switch (background.selected) {
       case 'color':
         return background.color.color;
@@ -84,13 +84,8 @@ function ElementDesigner() {
     }
   }
 
-  const getCurrentValue = (): string => {
-    const formattedInputType = toCamelCase(inputType) as keyof typeof value;
-    return value[formattedInputType];
-  }
-
-  const getInputTypeForUserInput = (): InputType => {
-    switch (inputType) {
+  const getCurrentType = (): Type => {
+    switch (type) {
       case 'button':
       case 'email':
       case 'password':
@@ -98,25 +93,56 @@ function ElementDesigner() {
       case 'search':
         return 'text';
       default:
-        return inputType;
+        return type;
     }
+  }
+
+  const getCurrentValue = (): string => {
+    const formattedType = toCamelCase(type) as keyof typeof value;
+    return value[formattedType];
+  }
+
+  const getTypeOptions = (): Type[] => {
+    switch (element) {
+      case 'button':
+        return ['button', 'reset', 'submit'];
+      case 'input':
+        return types.slice();
+      default:
+        return [];
+    }
+  }
+
+  const isTypeVisible = (): boolean => {
+    return element == 'input' || element == 'button';
+  }
+
+  const isInnerTextVisible = (): boolean => {
+    return element !== 'input' && element !== 'textarea';
+  }
+
+  const isValueVisible = (): boolean => {
+    return element === 'input' || element === 'textarea';
+  }
+
+  const currentSelectionHasText = (): boolean => {
+    return element !== 'input' || type !== 'color';
   }
 
   const generateHTML = (): string => {
     switch (element) {
       case 'input':
-        return `<${element}\n` +
-               `  id="styleface-${element}"\n` +
-               `  type="${inputType}"\n` +
-               `  value="${getCurrentValue()}"\n` +
-               `/>`;
       case 'textarea':
         return `<${element}\n` +
                `  id="styleface-${element}"\n` +
+               (isTypeVisible() ? `  type="${type}"\n` : '') +
                `  value="${value.text}"\n` +
                `/>`;
       default:
-        return `<${element} id="styleface-${element}">\n` +
+        return `<${element}\n` +
+               `  id="styleface-${element}"\n` +
+               (isTypeVisible() ? `  type="${type}"\n` : '') +
+               `>\n` +
                `  ${innerText}\n` +
                `</${element}>`;
     }
@@ -127,10 +153,10 @@ function ElementDesigner() {
       `#styleface-${element} {\n` +
       `  height: ${height.value + height.unit};\n` +
       `  width: ${width.value + width.unit};\n` +
-      `  background: ${getBackground()};\n` +
-      `  color: ${color};\n` +
-      `  font-size: ${fontSize.value + fontSize.unit};\n` +
-      `  font-weight: ${fontWeight};\n` +
+      `  background: ${getCurrentBackground()};\n` +
+      (currentSelectionHasText() ? `  color: ${color};\n` : '') +
+      (currentSelectionHasText() ? `  font-size: ${fontSize.value + fontSize.unit};\n` : '')  +
+      (currentSelectionHasText() ? `  font-weight: ${fontWeight};\n` : '') +
       `  border: ${border.width.value + border.width.unit} ${border.style} ${border.color};\n` +
       `  border-radius: ${borderRadius.value + borderRadius.unit};\n` +
       `  padding: ${padding.value + padding.unit};\n` +
@@ -146,12 +172,12 @@ function ElementDesigner() {
           element={element}
           innerText={innerText}
           value={value}
-          inputType={inputType}
+          inputType={type}
           style={
             {
               height: `${height.value + height.unit}`,
               width: `${width.value + width.unit}`,
-              background: getBackground(),
+              background: getCurrentBackground(),
               color: color,
               fontSize: `${fontSize.value + fontSize.unit}`,
               fontWeight: fontWeight,
@@ -164,7 +190,7 @@ function ElementDesigner() {
       </div>
 
       <div id="styling-options">
-        <div id="element-container">
+        <div>
           <label htmlFor="element" className="option-name">element</label>
           <Select
             id="element"
@@ -175,23 +201,23 @@ function ElementDesigner() {
         </div>
 
         {
-          element == 'input' &&
-            <div id="input-type-container">
-              <label htmlFor="input-type" className="option-name">type</label>
+          isTypeVisible() &&
+            <div>
+              <label htmlFor="type" className="option-name">type</label>
               <Select
-                id="input-type"
-                value={inputType}
-                options={inputTypes.slice()}
+                id="type"
+                value={type}
+                options={getTypeOptions()}
                 onChange={
-                  (event) => setInputType(event.target.value as InputType)
+                  (event) => setType(event.target.value as Type)
                 }
               />
             </div>
         }
 
         {
-          element !== 'input' && element !== 'textarea' &&
-            <div id="innerText-container">
+          isInnerTextVisible() &&
+            <div>
               <label htmlFor="innerText" className="option-name">innerText</label>
               <Input
                 id="innerText"
@@ -203,24 +229,24 @@ function ElementDesigner() {
         }
 
         {
-          (element === 'input' || element === 'textarea') &&
-            <div id="value-container">
+          isValueVisible() &&
+            <div>
               <label htmlFor="value" className="option-name">value</label>
               <Input
                 id="value"
-                type={element === 'input' ? getInputTypeForUserInput() : 'text'}
+                type={element === 'input' ? getCurrentType() : 'text'}
                 value={element === 'input' ? getCurrentValue() : value.text}
                 onChange={
                   (event) => setValue((previousValue) => ({
                     ...previousValue,
-                    [element === 'input' ? inputType : 'text']: event.target.value,
+                    [element === 'input' ? type : 'text']: event.target.value,
                   }))
                 }
               />
             </div>
         }
 
-        <div id="height-container">
+        <div>
           <label htmlFor="height" className="option-name">height</label>
           <UnitSelect
             id="height"
@@ -231,7 +257,7 @@ function ElementDesigner() {
           />
         </div>
 
-        <div id="width-container">
+        <div>
           <label htmlFor="width" className="option-name">width</label>
           <UnitSelect
             id="width"
@@ -242,7 +268,7 @@ function ElementDesigner() {
           />
         </div>
 
-        <div id="background-container">
+        <div>
           <label htmlFor="background-property" className="option-name">background</label>
           <Select
             id="background-property"
@@ -276,41 +302,50 @@ function ElementDesigner() {
           }
         </div>
 
-        <div id="color-container">
-          <label htmlFor="color" className="option-name">color</label>
-          <Input
-            id="color"
-            type="color"
-            value={color}
-            onChange={(event) => setColor(event.target.value)}
-          />
-        </div>
+        {
+          currentSelectionHasText() &&
+            <div>
+              <label htmlFor="color" className="option-name">color</label>
+              <Input
+                id="color"
+                type="color"
+                value={color}
+                onChange={(event) => setColor(event.target.value)}
+              />
+            </div>
+        }
 
-        <div id="font-size-container">
-          <label htmlFor="font-size" className="option-name">font-size</label>
-          <UnitSelect
-            id="font-size"
-            value={fontSize.value}
-            unit={fontSize.unit} 
-            valueOnChange={(event) => setFontSize({ ...fontSize, value: Number(event.target.value) })}
-            unitOnChange={(event) => setFontSize({ ...fontSize, unit: event.target.value as Unit })}
-          />
-        </div>
+        {
+          currentSelectionHasText() &&
+            <div>
+              <label htmlFor="font-size" className="option-name">font-size</label>
+              <UnitSelect
+                id="font-size"
+                value={fontSize.value}
+                unit={fontSize.unit} 
+                valueOnChange={(event) => setFontSize({ ...fontSize, value: Number(event.target.value) })}
+                unitOnChange={(event) => setFontSize({ ...fontSize, unit: event.target.value as Unit })}
+              />
+            </div>
+        }
 
-        <div id="font-weight-container">
-          <label htmlFor="font-weight" className="option-name">font-weight</label>
-          <Input
-            id="font-weight"
-            type="number"
-            value={fontWeight}
-            min={100}
-            max={900}
-            step={100}
-            onChange={(event) => setFontWeight(event.target.value)}
-          />
-        </div>
+        {
+          currentSelectionHasText() &&
+            <div>
+              <label htmlFor="font-weight" className="option-name">font-weight</label>
+              <Input
+                id="font-weight"
+                type="number"
+                value={fontWeight}
+                min={100}
+                max={900}
+                step={100}
+                onChange={(event) => setFontWeight(event.target.value)}
+              />
+            </div>
+        }
 
-        <div id="border-container">
+        <div>
           <label htmlFor="border" className="option-name">border</label>
           <UnitSelect
             value={border.width.value}
@@ -330,7 +365,7 @@ function ElementDesigner() {
           />
         </div>
 
-        <div id="border-radius-container">
+        <div>
           <label htmlFor="border-radius" className="option-name">border-radius</label>
           <UnitSelect
             id="border-radius"
@@ -341,7 +376,7 @@ function ElementDesigner() {
           />
         </div>
 
-        <div id="padding-container">
+        <div>
           <label htmlFor="padding" className="option-name">padding</label>
           <UnitSelect
             id="padding"
@@ -352,7 +387,7 @@ function ElementDesigner() {
           />
         </div>
 
-        <div id="cursor-container">
+        <div>
           <label htmlFor="cursor" className="option-name">cursor</label>
           <Select
             id="cursor"

@@ -1,9 +1,9 @@
 import { ChangeEventHandler } from "react"
-import { InputType } from "./InputTypes"
+import { Type } from "./InputTypes"
 
 export interface InputProperties {
   id?: string,
-  type: InputType
+  type: Type
   value: string | number,
   min?: number,
   max?: number,
