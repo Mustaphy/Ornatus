@@ -67,12 +67,21 @@ function ElementDesigner() {
   });
   const [cursor, setCursor] = useState<CursorKeyword>('pointer');
 
+  /**
+   * Change the linear-gradient background when the selected colors are changed
+   * @param {ChangeEvent<HTMLInputElement>} event Event that fires when the selected colors are changed
+   * @param {number} index The index of the color that is changed, since the linear-gradient consists of mulitple colors
+   */
   const handleLinearGradientBackgroundChanged = (event: ChangeEvent<HTMLInputElement>, index: number): void => {
     const colors = background.linearGradient.colors;
     colors[index] = event.target.value;
     setBackground({ ...background, linearGradient: { colors: colors } });
   }
 
+  /**
+   * Get the value of the background property based on the current state
+   * @returns {string} Returns the string that is used for the background property in the CSS
+   */
   const getCurrentBackground = (): string => {
     switch (background.selected) {
       case 'color':
@@ -84,6 +93,10 @@ function ElementDesigner() {
     }
   }
 
+  /**
+   * Get the input type that should be used to input the value attribute
+   * @returns {Type} Returns which type the input field is used for the value input
+   */
   const getCurrentType = (): Type => {
     switch (type) {
       case 'button':
@@ -97,11 +110,19 @@ function ElementDesigner() {
     }
   }
 
+  /**
+   * Get the value that is used currently, based on the selected input type (e.g. text, number)
+   * @returns {string} Returns the current value based on the selected input type
+   */
   const getCurrentValue = (): string => {
     const formattedType = toCamelCase(type) as keyof typeof value;
     return value[formattedType];
   }
 
+  /**
+   * Get the type options that are available for the selected element
+   * @returns {Type[]} Returns which input types are available for the selected element
+   */
   const getTypeOptions = (): Type[] => {
     switch (element) {
       case 'button':
@@ -113,22 +134,42 @@ function ElementDesigner() {
     }
   }
 
+  /**
+   * Get if the 'type' option is visible for the user based on the selected element
+   * @returns {boolean} Returns if the type option is visible for the user
+   */
   const isTypeVisible = (): boolean => {
     return element == 'input' || element == 'button';
   }
 
+  /**
+   * Get if the 'innerText' option is visible for the user based on the selected element
+   * @returns {boolean} Returns if the 'innerText' option is visible for the user
+   */
   const isInnerTextVisible = (): boolean => {
     return element !== 'input' && element !== 'textarea';
   }
 
+  /**
+   * Get if the 'value' option is visible for the user based on the selected element
+   * @returns {boolean} Returns if the 'value' option is visible for the user
+   */
   const isValueVisible = (): boolean => {
     return element === 'input' || element === 'textarea';
   }
 
+  /**
+   * Get if the current state of the element has text on it
+   * @returns {boolean} Returns if the current state of the element has text on it
+   */
   const currentSelectionHasText = (): boolean => {
     return element !== 'input' || type !== 'color';
   }
 
+  /**
+   * Get a string of valid HTML of the current state of the element
+   * @returns {string} Returns a string of valid HTML of the current state of the element
+   */
   const generateHTML = (): string => {
     switch (element) {
       case 'input':
@@ -148,6 +189,10 @@ function ElementDesigner() {
     }
   }
 
+  /**
+   * Get a string of valid CSS of the current state of the element
+   * @returns {string} Returns a string of valid CSS of the current state of the element
+   */
   const generateCSS = (): string => {
     return (
       `#styleface-${element} {\n` +

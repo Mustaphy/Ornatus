@@ -5,6 +5,10 @@ import { PreviewElementProperties } from './PreviewElementInterfaces';
 function PreviewElement(props: PreviewElementProperties) {
   const Element = props.element as keyof JSX.IntrinsicElements;
 
+  /**
+   * Get the value that is used currently, based on the selected input type (e.g. text, number)
+   * @returns {string} Returns the current value based on the selected input type
+   */
   const getCurrentValue = (): string => {
     const formattedInputType = toCamelCase(props.inputType) as keyof typeof props.value;
     return props.value[formattedInputType];

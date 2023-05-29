@@ -20,9 +20,9 @@ export const useTypewriter = (textsToType: string[]) => {
     let timeout: ReturnType<typeof setTimeout>;
 
     switch (status) {
-      case TypewriterStatus.Typing:
+      case TypewriterStatus.Typing: {
         // Add a letter to the text that is displayed, to visualize the word slowly being typed
-        const nextTextToType = textsToType[selectedIndex].slice(0, currentTypingText.length + 1);;
+        const nextTextToType = textsToType[selectedIndex].slice(0, currentTypingText.length + 1);
 
         // Go to the next status if we completed writing the current text
         if (nextTextToType === currentTypingText) {
@@ -35,15 +35,15 @@ export const useTypewriter = (textsToType: string[]) => {
         }, TYPING_SPEED);
 
         break;
-
-      case TypewriterStatus.Pausing:
+      }
+      case TypewriterStatus.Pausing: {
         timeout = setTimeout(() => {
           setStatus(TypewriterStatus.Deleting);
         }, TYPING_PAUSE);
 
         break;
-
-      case TypewriterStatus.Deleting:
+    }
+      case TypewriterStatus.Deleting: {
         // Remove the last letter of the word, to visualize the word slowly being deleted
         // Is undefined when the word was already fully deleted
         const remainingText = currentTypingText.slice(0, -1);
@@ -62,6 +62,7 @@ export const useTypewriter = (textsToType: string[]) => {
         }, DELETING_SPEED);
 
         break;
+      }
     }
 
     return () => clearTimeout(timeout);
