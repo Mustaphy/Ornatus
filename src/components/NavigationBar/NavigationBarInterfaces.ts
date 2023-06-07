@@ -3,7 +3,6 @@ export interface NavigationBarProperties {
 }
 
 export interface NavigationLink {
-  id: number,
   name: string,
   path: string
 }

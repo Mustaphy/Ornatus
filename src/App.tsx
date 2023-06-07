@@ -8,7 +8,7 @@ const BASE_URL = "/Styleface";
 
 function App() {
   const navigationLinks = [
-    { id: 1, name: 'Element Designer', path: `${BASE_URL}/element-designer` },
+    { name: 'Element Designer', path: `${BASE_URL}/element-designer` },
   ];
 
   return (
@@ -16,10 +16,13 @@ function App() {
       <header>
         <NavigationBar navigationLinks={navigationLinks} />
       </header>
-      <Routes>
-        <Route path={BASE_URL} element={<Home />}></Route>
-        <Route path={`${BASE_URL}/element-designer`} element={<ElementDesigner />}></Route>
-      </Routes>
+
+      <main>
+        <Routes>
+          <Route path={BASE_URL} element={<Home />}></Route>
+          <Route path={`${BASE_URL}/element-designer`} element={<ElementDesigner />}></Route>
+        </Routes>
+      </main>
     </>
   )
 }

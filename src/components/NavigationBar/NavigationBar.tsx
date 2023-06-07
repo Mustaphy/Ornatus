@@ -13,8 +13,8 @@ function NavigationBar(props: NavigationBarProperties) {
         <nav>
           <ul id="navigation-links">
             {
-              props.navigationLinks.map(navigationLink =>
-                <li key={navigationLink.id}>
+              props.navigationLinks.map((navigationLink, index) =>
+                <li key={index}>
                   <Link className="navigation-link" to={navigationLink.path}>
                     <p className="navigation-text">{navigationLink.name}</p>
                   </Link>

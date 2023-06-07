@@ -177,7 +177,7 @@ function ElementDesigner() {
         return `<${element}\n` +
                `  id="styleface-${element}"\n` +
                (isTypeVisible() ? `  type="${type}"\n` : '') +
-               `  value="${value.text}"\n` +
+               `  value="${getCurrentValue()}"\n` +
                `/>`;
       default:
         return `<${element}\n` +
