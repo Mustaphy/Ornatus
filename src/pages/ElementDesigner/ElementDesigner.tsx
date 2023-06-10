@@ -1,7 +1,6 @@
 import { ChangeEvent, useState } from 'react';
 import './ElementDesigner.css';
-import { Background, Border, BorderRadius, FontSize, Height, Padding, Value, Width } from './ElementDesignerInterfaces';
-import { BackgroundProperty, BorderStyle, CursorKeyword, ElementSelector, Option, backgroundProperties, borderStyles, cursorKeywords, elementSelectors, options } from './ElementDesignerTypes';
+import { BackgroundProperty, BorderStyle, CursorKeyword, ElementSelector, Option, backgroundProperties, borderStyles, cursorKeywords, elementSelectors, options, Background, Border, BorderRadius, FontSize, Height, Padding, Value, Width, Color, Cursor, FontWeight } from './ElementDesignerTypes';
 import Input from '../../components/Input/Input'
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
 import Select from "../../components/Select/Select";
@@ -33,45 +32,57 @@ function ElementDesigner() {
     time: "00:00",
     url: 'https://example.com',
     week: '1',
+    active: true,
   });
   const [height, setHeight] = useState<Height>({
     value: 100,
-    unit: '%'
+    unit: '%',
+    active: false,
   });
   const [width, setWidth] = useState<Width>({
     value: 160,
-    unit: 'px'
+    unit: 'px',
+    active: false,
   });
   const [background, setBackground] = useState<Background>({
     selected: 'color',
     color: { color: '#000000' },
-    linearGradient: { colors: ['#000000', '#ffffff'] }
+    linearGradient: { colors: ['#000000', '#ffffff'] },
+    active: true,
   });
-  const [color, setColor] = useState('#ffffff');
+  const [color, setColor] = useState<Color>({
+    hex: '#ffffff',
+    active: true,
+  });
   const [fontSize, setFontSize] = useState<FontSize>({
     value: 16,
-    unit: 'px'
+    unit: 'px',
+    active: true,
   });
-  const [fontWeight, setFontWeight] = useState('400');
+  const [fontWeight, setFontWeight] = useState<FontWeight>({
+    value: 400,
+    active: true,
+  });
   const [border, setBorder] = useState<Border>({
     width: { value: 1, unit: 'px' },
     style: 'solid',
-    color: '#ffffff'
+    color: '#ffffff',
+    active: true,
   });
   const [borderRadius, setBorderRadius] = useState<BorderRadius>({
     value: 8,
-    unit: 'px'
+    unit: 'px',
+    active: true,
   });
   const [padding, setPadding] = useState<Padding>({
     value: 8,
-    unit: 'px'
+    unit: 'px',
+    active: true,
   });
-  const [cursor, setCursor] = useState<CursorKeyword>('pointer');
-
-  const [visibleOptions, setVisibleOptions] = useState(
-    // Options that should be hidden by default
-    options.filter((option) => option !== 'height' && option !== 'width')
-  );
+  const [cursor, setCursor] = useState<Cursor>({
+    keyword: 'pointer',
+    active: true,
+  });
 
   /**
    * Change the linear-gradient background when the selected colors are changed
@@ -82,14 +93,6 @@ function ElementDesigner() {
     const colors = background.linearGradient.colors;
     colors[index] = event.target.value;
     setBackground({ ...background, linearGradient: { colors: colors } });
-  }
-
-  const toggleOptionVisibility = (option: Option): void => {
-    setVisibleOptions(prevList => prevList.includes(option) ? prevList.filter(i => i !== option) : [...prevList, option]);
-  }
-
-  const isOptionVisible = (option: Option): boolean => {
-    return visibleOptions.includes(option);
   }
 
   /**
@@ -128,7 +131,7 @@ function ElementDesigner() {
    * Get the value that is used currently, based on the selected input type (e.g. text, number)
    * @returns {string} Returns the current value based on the selected input type
    */
-  const getCurrentValue = (): string => {
+  const getCurrentValue = (): string | boolean => {
     const formattedType = toCamelCase(type) as keyof typeof value;
     return value[formattedType];
   }
@@ -191,7 +194,7 @@ function ElementDesigner() {
         return `<${element}\n` +
                `  id="styleface-${element}"\n` +
                (isTypeVisible() ? `  type="${type}"\n` : '') +
-               (isOptionVisible('value') ? `  value="${type}"\n` : '') +
+               (value.active ? `  value="${type}"\n` : '') +
                `/>`;
       default:
         return `<${element}\n` +
@@ -209,16 +212,16 @@ function ElementDesigner() {
    */
   const generateCSS = (): string => {
     const styles = [
-      { condition: isOptionVisible('height'), style: `height: ${height.value + height.unit};` },
-      { condition: isOptionVisible('width'), style: `width: ${width.value + width.unit};` },
-      { condition: isOptionVisible('background'), style: `background: ${getCurrentBackground()};` },
-      { condition: isOptionVisible('border'), style: `border: ${border.width.value + border.width.unit} ${border.style} ${border.color};` },
-      { condition: isOptionVisible('borderRadius'), style: `border-radius: ${borderRadius.value + borderRadius.unit};` },
-      { condition: isOptionVisible('padding'), style: `padding: ${padding.value + padding.unit};` },
-      { condition: isOptionVisible('cursor'), style: `cursor: ${cursor};` },
-      { condition: isOptionVisible('color') && currentSelectionHasText(), style: `color: ${color};` },
-      { condition: isOptionVisible('fontSize') && currentSelectionHasText(), style: `font-size: ${fontSize.value + fontSize.unit};` },
-      { condition: isOptionVisible('fontWeight') && currentSelectionHasText(), style: `font-weight: ${fontWeight};` }
+      { condition: height.active, style: `height: ${height.value + height.unit};` },
+      { condition: width.active, style: `width: ${width.value + width.unit};` },
+      { condition: background.active, style: `background: ${getCurrentBackground()};` },
+      { condition: color.active && currentSelectionHasText(), style: `color: ${color.hex};` },
+      { condition: fontSize.active && currentSelectionHasText(), style: `font-size: ${fontSize.value + fontSize.unit};` },
+      { condition: fontWeight.active && currentSelectionHasText(), style: `font-weight: ${fontWeight.value};` },
+      { condition: border.active, style: `border: ${border.width.value + border.width.unit} ${border.style} ${border.color};` },
+      { condition: borderRadius.active, style: `border-radius: ${borderRadius.value + borderRadius.unit};` },
+      { condition: padding.active, style: `padding: ${padding.value + padding.unit};` },
+      { condition: cursor.active, style: `cursor: ${cursor.keyword};` },
     ];
     
     return `#styleface-${element} {\n` +
@@ -237,23 +240,23 @@ function ElementDesigner() {
           checked={value.checkbox}
           style={
             {
-              height: isOptionVisible('height') ? `${height.value + height.unit}` : '',
-              width: isOptionVisible('width') ? `${width.value + width.unit}` : '',
-              background: isOptionVisible('background') ? getCurrentBackground() : '',
-              color: isOptionVisible('color') ? color : '',
-              fontSize: isOptionVisible('fontSize') ? `${fontSize.value + fontSize.unit}` : '',
-              fontWeight: isOptionVisible('fontWeight') ? fontWeight : '',
-              border: isOptionVisible('border') ? `${border.width.value + border.width.unit} ${border.style} ${border.color}` : '',
-              borderRadius: isOptionVisible('borderRadius') ? `${borderRadius.value + borderRadius.unit}` : '',
-              padding: isOptionVisible('padding') ? `${padding.value + padding.unit}` : '',
-              cursor: isOptionVisible('cursor') ? cursor : '',
+              height: height.active ? `${height.value + height.unit}` : '',
+              width: width.active ? `${width.value + width.unit}` : '',
+              background: background.active ? getCurrentBackground() : '',
+              color: color.active ? color.hex : '',
+              fontSize: fontSize.active ? `${fontSize.value + fontSize.unit}` : '',
+              fontWeight: fontWeight.active ? fontWeight.value : '',
+              border: border.active ? `${border.width.value + border.width.unit} ${border.style} ${border.color}` : '',
+              borderRadius: borderRadius.active ? `${borderRadius.value + borderRadius.unit}` : '',
+              padding: padding.active ? `${padding.value + padding.unit}` : '',
+              cursor: cursor.active ? cursor.keyword : '',
             }
           } />
       </div>
 
       <div id="styling-options">
         <div>
-          <Input type="checkbox" checked={isOptionVisible('element')} disabled />
+          <Input type="checkbox" checked disabled />
 
           <label htmlFor="element" className="option-name">element</label>
           <Select
@@ -267,7 +270,7 @@ function ElementDesigner() {
         {
           isTypeVisible() &&
             <div>
-              <Input type="checkbox" checked={isOptionVisible('type')} disabled />
+              <Input type="checkbox" checked disabled />
 
               <label htmlFor="type" className="option-name">type</label>
               <Select
@@ -283,8 +286,8 @@ function ElementDesigner() {
 
         {
           isInnerTextVisible() &&
-            <div className={!isOptionVisible('innerText') ? 'hidden' : ''}>
-              <Input type="checkbox" checked={isOptionVisible('innerText')} disabled />
+            <div>
+              <Input type="checkbox" checked disabled />
 
               <label htmlFor="innerText" className="option-name">innerText</label>
               <Input
@@ -298,8 +301,8 @@ function ElementDesigner() {
 
         {
           isValueVisible() &&
-            <div className={!isOptionVisible('value') ? 'hidden' : ''}>
-              <Input type="checkbox" checked={isOptionVisible('value')} disabled />
+            <div className={!value.active ? 'hidden' : ''}>
+              <Input type="checkbox" checked={value.active} disabled />
 
               <label htmlFor="value" className="option-name">value</label>
               <Input
@@ -307,7 +310,7 @@ function ElementDesigner() {
                 type={element === 'input' ? getCurrentType() : 'text'}
                 value={element === 'input' ? getCurrentValue() : value.text}
                 onChange={
-                  (event) => setValue((previousValue) => ({
+                  (event) => setValue((previousValue: Value) => ({
                     ...previousValue,
                     [element === 'input' ? type : 'text']:
                       element === 'input' && type === 'checkbox' ? event.target.checked : event.target.value,
@@ -317,8 +320,8 @@ function ElementDesigner() {
             </div>
         }
 
-        <div className={!isOptionVisible('height') ? 'hidden' : ''}>
-          <Input type="checkbox" checked={isOptionVisible('height')} onChange={(() => toggleOptionVisibility('height'))} />
+        <div className={!height.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={height.active} onChange={(() => setHeight({ ...height, active: !height.active }))} />
 
           <label htmlFor="height" className="option-name">height</label>
           <UnitSelect
@@ -330,8 +333,8 @@ function ElementDesigner() {
           />
         </div>
 
-        <div className={!isOptionVisible('width') ? 'hidden' : ''}>
-          <Input type="checkbox" checked={isOptionVisible('width')} onChange={(() => toggleOptionVisibility('width'))} />
+        <div className={!width.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={width.active} onChange={(() => setWidth({ ...width, active: !width.active }))} />
 
           <label htmlFor="width" className="option-name">width</label>
           <UnitSelect
@@ -343,8 +346,8 @@ function ElementDesigner() {
           />
         </div>
 
-        <div className={!isOptionVisible('background') ? 'hidden' : ''}>
-          <Input type="checkbox" checked={isOptionVisible('background')} onChange={(() => toggleOptionVisibility('background'))} />
+        <div className={!background.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={background.active} onChange={(() => setBackground({ ...background, active: !background.active }))} />
 
           <label htmlFor="background-property" className="option-name">background</label>
           <Select
@@ -381,23 +384,23 @@ function ElementDesigner() {
 
         {
           currentSelectionHasText() &&
-            <div className={!isOptionVisible('color') ? 'hidden' : ''}>
-              <Input type="checkbox" checked={isOptionVisible('color')} onChange={(() => toggleOptionVisibility('color'))} />
+            <div className={!color.active ? 'hidden' : ''}>
+              <Input type="checkbox" checked={color.active} onChange={(() => setColor({ ...color, active: !color.active }))} />
 
               <label htmlFor="color" className="option-name">color</label>
               <Input
                 id="color"
                 type="color"
-                value={color}
-                onChange={(event) => setColor(event.target.value)}
+                value={color.hex}
+                onChange={(event) => setColor({ ...color, hex: event.target.value })}
               />
             </div>
         }
 
         {
           currentSelectionHasText() &&
-          <div className={!isOptionVisible('fontSize') ? 'hidden' : ''}>
-              <Input type="checkbox" checked={isOptionVisible('fontSize')} onChange={(() => toggleOptionVisibility('fontSize'))} />
+          <div className={!fontSize.active ? 'hidden' : ''}>
+              <Input type="checkbox" checked={fontSize.active} onChange={(() => setFontSize({ ...fontSize, active: !fontSize.active }))} />
 
               <label htmlFor="font-size" className="option-name">font-size</label>
               <UnitSelect
@@ -412,24 +415,24 @@ function ElementDesigner() {
 
         {
           currentSelectionHasText() &&
-            <div className={!isOptionVisible('fontWeight') ? 'hidden' : ''}>
-              <Input type="checkbox" checked={isOptionVisible('fontWeight')} onChange={(() => toggleOptionVisibility('fontWeight'))} />
+            <div className={!fontWeight.active ? 'hidden' : ''}>
+              <Input type="checkbox" checked={fontWeight.active} onChange={(() => setFontWeight({ ...fontWeight, active: !fontWeight.active }))} />
 
               <label htmlFor="font-weight" className="option-name">font-weight</label>
               <Input
                 id="font-weight"
                 type="number"
-                value={fontWeight}
+                value={fontWeight.value}
                 min={100}
                 max={900}
                 step={100}
-                onChange={(event) => setFontWeight(event.target.value)}
+                onChange={(event) => setFontWeight({ ...fontWeight, value: Number(event.target.value)})}
               />
             </div>
         }
 
-        <div className={!isOptionVisible('border') ? 'hidden' : ''}>
-          <Input type="checkbox" checked={isOptionVisible('border')} onChange={(() => toggleOptionVisibility('border'))} />
+        <div className={!border.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={border.active} onChange={(() => setBorder({ ...border, active: !border.active }))} />
 
           <label htmlFor="border" className="option-name">border</label>
           <UnitSelect
@@ -450,8 +453,8 @@ function ElementDesigner() {
           />
         </div>
 
-        <div className={!isOptionVisible('borderRadius') ? 'hidden' : ''}>
-          <Input type="checkbox" checked={isOptionVisible('borderRadius')} onChange={(() => toggleOptionVisibility('borderRadius'))} />
+        <div className={!borderRadius.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={borderRadius.active} onChange={(() => setBorderRadius({ ...borderRadius, active: !borderRadius.active }))} />
 
           <label htmlFor="border-radius" className="option-name">border-radius</label>
           <UnitSelect
@@ -463,8 +466,8 @@ function ElementDesigner() {
           />
         </div>
 
-        <div className={!isOptionVisible('padding') ? 'hidden' : ''}>
-          <Input type="checkbox" checked={isOptionVisible('padding')} onChange={(() => toggleOptionVisibility('padding'))} />
+        <div className={!padding.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={padding.active} onChange={(() => setPadding({ ...padding, active: !padding.active }))} />
 
           <label htmlFor="padding" className="option-name">padding</label>
           <UnitSelect
@@ -476,15 +479,15 @@ function ElementDesigner() {
           />
         </div>
 
-        <div className={!isOptionVisible('cursor') ? 'hidden' : ''}>
-          <Input type="checkbox" checked={isOptionVisible('cursor')} onChange={(() => toggleOptionVisibility('cursor'))} />
+        <div className={!cursor.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={cursor.active} onChange={(() => setCursor({ ...cursor, active: !cursor.active }))} />
 
           <label htmlFor="cursor" className="option-name">cursor</label>
           <Select
             id="cursor"
-            value={cursor}
+            value={cursor.keyword}
             options={cursorKeywords.slice()}
-            onChange={(event) => setCursor(event.target.value as CursorKeyword)} 
+            onChange={(event) => setCursor({ ...cursor, keyword: event.target.value as CursorKeyword })} 
           />
         </div>
       </div>
