@@ -121,6 +121,7 @@ function ElementDesigner() {
       case 'password':
       case 'reset':
       case 'search':
+      case 'submit':
         return 'text';
       default:
         return type;
@@ -194,7 +195,7 @@ function ElementDesigner() {
         return `<${element}\n` +
                `  id="styleface-${element}"\n` +
                (isTypeVisible() ? `  type="${type}"\n` : '') +
-               (value.active ? `  value="${type}"\n` : '') +
+               (value.active ? `  value="${getCurrentValue()}"\n` : '') +
                `/>`;
       default:
         return `<${element}\n` +
