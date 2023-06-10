@@ -4,6 +4,7 @@ import { BackgroundProperty, BorderStyle } from "./ElementDesignerTypes"
 export interface Value {
   button: string,
   color: string,
+  checkbox: string,
   date: string,
   datetimeLocal: string,
   email: string,

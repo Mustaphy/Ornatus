@@ -8,5 +8,6 @@ export interface PreviewElementProperties {
   style: CSSProperties,
   innerText: string,
   value: Value,
-  inputType: Type,
+  type: Type,
+  checked?: string,
 }

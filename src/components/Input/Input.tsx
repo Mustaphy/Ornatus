@@ -10,6 +10,8 @@ function Input(props: InputProperties) {
       min={props.min}
       max={props.max}
       step={props.step}
+      checked={props.checked}
+      disabled={props.disabled}
       onChange={props.onChange}
     />
   )

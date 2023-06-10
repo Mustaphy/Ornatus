@@ -23,3 +23,9 @@ export const cursorKeywords = [
   'ns-resize', 'nesw-resize', 'nwse-resize', 'zoom-in', 'zoom-out'
 ] as const;
 export type CursorKeyword = typeof cursorKeywords[number];
+
+export const options = [
+  'element', 'type', 'innerText', 'value', 'height', 'width', 'background', 'color', 'fontSize', 'fontWeight',
+  'border', 'borderRadius', 'padding', 'cursor'
+] as const;
+export type Option = typeof options[number];

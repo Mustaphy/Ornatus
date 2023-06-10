@@ -10,7 +10,7 @@ function PreviewElement(props: PreviewElementProperties) {
    * @returns {string} Returns the current value based on the selected input type
    */
   const getCurrentValue = (): string => {
-    const formattedInputType = toCamelCase(props.inputType) as keyof typeof props.value;
+    const formattedInputType = toCamelCase(props.type) as keyof typeof props.value;
     return props.value[formattedInputType];
   }
 
@@ -18,9 +18,10 @@ function PreviewElement(props: PreviewElementProperties) {
     case 'input':
       return (
         <input
-          type={props.inputType}
+          type={props.type}
           value={getCurrentValue()}
-          style={props.style} 
+          style={props.style}
+          checked={Boolean(props.checked)}
           readOnly
         />
       )
