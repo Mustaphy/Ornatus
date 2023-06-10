@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import { Value } from "../../pages/ElementDesigner/ElementDesignerInterfaces";
+import { Value } from "../../pages/ElementDesigner/ElementDesignerTypes";
 import { Type } from "../Input/InputTypes";
 import { ElementSelector } from "../../pages/ElementDesigner/ElementDesignerTypes";
 

@@ -6,7 +6,8 @@ function Input(props: InputProperties) {
     <input
       id={props.id}
       className={'styleface-input'}
-      type={props.type} value={props.value}
+      type={props.type}
+      value={props.value}
       min={props.min}
       max={props.max}
       step={props.step}

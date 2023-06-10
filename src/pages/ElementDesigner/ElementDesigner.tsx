@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from 'react';
 import './ElementDesigner.css';
-import { BackgroundProperty, BorderStyle, CursorKeyword, ElementSelector, Option, backgroundProperties, borderStyles, cursorKeywords, elementSelectors, options, Background, Border, BorderRadius, FontSize, Height, Padding, Value, Width, Color, Cursor, FontWeight } from './ElementDesignerTypes';
+import { BackgroundProperty, BorderStyle, CursorKeyword, ElementSelector, backgroundProperties, borderStyles, cursorKeywords, elementSelectors, Background, Border, BorderRadius, FontSize, Height, Padding, Value, Width, Color, Cursor, FontWeight } from './ElementDesignerTypes';
 import Input from '../../components/Input/Input'
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
 import Select from "../../components/Select/Select";
@@ -131,9 +131,9 @@ function ElementDesigner() {
    * Get the value that is used currently, based on the selected input type (e.g. text, number)
    * @returns {string} Returns the current value based on the selected input type
    */
-  const getCurrentValue = (): string | boolean => {
+  const getCurrentValue = (): string => {
     const formattedType = toCamelCase(type) as keyof typeof value;
-    return value[formattedType];
+    return value[formattedType].toString();
   }
 
   /**
