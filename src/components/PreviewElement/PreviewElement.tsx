@@ -11,7 +11,7 @@ function PreviewElement(props: PreviewElementProperties) {
    */
   const getCurrentValue = (): string => {
     const formattedInputType = toCamelCase(props.type) as keyof typeof props.value;
-    return props.value[formattedInputType];
+    return props.value[formattedInputType].toString();
   }
 
   switch (props.element) {
