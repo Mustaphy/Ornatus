@@ -1,0 +1,27 @@
+.treeview {
+  font-family: monospace;
+  background: #000000;
+  color: #ffffff;
+  font-size: 16px;
+  padding: 8px;
+  border-radius: 8px;
+  box-shadow: 1px 1px 2px #0E8388;
+}
+
+.treeview li {
+  position: relative;
+  background: linear-gradient(#006666, #0E8388);
+  border-radius: 4px;
+  padding: 4px;
+  margin: 2px;
+  width: fit-content;
+}
+
+.treeview li span {
+  cursor: pointer;
+  color: #CBE4DE;
+}
+
+.treeview li.drag-over {
+  border-bottom: 2px dashed #CBE4DE;
+}

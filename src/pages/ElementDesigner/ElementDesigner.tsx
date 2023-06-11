@@ -1,6 +1,26 @@
 import { ChangeEvent, useState } from 'react';
 import './ElementDesigner.css';
-import { BackgroundProperty, BorderStyle, CursorKeyword, ElementSelector, backgroundProperties, borderStyles, cursorKeywords, elementSelectors, Background, Border, BorderRadius, FontSize, Height, Padding, Value, Width, Color, Cursor, FontWeight } from './ElementDesignerTypes';
+import {
+  BackgroundProperty,
+  BorderStyle,
+  CursorKeyword,
+  ElementSelector,
+  backgroundProperties,
+  borderStyles,
+  cursorKeywords,
+  elementSelectors,
+  Background,
+  Border,
+  BorderRadius,
+  FontSize,
+  Height,
+  Padding,
+  Value,
+  Width,
+  Color,
+  Cursor,
+  FontWeight,
+} from './ElementDesignerTypes';
 import Input from '../../components/Input/Input'
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
 import Select from "../../components/Select/Select";
@@ -9,6 +29,7 @@ import PreviewElement from '../../components/PreviewElement/PreviewElement';
 import { toCamelCase } from '../../utilities';
 import { Type as Type, types } from '../../components/Input/InputTypes';
 import { Unit } from '../../components/UnitSelect/UnitSelectTypes';
+import TreeView from '../../components/TreeView/TreeView';
 
 function ElementDesigner() {
   const [element, setElement] = useState<ElementSelector>('button');
@@ -83,6 +104,27 @@ function ElementDesigner() {
     keyword: 'pointer',
     active: true,
   });
+
+  const hierarchy = [
+    {
+      id: 1,
+      label: 'Node 1',
+      children: [
+        {
+          id: 2,
+          label: 'Node 1.1',
+        },
+        {
+          id: 3,
+          label: 'Node 1.2',
+        },
+      ],
+    },
+    {
+      id: 4,
+      label: 'Node 2',
+    },
+  ];
 
   /**
    * Change the linear-gradient background when the selected colors are changed
@@ -255,10 +297,14 @@ function ElementDesigner() {
           } />
       </div>
 
-      <div id="styling-options">
-        <div>
-          <Input type="checkbox" checked disabled />
+      <div id="element-hierarchy">
+        <h2>Structure (HTML)</h2>
+        <hr />
+        <TreeView data={hierarchy} />
+      </div>
 
+      <div id="element-options">
+        <div>
           <label htmlFor="element" className="option-name">element</label>
           <Select
             id="element"
@@ -271,8 +317,6 @@ function ElementDesigner() {
         {
           isTypeVisible() &&
             <div>
-              <Input type="checkbox" checked disabled />
-
               <label htmlFor="type" className="option-name">type</label>
               <Select
                 id="type"
@@ -288,8 +332,6 @@ function ElementDesigner() {
         {
           isInnerTextVisible() &&
             <div>
-              <Input type="checkbox" checked disabled />
-
               <label htmlFor="innerText" className="option-name">innerText</label>
               <Input
                 id="innerText"
@@ -320,6 +362,11 @@ function ElementDesigner() {
               />
             </div>
         }
+      </div>
+
+      <div id="styling-options">
+        <h2>Styling (CSS)</h2>
+        <hr />
 
         <div className={!height.active ? 'hidden' : ''}>
           <Input type="checkbox" checked={height.active} onChange={(() => setHeight({ ...height, active: !height.active }))} />

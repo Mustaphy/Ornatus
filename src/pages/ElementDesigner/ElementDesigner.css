@@ -3,6 +3,11 @@
   margin: 0 16px;
 }
 
+/* Hierarchy */
+#element-hierarchy {
+  margin: 0 0 16px 0;
+}
+
 /* Element Preview */
 #element-preview {
   display: grid;
@@ -17,18 +22,34 @@
   box-shadow: 1px 1px 2px #0E8388;
 }
 
-/* Styling Options */
-#styling-options {
+/* Element (HTML) and Styling (CSS) Options */
+#styling-options, #element-options {
   margin: 0 0 16px 0;
 }
 
-#styling-options > * {
+#styling-options > *, #element-options > * {
   display: grid;
   grid-auto-flow: column;
-  grid-template-columns: auto 1fr 1fr 1fr 1fr;
   font-size: 16px;
   margin: 0 0 4px 0;
   gap: 8px;
+}
+
+#styling-options > * {
+  grid-template-columns: auto 1fr 1fr 1fr 1fr;
+}
+
+#element-options > * {
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+#element-hierarchy h2, #styling-options h2 {
+  color: #ffffff;
+  font-size: 16px;
+}
+
+#element-hierarchy hr, #styling-options hr {
+  margin: 8px 0 16px 0;
 }
 
 .option-name {

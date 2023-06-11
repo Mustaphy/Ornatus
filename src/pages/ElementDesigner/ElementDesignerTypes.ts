@@ -1,5 +1,6 @@
 import { Unit } from "../../components/UnitSelect/UnitSelectTypes";
 
+/* Values that can be selected */
 export const elementSelectors = [
   'a', 'abbr', 'address', 'article', 'aside', 'b', 'bdi', 'bdo', 'blockquote', 'button', 'cite', 'code', 'div', 'em',
   'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'i', 'input', 'ins', 'kbd', 'label', 'main', 'mark',  'nav',
@@ -26,16 +27,10 @@ export const cursorKeywords = [
 ] as const;
 export type CursorKeyword = typeof cursorKeywords[number];
 
-export const options = [
-  'element', 'type', 'innerText', 'value', 'height', 'width', 'background', 'color', 'fontSize', 'fontWeight',
-  'border', 'borderRadius', 'padding', 'cursor'
-] as const;
-export type Option = typeof options[number];
-
-export const globalKeywords = [
-  'auto', 'inherit', 'initial', 'revert', 'revert-layer', 'unset'
-] as const;
-export type GlobalKeyword = typeof globalKeywords[number];
+/* Input fields */
+export type Property = {
+  active: boolean
+}
 
 export type Value = {
   button: string,
@@ -55,56 +50,56 @@ export type Value = {
   time: string,
   url: string,
   week: string,
-} & Settings;
+} & Property;
 
 export type Height = {
   value: number,
   unit: Unit
-} & Settings;
+} & Property;
 
 export type Width = {
   value: number,
   unit: Unit
-} & Settings;
+} & Property;
 
 export type Background = {
   selected: BackgroundProperty,
   color: BackgroundColor,
   linearGradient: BackgroundLinearGradient
-} & Settings;
+} & Property;
 
 export type FontSize = {
   value: number,
   unit: Unit
-} & Settings;
+} & Property;
 
 export type Border = {
   width: BorderWidth,
   style: BorderStyle,
   color: string,
-} & Settings;
+} & Property;
 
 export type BorderRadius = {
   value: number,
   unit: Unit
-} & Settings;
+} & Property;
 
 export type Padding = {
   value: number,
   unit: Unit
-} & Settings;
+} & Property;
 
 export type Color = {
   hex: string,
-} & Settings;
+} & Property;
 
 export type Cursor = {
   keyword: CursorKeyword,
-} & Settings;
+} & Property;
 
 export type FontWeight = {
   value: number,
-} & Settings;
+} & Property;
 
 type BorderWidth = {
   value: number,
@@ -117,8 +112,4 @@ type BackgroundColor = {
 
 type BackgroundLinearGradient = {
   colors: string[]
-};
-
-type Settings = {
-  active: boolean,
 };
