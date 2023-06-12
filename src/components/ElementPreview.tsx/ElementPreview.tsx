@@ -1,4 +1,4 @@
-import { Element, PropertyCondition } from '../../pages/ElementDesigner/ElementDesignerTypes';
+import { Element, StylingCondition } from '../../pages/ElementDesigner/ElementDesignerTypes';
 import { toCamelCase } from '../../utilities';
 import { TreeNode } from '../TreeView/TreeViewTypes';
 import { ElementPreviewProps } from './ElementPreviewTypes';
@@ -13,7 +13,7 @@ function ElementPreview({ tree: hierarchy, getPropertyConditions }: ElementPrevi
     const propertyConditions = getPropertyConditions(element);
     const styles: Record<string, string> = {};
 
-    propertyConditions.forEach((condition: PropertyCondition) => {
+    propertyConditions.forEach((condition: StylingCondition) => {
       if (condition.condition) {
         styles[condition.property] = condition.style;
       }
@@ -38,7 +38,7 @@ function ElementPreview({ tree: hierarchy, getPropertyConditions }: ElementPrevi
    * @returns {boolean} Returns true if the checkbox is checked, false otherwise
    */
   const isChecked = (element: Element): boolean => {
-    return element.element === 'input' && element.type === 'checkbox' && element.value.checkbox === 'true';
+    return element.element === 'input' && element.type === 'checkbox' && element.value.checkbox;
   }
 
   /**

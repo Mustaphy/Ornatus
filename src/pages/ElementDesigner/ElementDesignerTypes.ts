@@ -55,7 +55,7 @@ export type Property = {
 export type Value = {
   button: string,
   color: string,
-  checkbox: string,
+  checkbox: boolean,
   date: string,
   datetimeLocal: string,
   email: string,
@@ -134,8 +134,15 @@ type BackgroundLinearGradient = {
   colors: string[]
 };
 
-export type PropertyCondition = {
+export type StylingCondition = {
   property: keyof Element;
   condition: boolean;
   style: string;
 };
+
+export type AttributeCondition = {
+  property: keyof Element | 'checked';
+  condition: boolean;
+  value: string | boolean;
+  type: 'value' | 'boolean';
+}

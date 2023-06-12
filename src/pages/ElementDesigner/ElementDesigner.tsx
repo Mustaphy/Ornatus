@@ -10,7 +10,8 @@ import {
   cursorKeywords,
   elementSelectors,
   Element,
-  PropertyCondition,
+  StylingCondition,
+  AttributeCondition,
 } from './ElementDesignerTypes';
 import Input from '../../components/Input/Input'
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
@@ -33,7 +34,7 @@ function ElementDesigner() {
     value: {
       button: 'Click here!',
       color: '#000000',
-      checkbox: 'false',
+      checkbox: false,
       date: '2023-01-01',
       datetimeLocal: '2023-01-01T00:00',
       email: 'example@domain.com',
@@ -91,7 +92,7 @@ function ElementDesigner() {
       active: true,
     },
     padding: {
-      value: 8,
+      value: 2,
       unit: 'px',
       active: true,
     },
@@ -112,9 +113,9 @@ function ElementDesigner() {
   /**
    * Get the conditions when a property should be applied, and what the styling should be
    * @param {Element} element Element to get its property conditions
-   * @returns {PropertyCondition[]} conditions when a property should be applied, and what the styling should be
+   * @returns {StylingCondition[]} conditions when a property should be applied, and what the styling should be
    */
-  const getPropertyConditions = (element: Element): PropertyCondition[] => {
+  const getStylingConditions = (element: Element): StylingCondition[] => {
     return [
        {
         property: 'height',
@@ -167,6 +168,40 @@ function ElementDesigner() {
         style: `${element.cursor.keyword}`
       },
     ];
+  }
+
+  /**
+   * Get the conditions when an attribute should be used for an element, and what the value should be
+   * @param {Element} element Element to get its attribute conditions
+   * @returns {AttributeCondition[]} conditions when an attribute should be used for an element, and what the value should be
+   */
+  const getAttributeConditions = (element: Element): AttributeCondition[] => {
+    return [
+      {
+        property: 'id',
+        condition: true,
+        value: element.id,
+        type: 'value',
+      },
+      {
+        property: 'type',
+        condition: element.element === 'input' || element.element === 'button',
+        value: element.type,
+        type: 'value',
+      },
+      {
+        property: 'value',
+        condition: (element.element === 'input' && element.type !== 'checkbox') || element.element === 'textarea',
+        value: getCurrentValue(element),
+        type: 'value',
+      },
+      {
+        property: 'checked',
+        condition: element.element === 'input',
+        value: isChecked(element),
+        type: 'boolean',
+      }
+    ]
   }
 
   /**
@@ -232,6 +267,7 @@ function ElementDesigner() {
    */
   const addElement = (element: Element): void => {
     setTree([...tree, { element: { ...element }, onClick: () => setCurrentElementId(element.uuid!) } ]);
+    setCurrentElementId(element.uuid!);
   }
 
   /**
@@ -338,6 +374,15 @@ function ElementDesigner() {
   }
 
   /**
+   * Get if the checkbox is checked or not
+   * @param {Element} element The element to check if it is checked 
+   * @returns {boolean} Returns true if the checkbox is checked, false otherwise
+   */
+  const isChecked = (element: Element): boolean => {
+    return element.element === 'input' && element.type === 'checkbox' && element.value.checkbox;
+  }
+
+  /**
    * Get if the current state of the element has text on it
    * @param {Element} element Element to check if it has text on it
    * @returns {boolean} Returns if the current state of the element has text on it
@@ -346,72 +391,63 @@ function ElementDesigner() {
     return element.element  !== 'input' || (element.type !== 'color' && element.type !== 'checkbox');
   }
 
-    /**
+  /**
    * Get a string of valid HTML of the current state of the element
    * @param {TreeNode[]} nodes Nodes to generate HTML for (defaults to the indent)
    * @param {number} indent Indentation level of the HTML (defaults to 0)
    * @returns {string} Returns a string of valid HTML of the current state of the element
    */
   const generateHTML = (nodes: TreeNode[] = tree, indent: number = 0): string => {
-    let result = '';
     const spaces = ' '.repeat(indent);
-  
-    for (const node of nodes) {
+
+    return nodes.reduce((acc, node) => {
       const { element, children } = node;
-      const selfClosingElementsWithAttributes = {
-        input: [
-          {
-            attribute: 'id',
-            value: element.id
-          },
-          {
-            attribute: 'type',
-            value: element.type
-          },
-          {
-            attribute: 'value',
-            value: getCurrentValue(getCurrentElement()!)
-          }
-        ],
-        textarea: [
-          {
-            attribute: 'id',
-            value: element.id
-          },
-          {
-            attribute: 'type',
-            value: element.type
-          },
-          {
-            attribute: 'value',
-            value: getCurrentValue(getCurrentElement()!)
-          }
-        ],
-      };
-  
-      if (Object.keys(selfClosingElementsWithAttributes).includes(element.element)) {
-        const attributes = selfClosingElementsWithAttributes[element.element as keyof typeof selfClosingElementsWithAttributes]
-          .map(attribute => `${attribute.attribute}="${attribute.value}"`)
-          .join(' ');
-  
-        result += `${spaces}<${element.element}\n${spaces}  ${attributes}\n${spaces}/>\n`;
-      } else {
-        result += `${spaces}<${element.element} id="${element.id}">\n`;
-  
-        if (element.innerText) {
-          result += `${spaces}  ${element.innerText}\n`;
-        }
-  
-        if (children) {
-          result += generateHTML(children, indent + 2);
-        }
-  
-        result += `${spaces}</${element.element}>\n`;
+      const attributeProperties = getAttributeConditions(element);
+      const selfClosingElements = ['input', 'textarea'];
+      const isSelfClosing = selfClosingElements.includes(element.element);
+
+      const attributes = attributeProperties
+        .map(attribute => {
+          if (!attribute.condition)
+            return '';
+
+          // An example of a boolean attribute is 'checked', you only need to give the attribute name to make it true
+          if (attribute.type === 'boolean' && attribute.value)
+            return attribute.property;
+          else if (attribute.type === 'value')
+            return `${attribute.property}="${attribute.value}"`;
+
+          return '';
+        })
+        .filter(attribute => attribute !== '');
+
+      let attributesString = '';
+
+      if (attributes.length === 1) {
+        attributesString = ` ${attributes[0]}`;
+      } else if (attributes.length > 1) {
+        attributesString = `\n${spaces}  ${attributes.join(`\n${spaces}  `)}\n${spaces}`;
       }
-    }
-  
-    return result;
-  }  
+
+      if (attributeProperties.length > 0 && isSelfClosing) {
+        return `${acc}${spaces}<${element.element}${attributesString} />\n`;
+      } else {
+        let nodeResult = `${spaces}<${element.element}${attributesString}>\n`;
+
+        if (element.innerText) {
+          nodeResult += `${spaces}  ${element.innerText}\n`;
+        }
+
+        if (children) {
+          nodeResult += generateHTML(children, indent + 2);
+        }
+
+        nodeResult += `${spaces}</${element.element}>\n`;
+
+        return `${acc}${nodeResult}`;
+      }
+    }, '');
+  };
 
   /**
    * Get a string of valid CSS of the current state of the element
@@ -427,7 +463,7 @@ function ElementDesigner() {
   
         cssCode += `#${id} {\n`;
   
-        const propertyConditions = getPropertyConditions(element);
+        const propertyConditions = getStylingConditions(element);
   
         for (const condition of propertyConditions) {
           const { property, condition: propertyCondition, style } = condition;
@@ -452,7 +488,7 @@ function ElementDesigner() {
   return (
     <div id="element-designer">
       <div id="element-preview">
-        <ElementPreview tree={tree} getPropertyConditions={getPropertyConditions} />
+        <ElementPreview tree={tree} getPropertyConditions={getStylingConditions} />
       </div>
 
       <div id="element-hierarchy">
@@ -525,7 +561,13 @@ function ElementDesigner() {
                 id="value"
                 type={getCurrentElement()!.element === 'input' ? getTypeForUserInput(getCurrentElement()!) : 'text'}
                 value={getCurrentElement()!.element === 'input' ? getCurrentValue(getCurrentElement()!) : getCurrentElement()!.value.text}
-                onChange={(event) => updateProperty('value', { ...getCurrentElement()!.value, [getTypeForUserInput(getCurrentElement()!)]: event.target.value })}
+                checked={isChecked(getCurrentElement()!)}
+                onChange={(event) => {
+                  const currentElement = getCurrentElement()!;
+                  const value = currentElement.type === 'checkbox' ? event.target.checked : event.target.value;
+
+                  updateProperty('value', { ...getCurrentElement()!.value, [getCurrentElement()!.type]: value });
+                }}
               />
             </div>
         }
