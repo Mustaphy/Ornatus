@@ -1,26 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './TreeView.css';
+import { Element } from '../../pages/ElementDesigner/ElementDesignerTypes';
 
-interface TreeNode {
-  id: number;
-  label: string;
+export interface TreeNode {
+  element: Element;
   children?: TreeNode[];
-  hidden?: boolean;
+  onClick: () => void;
 }
 
 interface TreeViewProps {
   data: TreeNode[];
+  onChange: (tree: TreeNode[]) => void;
 }
 
-const TreeView: React.FC<TreeViewProps> = ({ data }) => {
+const TreeView = ({ data, onChange }: TreeViewProps) => {
   const [treeData, setTreeData] = useState<TreeNode[]>(data);
-  const [dragOverNodeId, setDragOverNodeId] = useState<number | null>(null);
+  const [dragOverNodeId, setDragOverNodeId] = useState<string | null>(null);
 
-  const handleDragStart = (event: React.DragEvent<HTMLLIElement>, nodeId: number) => {
+  useEffect(() => {
+    setTreeData(data);
+  }, [data]);
+
+  const handleDragStart = (event: React.DragEvent<HTMLLIElement>, nodeId: string) => {
     event.dataTransfer.setData('text/plain', String(nodeId));
   };
 
-  const handleDragOver = (event: React.DragEvent<HTMLLIElement>, nodeId: number) => {
+  const handleDragOver = (event: React.DragEvent<HTMLLIElement>, nodeId: string) => {
     event.preventDefault();
     setDragOverNodeId(nodeId);
   };
@@ -29,30 +34,27 @@ const TreeView: React.FC<TreeViewProps> = ({ data }) => {
     setDragOverNodeId(null);
   };
 
-  const handleDrop = (event: React.DragEvent<HTMLLIElement>, parentId: number) => {
-    const nodeId = Number(event.dataTransfer.getData('text/plain'));
+  const handleDrop = (event: React.DragEvent<HTMLLIElement>, parentId: string) => {
+    const nodeId = event.dataTransfer.getData('text/plain');
     const draggedNode = findNode(treeData, nodeId);
 
-    if (draggedNode) {
+    if (draggedNode && isParentValidForChildren(findNode(treeData, parentId)!)) {
       const isDescendant = isNodeDescendant(draggedNode, parentId);
+
       if (!isDescendant) {
         const updatedTree = removeNode(treeData, nodeId);
         const newTree = insertNode(updatedTree, draggedNode, parentId);
         setTreeData(newTree);
+        onChange(newTree);
       }
     }
 
     setDragOverNodeId(null);
   };
 
-  const handleNodeClick = (nodeId: number) => {
-    const updatedTree = toggleNodeVisibility(treeData, nodeId);
-    setTreeData(updatedTree);
-  };
-
-  const findNode = (tree: TreeNode[], nodeId: number): TreeNode | undefined => {
+  const findNode = (tree: TreeNode[], nodeId: string): TreeNode | undefined => {
     for (const node of tree) {
-      if (node.id === nodeId) {
+      if (node.element.uuid === nodeId) {
         return node;
       }
       if (node.children) {
@@ -65,8 +67,8 @@ const TreeView: React.FC<TreeViewProps> = ({ data }) => {
     return undefined;
   };
 
-  const isNodeDescendant = (node: TreeNode, targetId: number): boolean => {
-    if (node.id === targetId) {
+  const isNodeDescendant = (node: TreeNode, targetId: string): boolean => {
+    if (node.element.uuid === targetId) {
       return true;
     }
     if (node.children) {
@@ -79,8 +81,8 @@ const TreeView: React.FC<TreeViewProps> = ({ data }) => {
     return false;
   };
 
-  const removeNode = (tree: TreeNode[], nodeId: number): TreeNode[] => {
-    const updatedTree = tree.filter(node => node.id !== nodeId);
+  const removeNode = (tree: TreeNode[], nodeId: string): TreeNode[] => {
+    const updatedTree = tree.filter(node => node.element.uuid !== nodeId);
 
     return updatedTree.map(node => {
       if (node.children) {
@@ -93,9 +95,9 @@ const TreeView: React.FC<TreeViewProps> = ({ data }) => {
     });
   };
 
-  const insertNode = (tree: TreeNode[], nodeToInsert: TreeNode, parentId: number): TreeNode[] => {
+  const insertNode = (tree: TreeNode[], nodeToInsert: TreeNode, parentId: string): TreeNode[] => {
     const updatedTree = tree.map(node => {
-      if (node.id === parentId) {
+      if (node.element.uuid === parentId) {
         return {
           ...node,
           children: node.children ? [...node.children, nodeToInsert] : [nodeToInsert],
@@ -113,49 +115,29 @@ const TreeView: React.FC<TreeViewProps> = ({ data }) => {
     return updatedTree;
   };
 
-  const toggleNodeVisibility = (tree: TreeNode[], nodeId: number): TreeNode[] => {
-    return tree.map(node => {
-      if (node.id === nodeId) {
-        return {
-          ...node,
-          hidden: !node.hidden,
-        };
-      }
-      if (node.children) {
-        return {
-          ...node,
-          children: toggleNodeVisibility(node.children, nodeId),
-        };
-      }
-      return node;
-    });
-  };
-
   const renderTreeNodes = (nodes: TreeNode[] | undefined, indentLevel = 0) => {
     if (!nodes) {
       return null;
     }
 
     return nodes.map(node => (
-      <React.Fragment key={node.id}>
+      <React.Fragment key={node.element.uuid}>
         <li
           draggable
-          onDragStart={(event) => handleDragStart(event, node.id)}
-          onDragOver={(event) => handleDragOver(event, node.id)}
+          onDragStart={(event) => handleDragStart(event, node.element.uuid)}
+          onDragOver={(event) => handleDragOver(event, node.element.uuid)}
           onDragLeave={handleDragLeave}
-          onDrop={(event) => handleDrop(event, node.id)}
-          className={dragOverNodeId === node.id ? 'drag-over' : ''}
+          onDrop={(event) => handleDrop(event, node.element.uuid)}
+          className={dragOverNodeId === node.element.uuid ? 'drag-over' : ''}
           style={{ marginLeft: `${indentLevel * 20}px` }}
+          onClick={node.onClick}
         >
           {node.children && (
-            <span
-              className={`toggle-icon ${node.hidden ? 'collapsed' : 'expanded'}`}
-              onClick={() => handleNodeClick(node.id)}
-            />
+            <span />
           )}
-          <span>{node.label}</span>
+          <span>{node.element.element}</span>
         </li>
-        {!node.hidden && node.children && (
+        { node.children && (
           <ul>
             {renderTreeNodes(node.children, indentLevel + 1)}
           </ul>
@@ -163,6 +145,14 @@ const TreeView: React.FC<TreeViewProps> = ({ data }) => {
       </React.Fragment>
     ));
   };
+
+  const isParentValidForChildren = (parentNode: TreeNode): boolean => {
+    const selfClosing = ['input', 'textarea'];
+    const noChildren = ['button'];
+
+    return !selfClosing.includes(parentNode.element.element) &&
+           !noChildren.includes(parentNode.element.element);
+  }
 
   return (
     <ul className="treeview">

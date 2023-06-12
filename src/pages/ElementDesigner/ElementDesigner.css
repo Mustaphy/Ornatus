@@ -22,6 +22,22 @@
   box-shadow: 1px 1px 2px #0E8388;
 }
 
+/* Element Hierarchy */
+#add-element-container {
+  display: flex;
+  flex-direction: row;
+  color: #ffffff;
+  font-weight: 600;
+  margin: 8px 0;
+  cursor: pointer;
+  gap: 4px;
+}
+
+#add-element-container:hover {
+  transition: 0.2s filter;
+  filter: brightness(1.2);
+}
+
 /* Element (HTML) and Styling (CSS) Options */
 #styling-options, #element-options {
   margin: 0 0 16px 0;
@@ -43,12 +59,12 @@
   grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 
-#element-hierarchy h2, #styling-options h2 {
+.section-title {
   color: #ffffff;
   font-size: 16px;
 }
 
-#element-hierarchy hr, #styling-options hr {
+#element-options .section-title + hr, #styling-options .section-title + hr {
   margin: 8px 0 16px 0;
 }
 
@@ -61,6 +77,10 @@
   opacity: 0.5;
   transition: 0.3s opacity;
   pointer-events: none;
+}
+
+#element-hierarchy, #styling-options, #element-code {
+  margin: 0 0 50px 0;
 }
 
 /* Code Preview */

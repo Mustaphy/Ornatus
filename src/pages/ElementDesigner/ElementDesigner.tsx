@@ -9,122 +9,229 @@ import {
   borderStyles,
   cursorKeywords,
   elementSelectors,
-  Background,
-  Border,
-  BorderRadius,
-  FontSize,
-  Height,
-  Padding,
-  Value,
-  Width,
-  Color,
-  Cursor,
-  FontWeight,
+  Element,
+  PropertyCondition,
 } from './ElementDesignerTypes';
 import Input from '../../components/Input/Input'
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
 import Select from "../../components/Select/Select";
-import { MdContentCopy } from "react-icons/all";
-import PreviewElement from '../../components/PreviewElement/PreviewElement';
-import { toCamelCase } from '../../utilities';
+import { MdContentCopy, MdAddCircle } from "react-icons/all";
+import { generateId, generateUUID, toCamelCase, toKebabCase } from '../../utilities';
 import { Type as Type, types } from '../../components/Input/InputTypes';
 import { Unit } from '../../components/UnitSelect/UnitSelectTypes';
-import TreeView from '../../components/TreeView/TreeView';
+import TreeView, { TreeNode } from '../../components/TreeView/TreeView';
+import ElementPreview from '../../components/ElementPreview.tsx/ElementPreview';
 
 function ElementDesigner() {
-  const [element, setElement] = useState<ElementSelector>('button');
-  const [type, setType] = useState<Type>('text');
-  const [innerText, setInnerText] = useState('Design your own element!');
-  const [value, setValue] = useState<Value>({
-    button: 'Click here!',
-    color: '#000000',
-    checkbox: 'false',
-    date: '2023-01-01',
-    datetimeLocal: '2023-01-01T00:00',
-    email: 'example@domain.com',
-    month: 'January',
-    number: '2023',
-    password: 'admin',
-    reset: 'Reset',
-    search: 'Search',
-    submit: 'Submit',
-    tel: '+31 12 3456789',
-    text: 'Text',
-    time: "00:00",
-    url: 'https://example.com',
-    week: '1',
-    active: true,
-  });
-  const [height, setHeight] = useState<Height>({
-    value: 100,
-    unit: '%',
-    active: false,
-  });
-  const [width, setWidth] = useState<Width>({
-    value: 160,
-    unit: 'px',
-    active: false,
-  });
-  const [background, setBackground] = useState<Background>({
-    selected: 'color',
-    color: { color: '#000000' },
-    linearGradient: { colors: ['#000000', '#ffffff'] },
-    active: true,
-  });
-  const [color, setColor] = useState<Color>({
-    hex: '#ffffff',
-    active: true,
-  });
-  const [fontSize, setFontSize] = useState<FontSize>({
-    value: 16,
-    unit: 'px',
-    active: true,
-  });
-  const [fontWeight, setFontWeight] = useState<FontWeight>({
-    value: 400,
-    active: true,
-  });
-  const [border, setBorder] = useState<Border>({
-    width: { value: 1, unit: 'px' },
-    style: 'solid',
-    color: '#ffffff',
-    active: true,
-  });
-  const [borderRadius, setBorderRadius] = useState<BorderRadius>({
-    value: 8,
-    unit: 'px',
-    active: true,
-  });
-  const [padding, setPadding] = useState<Padding>({
-    value: 8,
-    unit: 'px',
-    active: true,
-  });
-  const [cursor, setCursor] = useState<Cursor>({
-    keyword: 'pointer',
-    active: true,
-  });
+  const initialElement: Element = {
+    uuid: generateUUID(),
+    element: 'button',
+    id: generateId('element'),
+    type: 'text',
+    innerText: 'Design your own element!',
+    value: {
+      button: 'Click here!',
+      color: '#000000',
+      checkbox: 'false',
+      date: '2023-01-01',
+      datetimeLocal: '2023-01-01T00:00',
+      email: 'example@domain.com',
+      month: 'January',
+      number: '2023',
+      password: 'admin',
+      reset: 'Reset',
+      search: 'Search',
+      submit: 'Submit',
+      tel: '+31 12 3456789',
+      text: 'Text',
+      time: "00:00",
+      url: 'https://example.com',
+      week: '1',
+      active: true,
+    },
+    height: {
+      value: 100,
+      unit: '%',
+      active: false,
+    },
+    width: {
+      value: 160,
+      unit: 'px',
+      active: false,
+    },
+    background: {
+      selected: 'color',
+      color: { color: '#000000' },
+      linearGradient: { colors: ['#000000', '#ffffff'] },
+      active: true,
+    },
+    color: {
+      hex: '#ffffff',
+      active: true,
+    },
+    fontSize: {
+      value: 16,
+      unit: 'px',
+      active: true,
+    },
+    fontWeight: {
+      value: 400,
+      active: true,
+    },
+    border: {
+      width: { value: 1, unit: 'px' },
+      style: 'solid',
+      color: '#ffffff',
+      active: true,
+    },
+    borderRadius: {
+      value: 8,
+      unit: 'px',
+      active: true,
+    },
+    padding: {
+      value: 8,
+      unit: 'px',
+      active: true,
+    },
+    cursor: {
+      keyword: 'pointer',
+      active: true,
+    }
+  };
 
-  const hierarchy = [
+  const [currentElementId, setCurrentElementId] = useState(initialElement.uuid);
+  const [hierarchy, setHierarchy] = useState<TreeNode[]>([
     {
-      id: 1,
-      label: 'Node 1',
-      children: [
-        {
-          id: 2,
-          label: 'Node 1.1',
-        },
-        {
-          id: 3,
-          label: 'Node 1.2',
-        },
-      ],
-    },
-    {
-      id: 4,
-      label: 'Node 2',
-    },
-  ];
+      element: initialElement,
+      onClick: () => setCurrentElementId(initialElement.uuid!),
+    }
+  ]);
+
+  /**
+   * Get the conditions when a property should be applied, and what the styling should be
+   * @param {Element} element Element to get its property conditions
+   * @returns {PropertyCondition[]} conditions when a property should be applied, and what the styling should be
+   */
+  const getPropertyConditions = (element: Element): PropertyCondition[] => {
+    return [
+       {
+        property: 'height',
+        condition: element.height.active,
+        style: `${element.height.value + element.height.unit}`
+      },
+      {
+        property: 'width',
+        condition: element.width.active,
+        style: `${element.width.value + element.width.unit}`
+      },
+      {
+        property: 'background',
+        condition: element.background.active,
+        style: `${getBackgroundStyling(element)}` 
+      },
+      {
+        property: 'color',
+        condition: element.color.active && currentSelectionHasText(element),
+        style: `${element.color.hex}`
+      },
+      {
+        property: 'fontSize',
+        condition: element.fontSize.active && currentSelectionHasText(element),
+        style: `${element.fontSize.value + element.fontSize.unit}`
+      },
+      {
+        property: 'fontWeight',
+        condition: element.fontWeight.active && currentSelectionHasText(element),
+        style: `${element.fontWeight.value}`
+      },
+      {
+        property: 'border',
+        condition: element.border.active,
+        style: `${element.border.width.value + element.border.width.unit} ${element.border.style} ${element.border.color}`
+      },
+      {
+        property: 'borderRadius',
+        condition: element.borderRadius.active,
+        style: `${element.borderRadius.value + element.borderRadius.unit}`
+      },
+      {
+        property: 'padding',
+        condition: element.padding.active,
+        style: `${element.padding.value + element.padding.unit}`
+      },
+      {
+        property: 'cursor',
+        condition: element.padding.active,
+        style: `${element.cursor.keyword}`
+      },
+    ];
+  }
+
+  /**
+   * Get the current element
+   * @param {TreeNode[]} nodes Nodes to search for the current element
+   * @returns {Element | undefined} The current element, or undefined if not found
+   */
+  const getCurrentElement = (nodes: TreeNode[] = hierarchy): Element | undefined => {
+    for (const node of nodes) {
+      if (node.element.uuid === currentElementId) {
+        return node.element;
+      }
+      if (node.children) {
+        const foundNode = getCurrentElement(node.children);
+        if (foundNode) {
+          return foundNode;
+        }
+      }
+    }
+
+    return undefined;
+  }
+
+  /**
+   * Update a property of the current element
+   * @param {keyof Element} property Property to update
+   * @param {any} value Value to update the property to
+   */
+  const updateProperty = (property: keyof Element, value: any): void => {
+    setHierarchy(prevHierarchy => {
+      const updatePropertyRecursively: any = (nodes: any): void => {
+        return nodes.map((node: any) => {
+          if (node.element.uuid === currentElementId) {
+            const updatedElement = {
+              ...node.element,
+              [property]: value
+            };
+  
+            return {
+              ...node,
+              element: updatedElement
+            };
+          }
+  
+          if (node.children) {
+            return {
+              ...node,
+              children: updatePropertyRecursively(node.children)
+            };
+          }
+  
+          return node;
+        });
+      };
+  
+      return updatePropertyRecursively(prevHierarchy);
+    });
+  };
+
+  /**
+   * Add an element to the hierarchy
+   * @param {Element} element Element to add to the hierarchy
+   */
+  const addElement = (element: Element): void => {
+    setHierarchy([...hierarchy, { element: { ...element }, onClick: () => setCurrentElementId(element.uuid!) } ]);
+  }
 
   /**
    * Change the linear-gradient background when the selected colors are changed
@@ -132,16 +239,19 @@ function ElementDesigner() {
    * @param {number} index The index of the color that is changed, since the linear-gradient consists of mulitple colors
    */
   const handleLinearGradientBackgroundChanged = (event: ChangeEvent<HTMLInputElement>, index: number): void => {
-    const colors = background.linearGradient.colors;
+    const colors = getCurrentElement()!.background.linearGradient.colors;
     colors[index] = event.target.value;
-    setBackground({ ...background, linearGradient: { colors: colors } });
+    updateProperty('background', { ...getCurrentElement()!.background, linearGradient: { colors: colors } });
   }
 
   /**
    * Get the value of the background property based on the current state
+   * @param {Element} element Element to get the background styling for
    * @returns {string} Returns the string that is used for the background property in the CSS
    */
-  const getCurrentBackground = (): string => {
+  const getBackgroundStyling = (element: Element): string => {
+    const background = element.background;
+
     switch (background.selected) {
       case 'color':
         return background.color.color;
@@ -154,10 +264,11 @@ function ElementDesigner() {
 
   /**
    * Get the input type that should be used to input the value attribute
+   * @param {Element} element Element to get the input type for
    * @returns {Type} Returns which type the input field is used for the value input
    */
-  const getCurrentType = (): Type => {
-    switch (type) {
+  const getTypeForUserInput = (element: Element): Type => {
+    switch (element.type) {
       case 'button':
       case 'email':
       case 'password':
@@ -166,29 +277,33 @@ function ElementDesigner() {
       case 'submit':
         return 'text';
       default:
-        return type;
+        return element.type;
     }
   }
 
   /**
    * Get the value that is used currently, based on the selected input type (e.g. text, number)
+   * @param {Element} element Element to get the current value for
    * @returns {string} Returns the current value based on the selected input type
    */
-  const getCurrentValue = (): string => {
-    const formattedType = toCamelCase(type) as keyof typeof value;
-    return value[formattedType].toString();
+  const getCurrentValue = (element: Element): string => {
+    const formattedType = toCamelCase(element.type) as keyof typeof element.value;
+    return element.value[formattedType].toString();
   }
 
   /**
    * Get the type options that are available for the selected element
+   * @param {Element} element Element to get the type options for
    * @returns {Type[]} Returns which input types are available for the selected element
    */
-  const getTypeOptions = (): Type[] => {
-    switch (element) {
+  const getTypeOptions = (element: Element): Type[] => {
+    const typeOptions = types.slice();
+
+    switch (element.element) {
       case 'button':
-        return ['button', 'reset', 'submit'];
+        return typeOptions.filter(type => type === 'button' || type === 'reset' || type === 'submit');
       case 'input':
-        return types.slice();
+        return typeOptions;
       default:
         return [];
     }
@@ -196,234 +311,284 @@ function ElementDesigner() {
 
   /**
    * Get if the 'type' option is visible for the user based on the selected element
+   * @param {Element} element Element to get the type option visibility for
    * @returns {boolean} Returns if the type option is visible for the user
    */
-  const isTypeVisible = (): boolean => {
-    return element == 'input' || element == 'button';
+  const isTypeVisible = (element: Element): boolean => {
+    return element.element == 'input' || element.element  == 'button';
   }
 
   /**
    * Get if the 'innerText' option is visible for the user based on the selected element
+   * @param {Element} element Element to get the 'innerText' option visibility for
    * @returns {boolean} Returns if the 'innerText' option is visible for the user
    */
-  const isInnerTextVisible = (): boolean => {
-    return element !== 'input' && element !== 'textarea';
+  const isInnerTextVisible = (element: Element): boolean => {
+    return element.element  !== 'input' && element.element  !== 'textarea';
   }
 
   /**
    * Get if the 'value' option is visible for the user based on the selected element
+   * @param {Element} element Element to get the 'value' option visibility for
    * @returns {boolean} Returns if the 'value' option is visible for the user
    */
-  const isValueVisible = (): boolean => {
-    return element === 'input' || element === 'textarea';
+  const isValueVisible = (element: Element): boolean => {
+    return element.element  === 'input' || element.element  === 'textarea';
   }
 
   /**
    * Get if the current state of the element has text on it
+   * @param {Element} element Element to check if it has text on it
    * @returns {boolean} Returns if the current state of the element has text on it
    */
-  const currentSelectionHasText = (): boolean => {
-    return element !== 'input' || (type !== 'color' && type !== 'checkbox');
+  const currentSelectionHasText = (element: Element): boolean => {
+    return element.element  !== 'input' || (element.type !== 'color' && element.type !== 'checkbox');
   }
 
-  /**
+    /**
    * Get a string of valid HTML of the current state of the element
+   * @param {TreeNode[]} nodes Nodes to generate HTML for (defaults to the hierarchy)
+   * @param {number} indent Indentation level of the HTML (defaults to 0)
    * @returns {string} Returns a string of valid HTML of the current state of the element
    */
-  const generateHTML = (): string => {
-    switch (element) {
-      case 'input':
-      case 'textarea':
-        return `<${element}\n` +
-               `  id="styleface-${element}"\n` +
-               (isTypeVisible() ? `  type="${type}"\n` : '') +
-               (value.active ? `  value="${getCurrentValue()}"\n` : '') +
-               `/>`;
-      default:
-        return `<${element}\n` +
-               `  id="styleface-${element}"\n` +
-               (isTypeVisible() ? `  type="${type}"\n` : '') +
-               `>\n` +
-               `  ${innerText}\n` +
-               `</${element}>`;
+  const generateHTML = (nodes: TreeNode[] = hierarchy, indent: number = 0): string => {
+    let result = '';
+    const spaces = ' '.repeat(indent);
+  
+    for (const node of nodes) {
+      const { element, children } = node;
+      const selfClosingElementsWithAttributes = {
+        input: [
+          {
+            attribute: 'id',
+            value: element.id
+          },
+          {
+            attribute: 'type',
+            value: element.type
+          },
+          {
+            attribute: 'value',
+            value: getCurrentValue(getCurrentElement()!)
+          }
+        ],
+        textarea: [
+          {
+            attribute: 'id',
+            value: element.id
+          },
+          {
+            attribute: 'type',
+            value: element.type
+          },
+          {
+            attribute: 'value',
+            value: getCurrentValue(getCurrentElement()!)
+          }
+        ],
+      };
+  
+      if (Object.keys(selfClosingElementsWithAttributes).includes(element.element)) {
+        const attributes = selfClosingElementsWithAttributes[element.element as keyof typeof selfClosingElementsWithAttributes]
+          .map(attribute => `${attribute.attribute}="${attribute.value}"`)
+          .join(' ');
+  
+        result += `${spaces}<${element.element}\n${spaces}  ${attributes}\n${spaces}/>\n`;
+      } else {
+        result += `${spaces}<${element.element} id="${element.id}">\n`;
+  
+        if (element.innerText) {
+          result += `${spaces}  ${element.innerText}\n`;
+        }
+  
+        if (children) {
+          result += generateHTML(children, indent + 2);
+        }
+  
+        result += `${spaces}</${element.element}>\n`;
+      }
     }
-  }
+  
+    return result;
+  }  
 
   /**
    * Get a string of valid CSS of the current state of the element
    * @returns {string} Returns a string of valid CSS of the current state of the element
    */
   const generateCSS = (): string => {
-    const styles = [
-      { condition: height.active, style: `height: ${height.value + height.unit};` },
-      { condition: width.active, style: `width: ${width.value + width.unit};` },
-      { condition: background.active, style: `background: ${getCurrentBackground()};` },
-      { condition: color.active && currentSelectionHasText(), style: `color: ${color.hex};` },
-      { condition: fontSize.active && currentSelectionHasText(), style: `font-size: ${fontSize.value + fontSize.unit};` },
-      { condition: fontWeight.active && currentSelectionHasText(), style: `font-weight: ${fontWeight.value};` },
-      { condition: border.active, style: `border: ${border.width.value + border.width.unit} ${border.style} ${border.color};` },
-      { condition: borderRadius.active, style: `border-radius: ${borderRadius.value + borderRadius.unit};` },
-      { condition: padding.active, style: `padding: ${padding.value + padding.unit};` },
-      { condition: cursor.active, style: `cursor: ${cursor.keyword};` },
-    ];
-    
-    return `#styleface-${element} {\n` +
-           `  ${styles.filter(line => line.condition).map(line => line.style).join('\n  ')}\n` +
-           `}`;
+    let cssCode = '';
+
+    function traverseHierarchy(nodes: TreeNode[]) {
+      for (const node of nodes) {
+        const { element, children } = node;
+        const { id } = element;
+  
+        cssCode += `#${id} {\n`;
+  
+        const propertyConditions = getPropertyConditions(element);
+  
+        for (const condition of propertyConditions) {
+          const { property, condition: propertyCondition, style } = condition;
+  
+          if (propertyCondition) {
+            cssCode += `  ${toKebabCase(property)}: ${style};\n`;
+          }
+        }
+  
+        cssCode += `}\n\n`;
+  
+        if (children) {
+          traverseHierarchy(children);
+        }
+      }
+    }
+  
+    traverseHierarchy(hierarchy);
+    return cssCode;
   }
 
   return (
     <div id="element-designer">
       <div id="element-preview">
-        <PreviewElement
-          element={element}
-          innerText={innerText}
-          value={value}
-          type={type}
-          checked={value.checkbox}
-          style={
-            {
-              height: height.active ? `${height.value + height.unit}` : '',
-              width: width.active ? `${width.value + width.unit}` : '',
-              background: background.active ? getCurrentBackground() : '',
-              color: color.active ? color.hex : '',
-              fontSize: fontSize.active ? `${fontSize.value + fontSize.unit}` : '',
-              fontWeight: fontWeight.active ? fontWeight.value : '',
-              border: border.active ? `${border.width.value + border.width.unit} ${border.style} ${border.color}` : '',
-              borderRadius: borderRadius.active ? `${borderRadius.value + borderRadius.unit}` : '',
-              padding: padding.active ? `${padding.value + padding.unit}` : '',
-              cursor: cursor.active ? cursor.keyword : '',
-            }
-          } />
+        <ElementPreview hierarchy={hierarchy} getPropertyConditions={getPropertyConditions} />
       </div>
 
       <div id="element-hierarchy">
-        <h2>Structure (HTML)</h2>
-        <hr />
-        <TreeView data={hierarchy} />
+        <TreeView data={hierarchy} onChange={(tree: TreeNode[]) => setHierarchy(tree) } />
+
+        <div
+          id="add-element-container"
+          onClick={() => addElement({ ...initialElement, uuid: generateUUID(), id: generateId('element') }) }
+        >
+          <MdAddCircle />
+          <p>Add a new element</p>
+        </div>
       </div>
 
       <div id="element-options">
+        <h2 className="section-title">Structure (HTML)</h2>
+        <hr />
+
         <div>
           <label htmlFor="element" className="option-name">element</label>
           <Select
             id="element"
-            value={element}
+            value={getCurrentElement()!.element}
             options={elementSelectors.slice()}
-            onChange={(event) => setElement(event.target.value as ElementSelector)}
+            onChange={(event) => updateProperty('element', event.target.value as ElementSelector)}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="id" className="option-name">id</label>
+          <Input
+            id="id"
+            type="text"
+            value={getCurrentElement()!.id}
+            onChange={(event) => updateProperty('id', event.target.value)}
           />
         </div>
 
         {
-          isTypeVisible() &&
+          isTypeVisible(getCurrentElement()!) &&
             <div>
               <label htmlFor="type" className="option-name">type</label>
               <Select
                 id="type"
-                value={type}
-                options={getTypeOptions()}
-                onChange={
-                  (event) => setType(event.target.value as Type)
-                }
-              />
+                value={getCurrentElement()!.type}
+                options={getTypeOptions(getCurrentElement()!)}
+                onChange={(event) => updateProperty('type', event.target.value as Type)}
+                />
             </div>
         }
-
+      
         {
-          isInnerTextVisible() &&
+          isInnerTextVisible(getCurrentElement()!) &&
             <div>
               <label htmlFor="innerText" className="option-name">innerText</label>
               <Input
                 id="innerText"
                 type="text"
-                value={innerText}
-                onChange={(event) => setInnerText(event.target.value)}
+                value={getCurrentElement()!.innerText}
+                onChange={(event) => updateProperty('innerText', event.target.value)}
               />
             </div>
         }
 
         {
-          isValueVisible() &&
-            <div className={!value.active ? 'hidden' : ''}>
-              <Input type="checkbox" checked={value.active} disabled />
-
+          isValueVisible(getCurrentElement()!) &&
+            <div className={!getCurrentElement()!.value.active ? 'hidden' : ''}>
               <label htmlFor="value" className="option-name">value</label>
               <Input
                 id="value"
-                type={element === 'input' ? getCurrentType() : 'text'}
-                value={element === 'input' ? getCurrentValue() : value.text}
-                onChange={
-                  (event) => setValue((previousValue: Value) => ({
-                    ...previousValue,
-                    [element === 'input' ? type : 'text']:
-                      element === 'input' && type === 'checkbox' ? event.target.checked : event.target.value,
-                  }))
-                }
+                type={getCurrentElement()!.element === 'input' ? getTypeForUserInput(getCurrentElement()!) : 'text'}
+                value={getCurrentElement()!.element === 'input' ? getCurrentValue(getCurrentElement()!) : getCurrentElement()!.value.text}
+                onChange={(event) => updateProperty('value', { ...getCurrentElement()!.value, [getTypeForUserInput(getCurrentElement()!)]: event.target.value })}
               />
             </div>
         }
       </div>
 
       <div id="styling-options">
-        <h2>Styling (CSS)</h2>
+        <h2 className="section-title">Styling (CSS)</h2>
         <hr />
 
-        <div className={!height.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={height.active} onChange={(() => setHeight({ ...height, active: !height.active }))} />
-
+        <div className={!getCurrentElement()!.height.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={getCurrentElement()!.height.active} onChange={() => updateProperty('height', { ...getCurrentElement()!.height, active: !getCurrentElement()!.height.active } )} />
           <label htmlFor="height" className="option-name">height</label>
           <UnitSelect
             id="height"
-            value={height.value}
-            unit={height.unit} 
-            valueOnChange={(event) => setHeight({ ...height, value: Number(event.target.value) })}
-            unitOnChange={(event) => setHeight({ ...height, unit: event.target.value as Unit })}
+            value={getCurrentElement()!.height.value}
+            unit={getCurrentElement()!.height.unit} 
+            valueOnChange={(event) => updateProperty('height', { ...getCurrentElement()!.height, value: Number(event.target.value) })}
+            unitOnChange={(event) => updateProperty('height', { ...getCurrentElement()!.height, value: Number(event.target.value) })}
           />
         </div>
 
-        <div className={!width.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={width.active} onChange={(() => setWidth({ ...width, active: !width.active }))} />
+        <div className={!getCurrentElement()!.width.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={getCurrentElement()!.width.active} onChange={() => updateProperty('width', { ...getCurrentElement()!.width, active: !getCurrentElement()!.width.active } )} />
 
           <label htmlFor="width" className="option-name">width</label>
           <UnitSelect
             id="width"
-            value={width.value}
-            unit={width.unit} 
-            valueOnChange={(event) => setWidth({ ...width, value: Number(event.target.value) })}
-            unitOnChange={(event) => setWidth({ ...width, unit: event.target.value as Unit })}
+            value={getCurrentElement()!.width.value}
+            unit={getCurrentElement()!.width.unit} 
+            valueOnChange={(event) => updateProperty('width', { ...getCurrentElement()!.height, value: Number(event.target.value) })}
+            unitOnChange={(event) => updateProperty('width', { ...getCurrentElement()!.height, unit: event.target.value as Unit })}
           />
         </div>
 
-        <div className={!background.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={background.active} onChange={(() => setBackground({ ...background, active: !background.active }))} />
+        <div className={!getCurrentElement()!.background.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={getCurrentElement()!.background.active} onChange={() => updateProperty('background', { ...getCurrentElement()!.background, active: !getCurrentElement()!.background.active } )} />
 
           <label htmlFor="background-property" className="option-name">background</label>
           <Select
             id="background-property"
-            value={background.selected}
+            value={getCurrentElement()!.background.selected}
             options={backgroundProperties.slice()}
-            onChange={(event) => setBackground({ ...background, selected: event.target.value as BackgroundProperty})}
+            onChange={(event) => updateProperty('background', { ...getCurrentElement()!.background, selected: event.target.value as BackgroundProperty })}
           />
   
           {
-            background.selected == 'color' &&
+            getCurrentElement()!.background.selected == 'color' &&
               <Input
                 type="color"
-                value={background.color.color}
-                onChange={(event) => setBackground({ ...background, color: { color: event.target.value } })}
+                value={getCurrentElement()!.background.color.color}
+                onChange={(event) => updateProperty('background', { ...getCurrentElement()!.background, color: { ...getCurrentElement()!.background.color, color: event.target.value } })}
               />
           }
           {
-            background.selected == 'linear-gradient' &&
+            getCurrentElement()!.background.selected == 'linear-gradient' &&
               <>
                 <Input
                   type="color"
-                  value={background.linearGradient.colors[0]}
+                  value={getCurrentElement()!.background.linearGradient.colors[0]}
                   onChange={(event) => handleLinearGradientBackgroundChanged(event, 0)}
                 />
                 <Input
                   type="color"
-                  value={background.linearGradient.colors[1]}
+                  value={getCurrentElement()!.background.linearGradient.colors[1]}
                   onChange={(event) => handleLinearGradientBackgroundChanged(event, 1)}
                 />
               </>
@@ -431,111 +596,111 @@ function ElementDesigner() {
         </div>
 
         {
-          currentSelectionHasText() &&
-            <div className={!color.active ? 'hidden' : ''}>
-              <Input type="checkbox" checked={color.active} onChange={(() => setColor({ ...color, active: !color.active }))} />
+          currentSelectionHasText(getCurrentElement()!) &&
+            <div className={!getCurrentElement()!.color.active ? 'hidden' : ''}>
+              <Input type="checkbox" checked={getCurrentElement()!.color.active} onChange={() => updateProperty('color', { ...getCurrentElement()!.color, active: !getCurrentElement()!.color.active } )} />
 
               <label htmlFor="color" className="option-name">color</label>
               <Input
                 id="color"
                 type="color"
-                value={color.hex}
-                onChange={(event) => setColor({ ...color, hex: event.target.value })}
+                value={getCurrentElement()!.color.hex}
+                onChange={(event) => updateProperty('color', { ...getCurrentElement()!.border, hex: event.target.value } )}
               />
             </div>
         }
 
         {
-          currentSelectionHasText() &&
-          <div className={!fontSize.active ? 'hidden' : ''}>
-              <Input type="checkbox" checked={fontSize.active} onChange={(() => setFontSize({ ...fontSize, active: !fontSize.active }))} />
+          currentSelectionHasText(getCurrentElement()!) &&
+          <div className={!getCurrentElement()!.fontSize.active ? 'hidden' : ''}>
+              <Input type="checkbox" checked={getCurrentElement()!.fontSize.active} onChange={() => updateProperty('fontSize', { ...getCurrentElement()!.fontSize, active: !getCurrentElement()!.fontSize.active } )} />
 
               <label htmlFor="font-size" className="option-name">font-size</label>
               <UnitSelect
                 id="font-size"
-                value={fontSize.value}
-                unit={fontSize.unit} 
-                valueOnChange={(event) => setFontSize({ ...fontSize, value: Number(event.target.value) })}
-                unitOnChange={(event) => setFontSize({ ...fontSize, unit: event.target.value as Unit })}
+                value={getCurrentElement()!.fontSize.value}
+                unit={getCurrentElement()!.fontSize.unit} 
+                valueOnChange={(event) => updateProperty('fontSize', { ...getCurrentElement()!.fontSize, value: Number(event.target.value) })}
+                unitOnChange={(event) => updateProperty('fontSize', { ...getCurrentElement()!.fontSize, unit: event.target.value as Unit })}
               />
             </div>
         }
 
         {
-          currentSelectionHasText() &&
-            <div className={!fontWeight.active ? 'hidden' : ''}>
-              <Input type="checkbox" checked={fontWeight.active} onChange={(() => setFontWeight({ ...fontWeight, active: !fontWeight.active }))} />
+          currentSelectionHasText(getCurrentElement()!) &&
+            <div className={!getCurrentElement()!.fontWeight.active ? 'hidden' : ''}>
+              <Input type="checkbox" checked={getCurrentElement()!.fontWeight.active} onChange={() => updateProperty('fontWeight', { ...getCurrentElement()!.fontWeight, active: !getCurrentElement()!.fontWeight.active } )} />
 
               <label htmlFor="font-weight" className="option-name">font-weight</label>
               <Input
                 id="font-weight"
                 type="number"
-                value={fontWeight.value}
+                value={getCurrentElement()!.fontWeight.value}
                 min={100}
                 max={900}
                 step={100}
-                onChange={(event) => setFontWeight({ ...fontWeight, value: Number(event.target.value)})}
-              />
+                onChange={(event) => updateProperty('fontWeight', { ...getCurrentElement()!.cursor, value: Number(event.target.value) } )}
+                />
             </div>
         }
 
-        <div className={!border.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={border.active} onChange={(() => setBorder({ ...border, active: !border.active }))} />
+        <div className={!getCurrentElement()!.border.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={getCurrentElement()!.border.active} onChange={() => updateProperty('border', { ...getCurrentElement()!.border, active: !getCurrentElement()!.border.active } )}  />
 
           <label htmlFor="border" className="option-name">border</label>
           <UnitSelect
-            value={border.width.value}
-            unit={border.width.unit} 
-            valueOnChange={(event) => setBorder({ ...border, width: { ...border.width, value: Number(event.target.value) } })}
-            unitOnChange={(event) => setBorder({ ...border, width: { ...border.width, unit: event.target.value as Unit } })}
+            value={getCurrentElement()!.border.width.value}
+            unit={getCurrentElement()!.border.width.unit} 
+            valueOnChange={(event) => updateProperty('border', { ...getCurrentElement()!.border, width: { ...getCurrentElement()!.border.width, value: Number(event.target.value) } })}
+            unitOnChange={(event) => updateProperty('border', { ...getCurrentElement()!.border, width: { ...getCurrentElement()!.border.width, unit: event.target.value as Unit } })}
           />
           <Select
-            value={border.style}
+            value={getCurrentElement()!.border.style}
             options={borderStyles.slice()}
-            onChange={(event) => setBorder({ ...border, style: event.target.value as BorderStyle })}
+            onChange={(event) => updateProperty('border', { ...getCurrentElement()!.border, style: event.target.value as BorderStyle } )}
           />
           <Input
             type="color"
-            value={border.color}
-            onChange={(event) => setBorder({ ...border, color: event.target.value })}
+            value={getCurrentElement()!.border.color}
+            onChange={(event) => updateProperty('border', { ...getCurrentElement()!.border, color: event.target.value } )}
           />
         </div>
 
-        <div className={!borderRadius.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={borderRadius.active} onChange={(() => setBorderRadius({ ...borderRadius, active: !borderRadius.active }))} />
+        <div className={!getCurrentElement()!.borderRadius.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={getCurrentElement()!.borderRadius.active} onChange={() => updateProperty('borderRadius', { ...getCurrentElement()!.borderRadius, active: !getCurrentElement()!.borderRadius.active } )} />
 
           <label htmlFor="border-radius" className="option-name">border-radius</label>
           <UnitSelect
             id="border-radius"
-            value={borderRadius.value}
-            unit={borderRadius.unit} 
-            valueOnChange={(event) => setBorderRadius({ ...borderRadius, value: Number(event.target.value) })}
-            unitOnChange={(event) => setBorderRadius({ ...borderRadius, unit: event.target.value as Unit })}
+            value={getCurrentElement()!.borderRadius.value}
+            unit={getCurrentElement()!.borderRadius.unit} 
+            valueOnChange={(event) => updateProperty('borderRadius', { ...getCurrentElement()!.borderRadius, value: Number(event.target.value) })}
+            unitOnChange={(event) => updateProperty('borderRadius', { ...getCurrentElement()!.borderRadius, unit: event.target.value as Unit })}
           />
         </div>
 
-        <div className={!padding.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={padding.active} onChange={(() => setPadding({ ...padding, active: !padding.active }))} />
+        <div className={!getCurrentElement()!.padding.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={getCurrentElement()!.padding.active} onChange={() => updateProperty('padding', { ...getCurrentElement()!.padding, active: !getCurrentElement()!.padding.active } )}  />
 
           <label htmlFor="padding" className="option-name">padding</label>
           <UnitSelect
             id="padding"
-            value={padding.value}
-            unit={padding.unit} 
-            valueOnChange={(event) => setPadding({ ...padding, value: Number(event.target.value) })}
-            unitOnChange={(event) => setPadding({ ...padding, unit: event.target.value as Unit })}
+            value={getCurrentElement()!.padding.value}
+            unit={getCurrentElement()!.padding.unit} 
+            valueOnChange={(event) => updateProperty('padding', { ...getCurrentElement()!.padding, value: Number(event.target.value) })}
+            unitOnChange={(event) => updateProperty('padding', { ...getCurrentElement()!.padding, unit: event.target.value as Unit })}
           />
         </div>
 
-        <div className={!cursor.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={cursor.active} onChange={(() => setCursor({ ...cursor, active: !cursor.active }))} />
+        <div className={!getCurrentElement()!.cursor.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={getCurrentElement()!.cursor.active} onChange={() => updateProperty('cursor', { ...getCurrentElement()!.cursor, active: !getCurrentElement()!.cursor.active } )} />
 
           <label htmlFor="cursor" className="option-name">cursor</label>
           <Select
             id="cursor"
-            value={cursor.keyword}
+            value={getCurrentElement()!.cursor.keyword}
             options={cursorKeywords.slice()}
-            onChange={(event) => setCursor({ ...cursor, keyword: event.target.value as CursorKeyword })} 
+            onChange={(event) => updateProperty('cursor', { ...getCurrentElement()!.cursor, keyword: event.target.value as CursorKeyword } )}
           />
         </div>
       </div>

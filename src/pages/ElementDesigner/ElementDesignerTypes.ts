@@ -1,4 +1,24 @@
+import { Type } from "../../components/Input/InputTypes";
 import { Unit } from "../../components/UnitSelect/UnitSelectTypes";
+
+export type Element = {
+  uuid: string,
+  element: ElementSelector,
+  id: string,
+  type: Type,
+  value: Value
+  innerText: string,
+  height: Height,
+  width: Width,
+  background: Background,
+  color: Color,
+  fontSize: FontSize,
+  fontWeight: FontWeight,
+  border: Border,
+  borderRadius: BorderRadius,
+  padding: Padding,
+  cursor: Cursor,
+};
 
 /* Values that can be selected */
 export const elementSelectors = [
@@ -112,4 +132,10 @@ type BackgroundColor = {
 
 type BackgroundLinearGradient = {
   colors: string[]
+};
+
+export type PropertyCondition = {
+  property: keyof Element;
+  condition: boolean;
+  style: string;
 };
