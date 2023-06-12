@@ -1,9 +1,9 @@
 import './Typewriter.css';
-import { TypewriterProperties } from './TypewriterInterfaces';
+import { TypewriterProperties } from './TypewriterTypes';
 import { useTypewriter } from '../../hooks/useTypewriter';
 
-function Typewriter(props: TypewriterProperties) {
-  const { currentTypingText, currentText } = useTypewriter(props.textsToType);
+function Typewriter({textsToType}: TypewriterProperties) {
+  const { currentTypingText, currentText } = useTypewriter(textsToType);
 
   return (
     <span

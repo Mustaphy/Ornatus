@@ -1,9 +1,9 @@
-import { TreeNode } from '../TreeView/TreeView';
 import { Element, PropertyCondition } from '../../pages/ElementDesigner/ElementDesignerTypes';
 import { toCamelCase } from '../../utilities';
+import { TreeNode } from '../TreeView/TreeViewTypes';
 import { ElementPreviewProps } from './ElementPreviewTypes';
 
-const ElementPreview = ({ tree: hierarchy, getPropertyConditions }: ElementPreviewProps) => {
+function ElementPreview({ tree: hierarchy, getPropertyConditions }: ElementPreviewProps) {
   /**
    * Get the styles for the element based on the property conditions
    * @param {Element} element The element to get the styles for

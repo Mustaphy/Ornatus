@@ -19,8 +19,9 @@ import { MdContentCopy, MdAddCircle } from "react-icons/all";
 import { generateId, generateUUID, toCamelCase, toKebabCase } from '../../utilities';
 import { Type as Type, types } from '../../components/Input/InputTypes';
 import { Unit } from '../../components/UnitSelect/UnitSelectTypes';
-import TreeView, { TreeNode } from '../../components/TreeView/TreeView';
+import TreeView from '../../components/TreeView/TreeView';
 import ElementPreview from '../../components/ElementPreview.tsx/ElementPreview';
+import { TreeNode } from '../../components/TreeView/TreeViewTypes';
 
 function ElementDesigner() {
   const initialElement: Element = {

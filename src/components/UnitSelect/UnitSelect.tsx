@@ -1,14 +1,13 @@
 import Input from '../Input/Input';
 import './UnitSelect.css';
-import { UnitSelectProperties } from './UnitSelectInterfaces';
 import Select from "../Select/Select";
-import { units } from './UnitSelectTypes';
+import { UnitSelectProperties, units } from './UnitSelectTypes';
 
-function UnitSelect(props: UnitSelectProperties) {
+function UnitSelect({id, value, unit, valueOnChange, unitOnChange}: UnitSelectProperties) {
   return (
-    <div id={props.id} className="styleface-unit-select">
-      <Input type="number" value={props.value} onChange={props.valueOnChange} />
-      <Select value={props.unit} options={units.slice()} onChange={props.unitOnChange} />
+    <div id={id} className="styleface-unit-select">
+      <Input type="number" value={value} onChange={valueOnChange} />
+      <Select value={unit} options={units.slice()} onChange={unitOnChange} />
     </div>
   )
 }

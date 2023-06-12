@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
 import './Button.css'
-import { ButtonProperties } from './ButtonInterfaces';
+import { ButtonProperties } from './ButtonTypes';
 
-function Button(props: ButtonProperties) {
+function Button({text, path}: ButtonProperties) {
   return (
-    <Link to={props.path}>
+    <Link to={path}>
       <button className="styleface-button">
-        {props.text}
+        {text}
       </button>
     </Link>
   )

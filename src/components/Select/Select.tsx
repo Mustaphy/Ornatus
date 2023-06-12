@@ -1,5 +1,5 @@
 import './Select.css';
-import { SelectProperties } from "./SelectInterfaces";
+import { SelectProperties } from "./SelectTypes";
 
 function Select(props: SelectProperties) {
   return (

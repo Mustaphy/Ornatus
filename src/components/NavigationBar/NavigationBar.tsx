@@ -1,9 +1,9 @@
 import "./NavigationBar.css";
 import { Link } from "react-router-dom";
-import { NavigationBarProperties } from "./NavigationBarInterfaces";
+import { NavigationBarProperties } from "./NavigationBarTypes";
 import { useScrolledDown } from "../../hooks/useScrolledDown";
 
-function NavigationBar(props: NavigationBarProperties) {
+function NavigationBar({navigationLinks}: NavigationBarProperties) {
   const scrolledDown = useScrolledDown();
 
   return (
@@ -13,7 +13,7 @@ function NavigationBar(props: NavigationBarProperties) {
         <nav>
           <ul id="navigation-links">
             {
-              props.navigationLinks.map((navigationLink, index) =>
+              navigationLinks.map((navigationLink, index) =>
                 <li key={index}>
                   <Link className="navigation-link" to={navigationLink.path}>
                     <p className="navigation-text">{navigationLink.name}</p>

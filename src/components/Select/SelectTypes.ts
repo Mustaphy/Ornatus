@@ -1,6 +1,6 @@
 import { ChangeEventHandler } from "react";
 
-export interface SelectProperties {
+export type SelectProperties = {
   id?: string,
   value: string,
   options: string[],

@@ -1,19 +1,19 @@
-import { InputProperties } from './InputInterfaces';
+import { InputProperties } from './InputTypes';
 import './Input.css'
 
-function Input(props: InputProperties) {
+function Input({id, type, value, min, max, step, checked, disabled, onChange}: InputProperties) {
   return (
     <input
-      id={props.id}
+      id={id}
       className={'styleface-input'}
-      type={props.type}
-      value={props.value}
-      min={props.min}
-      max={props.max}
-      step={props.step}
-      checked={props.checked}
-      disabled={props.disabled}
-      onChange={props.onChange}
+      type={type}
+      value={value}
+      min={min}
+      max={max}
+      step={step}
+      checked={checked}
+      disabled={disabled}
+      onChange={onChange}
     />
   )
 }
