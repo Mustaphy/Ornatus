@@ -10,10 +10,11 @@ export interface TreeNode {
 
 interface TreeViewProps {
   data: TreeNode[];
+  selectedElementId: string;
   onChange: (tree: TreeNode[]) => void;
 }
 
-const TreeView = ({ data, onChange }: TreeViewProps) => {
+const TreeView = ({ data, selectedElementId, onChange }: TreeViewProps) => {
   const [treeData, setTreeData] = useState<TreeNode[]>(data);
   const [dragOverNodeId, setDragOverNodeId] = useState<string | null>(null);
 
@@ -128,7 +129,9 @@ const TreeView = ({ data, onChange }: TreeViewProps) => {
           onDragOver={(event) => handleDragOver(event, node.element.uuid)}
           onDragLeave={handleDragLeave}
           onDrop={(event) => handleDrop(event, node.element.uuid)}
-          className={dragOverNodeId === node.element.uuid ? 'drag-over' : ''}
+          className={
+            `${dragOverNodeId === node.element.uuid ? 'drag-over' : ''} ${selectedElementId === node.element.uuid ? 'selected' : ''}`
+          }
           style={{ marginLeft: `${indentLevel * 20}px` }}
           onClick={node.onClick}
         >

@@ -17,6 +17,11 @@
   width: fit-content;
 }
 
+.treeview li:hover {
+  transition: 0.2s filter;
+  filter: brightness(1.2);
+}
+
 .treeview li span {
   cursor: pointer;
   color: #CBE4DE;
@@ -24,4 +29,8 @@
 
 .treeview li.drag-over {
   border-bottom: 2px dashed #CBE4DE;
+}
+
+.treeview li.selected {
+  background: linear-gradient(#006666, #000000) fixed;
 }

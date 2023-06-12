@@ -2,6 +2,6 @@ import { Element, PropertyCondition } from "../../pages/ElementDesigner/ElementD
 import { TreeNode } from "../TreeView/TreeView";
 
 export type ElementPreviewProps = {
-  hierarchy: TreeNode[];
+  tree: TreeNode[];
   getPropertyConditions: (element: Element) => PropertyCondition[];
 }

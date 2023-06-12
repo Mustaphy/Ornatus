@@ -101,7 +101,7 @@ function ElementDesigner() {
   };
 
   const [currentElementId, setCurrentElementId] = useState(initialElement.uuid);
-  const [hierarchy, setHierarchy] = useState<TreeNode[]>([
+  const [tree, setTree] = useState<TreeNode[]>([
     {
       element: initialElement,
       onClick: () => setCurrentElementId(initialElement.uuid!),
@@ -173,7 +173,7 @@ function ElementDesigner() {
    * @param {TreeNode[]} nodes Nodes to search for the current element
    * @returns {Element | undefined} The current element, or undefined if not found
    */
-  const getCurrentElement = (nodes: TreeNode[] = hierarchy): Element | undefined => {
+  const getCurrentElement = (nodes: TreeNode[] = tree): Element | undefined => {
     for (const node of nodes) {
       if (node.element.uuid === currentElementId) {
         return node.element;
@@ -195,7 +195,7 @@ function ElementDesigner() {
    * @param {any} value Value to update the property to
    */
   const updateProperty = (property: keyof Element, value: any): void => {
-    setHierarchy(prevHierarchy => {
+    setTree(prevHierarchy => {
       const updatePropertyRecursively: any = (nodes: any): void => {
         return nodes.map((node: any) => {
           if (node.element.uuid === currentElementId) {
@@ -226,11 +226,11 @@ function ElementDesigner() {
   };
 
   /**
-   * Add an element to the hierarchy
-   * @param {Element} element Element to add to the hierarchy
+   * Add an element to the nodes
+   * @param {Element} element Element to add to the nodes
    */
   const addElement = (element: Element): void => {
-    setHierarchy([...hierarchy, { element: { ...element }, onClick: () => setCurrentElementId(element.uuid!) } ]);
+    setTree([...tree, { element: { ...element }, onClick: () => setCurrentElementId(element.uuid!) } ]);
   }
 
   /**
@@ -347,11 +347,11 @@ function ElementDesigner() {
 
     /**
    * Get a string of valid HTML of the current state of the element
-   * @param {TreeNode[]} nodes Nodes to generate HTML for (defaults to the hierarchy)
+   * @param {TreeNode[]} nodes Nodes to generate HTML for (defaults to the indent)
    * @param {number} indent Indentation level of the HTML (defaults to 0)
    * @returns {string} Returns a string of valid HTML of the current state of the element
    */
-  const generateHTML = (nodes: TreeNode[] = hierarchy, indent: number = 0): string => {
+  const generateHTML = (nodes: TreeNode[] = tree, indent: number = 0): string => {
     let result = '';
     const spaces = ' '.repeat(indent);
   
@@ -444,18 +444,18 @@ function ElementDesigner() {
       }
     }
   
-    traverseHierarchy(hierarchy);
+    traverseHierarchy(tree);
     return cssCode;
   }
 
   return (
     <div id="element-designer">
       <div id="element-preview">
-        <ElementPreview hierarchy={hierarchy} getPropertyConditions={getPropertyConditions} />
+        <ElementPreview tree={tree} getPropertyConditions={getPropertyConditions} />
       </div>
 
       <div id="element-hierarchy">
-        <TreeView data={hierarchy} onChange={(tree: TreeNode[]) => setHierarchy(tree) } />
+        <TreeView data={tree} onChange={(tree: TreeNode[]) => setTree(tree)} selectedElementId={currentElementId} />
 
         <div
           id="add-element-container"

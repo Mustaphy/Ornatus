@@ -3,7 +3,7 @@ import { Element, PropertyCondition } from '../../pages/ElementDesigner/ElementD
 import { toCamelCase } from '../../utilities';
 import { ElementPreviewProps } from './ElementPreviewTypes';
 
-const ElementPreview = ({ hierarchy, getPropertyConditions }: ElementPreviewProps) => {
+const ElementPreview = ({ tree: hierarchy, getPropertyConditions }: ElementPreviewProps) => {
   /**
    * Get the styles for the element based on the property conditions
    * @param {Element} element The element to get the styles for
@@ -46,7 +46,7 @@ const ElementPreview = ({ hierarchy, getPropertyConditions }: ElementPreviewProp
    * @param {TreeNode} node The node to render
    */
   const renderTreeNode = (node: TreeNode) => {
-    const { element, children, onClick } = node;
+    const { element, children } = node;
     const elementStyles = getStyles(element);
     const Element = element.element;
 
@@ -73,7 +73,7 @@ const ElementPreview = ({ hierarchy, getPropertyConditions }: ElementPreviewProp
         )
       default: 
         return (
-          <Element key={element.id} style={elementStyles} onClick={onClick}>
+          <Element key={element.id} style={elementStyles}>
             {element.innerText}
             {children && children.length > 0 && (
               <div>
