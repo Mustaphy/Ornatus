@@ -136,20 +136,19 @@ function ElementDesigner() {
    * @returns {Element | undefined} The current element, or undefined if not found
    */
   const getCurrentElement = (nodes: TreeNode[] = tree): Element | undefined => {
-    for (const node of nodes) {
-      if (node.element.uuid === currentElementId) {
+    return nodes.reduce((element: Element | undefined, node) => {
+      if (element)
+        return element;
+  
+      if (node.element.uuid === currentElementId)
         return node.element;
-      }
-      if (node.children) {
-        const foundNode = getCurrentElement(node.children);
-        if (foundNode) {
-          return foundNode;
-        }
-      }
-    }
-
-    return undefined;
-  }
+  
+      if (node.children)
+        return getCurrentElement(node.children);
+  
+      return undefined;
+    }, undefined);
+  };
   const currentElement = getCurrentElement()!;
 
   /**
