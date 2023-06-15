@@ -134,15 +134,8 @@ type BackgroundLinearGradient = {
   colors: string[]
 };
 
-export type StylingCondition = {
-  property: keyof Element;
-  condition: boolean;
-  style: string;
-};
-
-export type AttributeCondition = {
+export type ConditionalValue = {
   property: keyof Element | 'checked';
   condition: boolean;
   value: string | boolean;
-  type: 'value' | 'boolean';
-}
+};

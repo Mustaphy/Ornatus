@@ -10,8 +10,7 @@ import {
   cursorKeywords,
   elementSelectors,
   Element,
-  StylingCondition,
-  AttributeCondition,
+  ConditionalValue,
 } from './ElementDesignerTypes';
 import Input from '../../components/Input/Input'
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
@@ -23,85 +22,10 @@ import { Unit } from '../../components/UnitSelect/UnitSelectTypes';
 import TreeView from '../../components/TreeView/TreeView';
 import ElementPreview from '../../components/ElementPreview.tsx/ElementPreview';
 import { TreeNode } from '../../components/TreeView/TreeViewTypes';
+import { buttonElement } from './ElementDesignerData';
 
 function ElementDesigner() {
-  const initialElement: Element = {
-    uuid: generateUUID(),
-    element: 'button',
-    id: generateId('element'),
-    type: 'text',
-    innerText: 'Design your own element!',
-    value: {
-      button: 'Click here!',
-      color: '#000000',
-      checkbox: false,
-      date: '2023-01-01',
-      datetimeLocal: '2023-01-01T00:00',
-      email: 'example@domain.com',
-      month: 'January',
-      number: '2023',
-      password: 'admin',
-      reset: 'Reset',
-      search: 'Search',
-      submit: 'Submit',
-      tel: '+31 12 3456789',
-      text: 'Text',
-      time: "00:00",
-      url: 'https://example.com',
-      week: '1',
-      active: true,
-    },
-    height: {
-      value: 100,
-      unit: '%',
-      active: false,
-    },
-    width: {
-      value: 160,
-      unit: 'px',
-      active: false,
-    },
-    background: {
-      selected: 'color',
-      color: { color: '#000000' },
-      linearGradient: { colors: ['#000000', '#ffffff'] },
-      active: true,
-    },
-    color: {
-      hex: '#ffffff',
-      active: true,
-    },
-    fontSize: {
-      value: 16,
-      unit: 'px',
-      active: true,
-    },
-    fontWeight: {
-      value: 400,
-      active: true,
-    },
-    border: {
-      width: { value: 1, unit: 'px' },
-      style: 'solid',
-      color: '#ffffff',
-      active: true,
-    },
-    borderRadius: {
-      value: 8,
-      unit: 'px',
-      active: true,
-    },
-    padding: {
-      value: 2,
-      unit: 'px',
-      active: true,
-    },
-    cursor: {
-      keyword: 'pointer',
-      active: true,
-    }
-  };
-
+  const initialElement: Element = buttonElement;
   const [currentElementId, setCurrentElementId] = useState(initialElement.uuid);
   const [tree, setTree] = useState<TreeNode[]>([
     {
@@ -113,59 +37,59 @@ function ElementDesigner() {
   /**
    * Get the conditions when a property should be applied, and what the styling should be
    * @param {Element} element Element to get its property conditions
-   * @returns {StylingCondition[]} conditions when a property should be applied, and what the styling should be
+   * @returns {ConditionalValue[]} conditions when a property should be applied, and what the styling should be
    */
-  const getStylingConditions = (element: Element): StylingCondition[] => {
+  const getStylingConditions = (element: Element): ConditionalValue[] => {
     return [
        {
         property: 'height',
         condition: element.height.active,
-        style: `${element.height.value + element.height.unit}`
+        value: `${element.height.value + element.height.unit}`
       },
       {
         property: 'width',
         condition: element.width.active,
-        style: `${element.width.value + element.width.unit}`
+        value: `${element.width.value + element.width.unit}`
       },
       {
         property: 'background',
         condition: element.background.active,
-        style: `${getBackgroundStyling(element)}` 
+        value: `${getBackgroundStyling(element)}` 
       },
       {
         property: 'color',
         condition: element.color.active && currentSelectionHasText(element),
-        style: `${element.color.hex}`
+        value: `${element.color.hex}`
       },
       {
         property: 'fontSize',
         condition: element.fontSize.active && currentSelectionHasText(element),
-        style: `${element.fontSize.value + element.fontSize.unit}`
+        value: `${element.fontSize.value + element.fontSize.unit}`
       },
       {
         property: 'fontWeight',
         condition: element.fontWeight.active && currentSelectionHasText(element),
-        style: `${element.fontWeight.value}`
+        value: `${element.fontWeight.value}`
       },
       {
         property: 'border',
         condition: element.border.active,
-        style: `${element.border.width.value + element.border.width.unit} ${element.border.style} ${element.border.color}`
+        value: `${element.border.width.value + element.border.width.unit} ${element.border.style} ${element.border.color}`
       },
       {
         property: 'borderRadius',
         condition: element.borderRadius.active,
-        style: `${element.borderRadius.value + element.borderRadius.unit}`
+        value: `${element.borderRadius.value + element.borderRadius.unit}`
       },
       {
         property: 'padding',
         condition: element.padding.active,
-        style: `${element.padding.value + element.padding.unit}`
+        value: `${element.padding.value + element.padding.unit}`
       },
       {
         property: 'cursor',
         condition: element.padding.active,
-        style: `${element.cursor.keyword}`
+        value: `${element.cursor.keyword}`
       },
     ];
   }
@@ -175,31 +99,27 @@ function ElementDesigner() {
    * @param {Element} element Element to get its attribute conditions
    * @returns {AttributeCondition[]} conditions when an attribute should be used for an element, and what the value should be
    */
-  const getAttributeConditions = (element: Element): AttributeCondition[] => {
+  const getAttributeConditions = (element: Element): ConditionalValue[] => {
     return [
       {
         property: 'id',
         condition: true,
         value: element.id,
-        type: 'value',
       },
       {
         property: 'type',
         condition: element.element === 'input' || element.element === 'button',
         value: element.type,
-        type: 'value',
       },
       {
         property: 'value',
         condition: (element.element === 'input' && element.type !== 'checkbox') || element.element === 'textarea',
         value: getCurrentValue(element),
-        type: 'value',
       },
       {
         property: 'checked',
         condition: element.element === 'input',
         value: isChecked(element),
-        type: 'boolean',
       }
     ]
   }
@@ -411,41 +331,34 @@ function ElementDesigner() {
           if (!attribute.condition)
             return '';
 
-          // An example of a boolean attribute is 'checked', you only need to give the attribute name to make it true
-          if (attribute.type === 'boolean' && attribute.value)
-            return attribute.property;
-          else if (attribute.type === 'value')
-            return `${attribute.property}="${attribute.value}"`;
-
-          return '';
+          // When there is a boolean attribute, we don't need to set the value explicitly (for example with 'checked')
+          return typeof attribute.value === 'string'
+            ? `${attribute.property}="${attribute.value}"`
+            : attribute.property
         })
         .filter(attribute => attribute !== '');
 
       let attributesString = '';
 
-      if (attributes.length === 1) {
-        attributesString = ` ${attributes[0]}`;
-      } else if (attributes.length > 1) {
-        attributesString = `\n${spaces}  ${attributes.join(`\n${spaces}  `)}\n${spaces}`;
-      }
+      // If there is only one attribute, we can put it on the same line. Otherwise we put all of them below each other
+      attributes.length === 1
+        ? attributesString = `${attributes[0]}`
+        : attributesString = `\n${spaces}  ${attributes.join(`\n${spaces}  `)}\n${spaces}`
 
-      if (attributeProperties.length > 0 && isSelfClosing) {
-        return `${acc}${spaces}<${element.element}${attributesString} />\n`;
-      } else {
-        let nodeResult = `${spaces}<${element.element}${attributesString}>\n`;
+      // Self closing elements cannot have children or innerText
+      if (attributeProperties.length > 0 && isSelfClosing)
+        return `${acc}${spaces}<${element.element} ${attributesString} />\n`;
 
-        if (element.innerText) {
-          nodeResult += `${spaces}  ${element.innerText}\n`;
-        }
+      let result = `${spaces}<${element.element} ${attributesString}>\n`;
 
-        if (children) {
-          nodeResult += generateHTML(children, indent + 2);
-        }
+      if (element.innerText)
+        result += `${spaces}  ${element.innerText}\n`;
+      if (children)
+        result += generateHTML(children, indent + 2);
 
-        nodeResult += `${spaces}</${element.element}>\n`;
+      result += `${spaces}</${element.element}>\n`;
 
-        return `${acc}${nodeResult}`;
-      }
+      return `${acc}${result}`;
     }, '');
   };
 
@@ -454,35 +367,32 @@ function ElementDesigner() {
    * @returns {string} Returns a string of valid CSS of the current state of the element
    */
   const generateCSS = (): string => {
-    let cssCode = '';
+    let css = '';
 
-    function traverseHierarchy(nodes: TreeNode[]) {
-      for (const node of nodes) {
+    const getStylingForNode = (nodes: TreeNode[]): void => {
+      nodes.forEach(node => {
         const { element, children } = node;
-        const { id } = element;
   
-        cssCode += `#${id} {\n`;
+        css += `#${element.id} {\n`;
   
-        const propertyConditions = getStylingConditions(element);
+        const propertyConditions = getStylingConditions(node.element);
+
+        propertyConditions.forEach(condition => {
+          const { property, condition: propertyCondition, value: style } = condition;
   
-        for (const condition of propertyConditions) {
-          const { property, condition: propertyCondition, style } = condition;
+          if (propertyCondition)
+            css += `  ${toKebabCase(property)}: ${style};\n`;
+        });
   
-          if (propertyCondition) {
-            cssCode += `  ${toKebabCase(property)}: ${style};\n`;
-          }
-        }
+        css += `}\n\n`;
   
-        cssCode += `}\n\n`;
-  
-        if (children) {
-          traverseHierarchy(children);
-        }
+        if (children)
+          getStylingForNode(children);
       }
-    }
+    )};
   
-    traverseHierarchy(tree);
-    return cssCode;
+    getStylingForNode(tree);
+    return css;
   }
 
   return (

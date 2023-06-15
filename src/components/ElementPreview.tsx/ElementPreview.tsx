@@ -1,4 +1,4 @@
-import { Element, StylingCondition } from '../../pages/ElementDesigner/ElementDesignerTypes';
+import { Element, ConditionalValue } from '../../pages/ElementDesigner/ElementDesignerTypes';
 import { toCamelCase } from '../../utilities';
 import { TreeNode } from '../TreeView/TreeViewTypes';
 import { ElementPreviewProps } from './ElementPreviewTypes';
@@ -13,15 +13,14 @@ function ElementPreview({ tree: hierarchy, getPropertyConditions }: ElementPrevi
     const propertyConditions = getPropertyConditions(element);
     const styles: Record<string, string> = {};
 
-    propertyConditions.forEach((condition: StylingCondition) => {
+    propertyConditions.forEach((condition: ConditionalValue) => {
       if (condition.condition) {
-        styles[condition.property] = condition.style;
+        styles[condition.property] = condition.value.toString();
       }
     });
 
     return styles;
   };
-
 
   /**
    * Get the value that is used currently, based on the selected input type (e.g. text, number)
