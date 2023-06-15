@@ -82,6 +82,11 @@ function ElementDesigner() {
         condition: element.borderRadius.active,
       },
       {
+        property: 'margin',
+        value: `${element.margin.value + element.margin.unit}`,
+        condition: element.margin.active,
+      },
+      {
         property: 'padding',
         value: `${element.padding.value + element.padding.unit}`,
         condition: element.padding.active,
@@ -623,6 +628,19 @@ function ElementDesigner() {
             unit={getCurrentElement()!.borderRadius.unit} 
             valueOnChange={(event) => updateProperty('borderRadius', { ...getCurrentElement()!.borderRadius, value: Number(event.target.value) })}
             unitOnChange={(event) => updateProperty('borderRadius', { ...getCurrentElement()!.borderRadius, unit: event.target.value as Unit })}
+          />
+        </div>
+
+        <div className={!getCurrentElement()!.margin.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={getCurrentElement()!.margin.active} onChange={() => updateProperty('margin', { ...getCurrentElement()!.margin, active: !getCurrentElement()!.margin.active } )}  />
+
+          <label htmlFor="padding" className="option-name">margin</label>
+          <UnitSelect
+            id="padding"
+            value={getCurrentElement()!.margin.value}
+            unit={getCurrentElement()!.margin.unit} 
+            valueOnChange={(event) => updateProperty('margin', { ...getCurrentElement()!.margin, value: Number(event.target.value) })}
+            unitOnChange={(event) => updateProperty('margin', { ...getCurrentElement()!.margin, unit: event.target.value as Unit })}
           />
         </div>
 

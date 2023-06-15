@@ -17,6 +17,7 @@ export type Element = {
   border: Border,
   borderRadius: BorderRadius,
   padding: Padding,
+  margin: Margin,
   cursor: Cursor,
 };
 
@@ -100,6 +101,11 @@ export type Border = {
 } & Property;
 
 export type BorderRadius = {
+  value: number,
+  unit: Unit
+} & Property;
+
+export type Margin = {
   value: number,
   unit: Unit
 } & Property;

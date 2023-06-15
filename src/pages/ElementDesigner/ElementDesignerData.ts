@@ -67,6 +67,11 @@ export const buttonElement: Element = {
     unit: 'px',
     active: true,
   },
+  margin: {
+    value: 4,
+    unit: 'px',
+    active: true,
+  },
   padding: {
     value: 4,
     unit: 'px',
