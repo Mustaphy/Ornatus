@@ -15,7 +15,7 @@ function ElementPreview({ tree: hierarchy, getPropertyConditions }: ElementPrevi
 
     propertyConditions.forEach((condition: ConditionalValue) => {
       if (condition.condition) {
-        styles[condition.property] = condition.value.toString();
+        styles[toCamelCase(condition.property)] = condition.value.toString();
       }
     });
 

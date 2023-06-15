@@ -16,7 +16,7 @@ import Input from '../../components/Input/Input'
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
 import Select from "../../components/Select/Select";
 import { MdContentCopy, MdAddCircle } from "react-icons/all";
-import { generateId, generateUUID, toCamelCase, toKebabCase } from '../../utilities';
+import { generateId, generateUUID, toCamelCase } from '../../utilities';
 import { Type as Type, types } from '../../components/Input/InputTypes';
 import { Unit } from '../../components/UnitSelect/UnitSelectTypes';
 import TreeView from '../../components/TreeView/TreeView';
@@ -62,12 +62,12 @@ function ElementDesigner() {
         condition: element.color.active && currentSelectionHasText(element),
       },
       {
-        property: 'fontSize',
+        property: 'font-size',
         value: `${element.fontSize.value + element.fontSize.unit}`,
         condition: element.fontSize.active && currentSelectionHasText(element),
       },
       {
-        property: 'fontWeight',
+        property: 'font-weight',
         value: `${element.fontWeight.value}`,
         condition: element.fontWeight.active && currentSelectionHasText(element),
       },
@@ -77,7 +77,7 @@ function ElementDesigner() {
         condition: element.border.active,
       },
       {
-        property: 'borderRadius',
+        property: 'border-radius',
         value: `${element.borderRadius.value + element.borderRadius.unit}`,
         condition: element.borderRadius.active,
       },
@@ -129,6 +129,7 @@ function ElementDesigner() {
     ]
   }
 
+
   /**
    * Get the current element
    * @param {TreeNode[]} nodes Nodes to search for the current element
@@ -149,6 +150,7 @@ function ElementDesigner() {
 
     return undefined;
   }
+  const currentElement = getCurrentElement()!;
 
   /**
    * Update a property of the current element
@@ -201,9 +203,9 @@ function ElementDesigner() {
    * @param {number} index The index of the color that is changed, since the linear-gradient consists of mulitple colors
    */
   const handleLinearGradientBackgroundChanged = (event: ChangeEvent<HTMLInputElement>, index: number): void => {
-    const colors = getCurrentElement()!.background.linearGradient.colors;
+    const colors = currentElement.background.linearGradient.colors;
     colors[index] = event.target.value;
-    updateProperty('background', { ...getCurrentElement()!.background, linearGradient: { colors: colors } });
+    updateProperty('background', { ...currentElement.background, linearGradient: { colors: colors } });
   }
 
   /**
@@ -382,7 +384,7 @@ function ElementDesigner() {
         const { property, condition, value } = propetyCondition;
   
         if (condition)
-          css += `  ${toKebabCase(property)}: ${value};\n`;
+          css += `  ${property}: ${value};\n`;
       });
   
       css += `}\n\n`;
@@ -420,7 +422,7 @@ function ElementDesigner() {
           <label htmlFor="element" className="option-name">element</label>
           <Select
             id="element"
-            value={getCurrentElement()!.element}
+            value={currentElement.element}
             options={elementSelectors.slice()}
             onChange={(event) => updateProperty('element', event.target.value as ElementSelector)}
           />
@@ -431,51 +433,50 @@ function ElementDesigner() {
           <Input
             id="id"
             type="text"
-            value={getCurrentElement()!.id}
+            value={currentElement.id}
             onChange={(event) => updateProperty('id', event.target.value)}
           />
         </div>
 
         {
-          isTypeVisible(getCurrentElement()!) &&
+          isTypeVisible(currentElement) &&
             <div>
               <label htmlFor="type" className="option-name">type</label>
               <Select
                 id="type"
-                value={getCurrentElement()!.type}
-                options={getTypeOptions(getCurrentElement()!)}
+                value={currentElement.type}
+                options={getTypeOptions(currentElement)}
                 onChange={(event) => updateProperty('type', event.target.value as Type)}
                 />
             </div>
         }
       
         {
-          isInnerTextVisible(getCurrentElement()!) &&
+          isInnerTextVisible(currentElement) &&
             <div>
               <label htmlFor="innerText" className="option-name">innerText</label>
               <Input
                 id="innerText"
                 type="text"
-                value={getCurrentElement()!.innerText}
+                value={currentElement.innerText}
                 onChange={(event) => updateProperty('innerText', event.target.value)}
               />
             </div>
         }
 
         {
-          isValueVisible(getCurrentElement()!) &&
-            <div className={!getCurrentElement()!.value.active ? 'hidden' : ''}>
+          isValueVisible(currentElement) &&
+            <div className={!currentElement.value.active ? 'hidden' : ''}>
               <label htmlFor="value" className="option-name">value</label>
               <Input
                 id="value"
-                type={getCurrentElement()!.element === 'input' ? getTypeForUserInput(getCurrentElement()!) : 'text'}
-                value={getCurrentElement()!.element === 'input' ? getCurrentValue(getCurrentElement()!) : getCurrentElement()!.value.text}
-                checked={isChecked(getCurrentElement()!)}
+                type={currentElement.element === 'input' ? getTypeForUserInput(currentElement) : 'text'}
+                value={currentElement.element === 'input' ? getCurrentValue(currentElement) : currentElement.value.text}
+                checked={isChecked(currentElement)}
                 onChange={(event) => {
-                  const currentElement = getCurrentElement()!;
                   const value = currentElement.type === 'checkbox' ? event.target.checked : event.target.value;
 
-                  updateProperty('value', { ...getCurrentElement()!.value, [getCurrentElement()!.type]: value });
+                  updateProperty('value', { ...currentElement.value, [currentElement.type]: value });
                 }}
               />
             </div>
@@ -486,61 +487,61 @@ function ElementDesigner() {
         <h2 className="section-title">Styling (CSS)</h2>
         <hr />
 
-        <div className={!getCurrentElement()!.height.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={getCurrentElement()!.height.active} onChange={() => updateProperty('height', { ...getCurrentElement()!.height, active: !getCurrentElement()!.height.active } )} />
+        <div className={!currentElement.height.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={currentElement.height.active} onChange={() => updateProperty('height', { ...currentElement.height, active: !currentElement.height.active } )} />
           <label htmlFor="height" className="option-name">height</label>
           <UnitSelect
             id="height"
-            value={getCurrentElement()!.height.value}
-            unit={getCurrentElement()!.height.unit} 
-            valueOnChange={(event) => updateProperty('height', { ...getCurrentElement()!.height, value: Number(event.target.value) })}
-            unitOnChange={(event) => updateProperty('height', { ...getCurrentElement()!.height, value: Number(event.target.value) })}
+            value={currentElement.height.value}
+            unit={currentElement.height.unit} 
+            valueOnChange={(event) => updateProperty('height', { ...currentElement.height, value: Number(event.target.value) })}
+            unitOnChange={(event) => updateProperty('height', { ...currentElement.height, value: Number(event.target.value) })}
           />
         </div>
 
-        <div className={!getCurrentElement()!.width.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={getCurrentElement()!.width.active} onChange={() => updateProperty('width', { ...getCurrentElement()!.width, active: !getCurrentElement()!.width.active } )} />
+        <div className={!currentElement.width.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={currentElement.width.active} onChange={() => updateProperty('width', { ...currentElement.width, active: !currentElement.width.active } )} />
 
           <label htmlFor="width" className="option-name">width</label>
           <UnitSelect
             id="width"
-            value={getCurrentElement()!.width.value}
-            unit={getCurrentElement()!.width.unit} 
-            valueOnChange={(event) => updateProperty('width', { ...getCurrentElement()!.height, value: Number(event.target.value) })}
-            unitOnChange={(event) => updateProperty('width', { ...getCurrentElement()!.height, unit: event.target.value as Unit })}
+            value={currentElement.width.value}
+            unit={currentElement.width.unit} 
+            valueOnChange={(event) => updateProperty('width', { ...currentElement.height, value: Number(event.target.value) })}
+            unitOnChange={(event) => updateProperty('width', { ...currentElement.height, unit: event.target.value as Unit })}
           />
         </div>
 
-        <div className={!getCurrentElement()!.background.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={getCurrentElement()!.background.active} onChange={() => updateProperty('background', { ...getCurrentElement()!.background, active: !getCurrentElement()!.background.active } )} />
+        <div className={!currentElement.background.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={currentElement.background.active} onChange={() => updateProperty('background', { ...currentElement.background, active: !currentElement.background.active } )} />
 
           <label htmlFor="background-property" className="option-name">background</label>
           <Select
             id="background-property"
-            value={getCurrentElement()!.background.selected}
+            value={currentElement.background.selected}
             options={backgroundProperties.slice()}
-            onChange={(event) => updateProperty('background', { ...getCurrentElement()!.background, selected: event.target.value as BackgroundProperty })}
+            onChange={(event) => updateProperty('background', { ...currentElement.background, selected: event.target.value as BackgroundProperty })}
           />
   
           {
-            getCurrentElement()!.background.selected == 'color' &&
+            currentElement.background.selected == 'color' &&
               <Input
                 type="color"
-                value={getCurrentElement()!.background.color.color}
-                onChange={(event) => updateProperty('background', { ...getCurrentElement()!.background, color: { ...getCurrentElement()!.background.color, color: event.target.value } })}
+                value={currentElement.background.color.color}
+                onChange={(event) => updateProperty('background', { ...currentElement.background, color: { ...currentElement.background.color, color: event.target.value } })}
               />
           }
           {
-            getCurrentElement()!.background.selected == 'linear-gradient' &&
+            currentElement.background.selected == 'linear-gradient' &&
               <>
                 <Input
                   type="color"
-                  value={getCurrentElement()!.background.linearGradient.colors[0]}
+                  value={currentElement.background.linearGradient.colors[0]}
                   onChange={(event) => handleLinearGradientBackgroundChanged(event, 0)}
                 />
                 <Input
                   type="color"
-                  value={getCurrentElement()!.background.linearGradient.colors[1]}
+                  value={currentElement.background.linearGradient.colors[1]}
                   onChange={(event) => handleLinearGradientBackgroundChanged(event, 1)}
                 />
               </>
@@ -548,124 +549,124 @@ function ElementDesigner() {
         </div>
 
         {
-          currentSelectionHasText(getCurrentElement()!) &&
-            <div className={!getCurrentElement()!.color.active ? 'hidden' : ''}>
-              <Input type="checkbox" checked={getCurrentElement()!.color.active} onChange={() => updateProperty('color', { ...getCurrentElement()!.color, active: !getCurrentElement()!.color.active } )} />
+          currentSelectionHasText(currentElement) &&
+            <div className={!currentElement.color.active ? 'hidden' : ''}>
+              <Input type="checkbox" checked={currentElement.color.active} onChange={() => updateProperty('color', { ...currentElement.color, active: !currentElement.color.active } )} />
 
               <label htmlFor="color" className="option-name">color</label>
               <Input
                 id="color"
                 type="color"
-                value={getCurrentElement()!.color.hex}
-                onChange={(event) => updateProperty('color', { ...getCurrentElement()!.border, hex: event.target.value } )}
+                value={currentElement.color.hex}
+                onChange={(event) => updateProperty('color', { ...currentElement.border, hex: event.target.value } )}
               />
             </div>
         }
 
         {
-          currentSelectionHasText(getCurrentElement()!) &&
-          <div className={!getCurrentElement()!.fontSize.active ? 'hidden' : ''}>
-              <Input type="checkbox" checked={getCurrentElement()!.fontSize.active} onChange={() => updateProperty('fontSize', { ...getCurrentElement()!.fontSize, active: !getCurrentElement()!.fontSize.active } )} />
+          currentSelectionHasText(currentElement) &&
+          <div className={!currentElement.fontSize.active ? 'hidden' : ''}>
+              <Input type="checkbox" checked={currentElement.fontSize.active} onChange={() => updateProperty('fontSize', { ...currentElement.fontSize, active: !currentElement.fontSize.active } )} />
 
               <label htmlFor="font-size" className="option-name">font-size</label>
               <UnitSelect
                 id="font-size"
-                value={getCurrentElement()!.fontSize.value}
-                unit={getCurrentElement()!.fontSize.unit} 
-                valueOnChange={(event) => updateProperty('fontSize', { ...getCurrentElement()!.fontSize, value: Number(event.target.value) })}
-                unitOnChange={(event) => updateProperty('fontSize', { ...getCurrentElement()!.fontSize, unit: event.target.value as Unit })}
+                value={currentElement.fontSize.value}
+                unit={currentElement.fontSize.unit} 
+                valueOnChange={(event) => updateProperty('fontSize', { ...currentElement.fontSize, value: Number(event.target.value) })}
+                unitOnChange={(event) => updateProperty('fontSize', { ...currentElement.fontSize, unit: event.target.value as Unit })}
               />
             </div>
         }
 
         {
-          currentSelectionHasText(getCurrentElement()!) &&
-            <div className={!getCurrentElement()!.fontWeight.active ? 'hidden' : ''}>
-              <Input type="checkbox" checked={getCurrentElement()!.fontWeight.active} onChange={() => updateProperty('fontWeight', { ...getCurrentElement()!.fontWeight, active: !getCurrentElement()!.fontWeight.active } )} />
+          currentSelectionHasText(currentElement) &&
+            <div className={!currentElement.fontWeight.active ? 'hidden' : ''}>
+              <Input type="checkbox" checked={currentElement.fontWeight.active} onChange={() => updateProperty('fontWeight', { ...currentElement.fontWeight, active: !currentElement.fontWeight.active } )} />
 
               <label htmlFor="font-weight" className="option-name">font-weight</label>
               <Input
                 id="font-weight"
                 type="number"
-                value={getCurrentElement()!.fontWeight.value}
+                value={currentElement.fontWeight.value}
                 min={100}
                 max={900}
                 step={100}
-                onChange={(event) => updateProperty('fontWeight', { ...getCurrentElement()!.cursor, value: Number(event.target.value) } )}
+                onChange={(event) => updateProperty('fontWeight', { ...currentElement.cursor, value: Number(event.target.value) } )}
                 />
             </div>
         }
 
-        <div className={!getCurrentElement()!.border.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={getCurrentElement()!.border.active} onChange={() => updateProperty('border', { ...getCurrentElement()!.border, active: !getCurrentElement()!.border.active } )}  />
+        <div className={!currentElement.border.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={currentElement.border.active} onChange={() => updateProperty('border', { ...currentElement.border, active: !currentElement.border.active } )}  />
 
           <label htmlFor="border" className="option-name">border</label>
           <UnitSelect
-            value={getCurrentElement()!.border.width.value}
-            unit={getCurrentElement()!.border.width.unit} 
-            valueOnChange={(event) => updateProperty('border', { ...getCurrentElement()!.border, width: { ...getCurrentElement()!.border.width, value: Number(event.target.value) } })}
-            unitOnChange={(event) => updateProperty('border', { ...getCurrentElement()!.border, width: { ...getCurrentElement()!.border.width, unit: event.target.value as Unit } })}
+            value={currentElement.border.width.value}
+            unit={currentElement.border.width.unit} 
+            valueOnChange={(event) => updateProperty('border', { ...currentElement.border, width: { ...currentElement.border.width, value: Number(event.target.value) } })}
+            unitOnChange={(event) => updateProperty('border', { ...currentElement.border, width: { ...currentElement.border.width, unit: event.target.value as Unit } })}
           />
           <Select
-            value={getCurrentElement()!.border.style}
+            value={currentElement.border.style}
             options={borderStyles.slice()}
-            onChange={(event) => updateProperty('border', { ...getCurrentElement()!.border, style: event.target.value as BorderStyle } )}
+            onChange={(event) => updateProperty('border', { ...currentElement.border, style: event.target.value as BorderStyle } )}
           />
           <Input
             type="color"
-            value={getCurrentElement()!.border.color}
-            onChange={(event) => updateProperty('border', { ...getCurrentElement()!.border, color: event.target.value } )}
+            value={currentElement.border.color}
+            onChange={(event) => updateProperty('border', { ...currentElement.border, color: event.target.value } )}
           />
         </div>
 
-        <div className={!getCurrentElement()!.borderRadius.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={getCurrentElement()!.borderRadius.active} onChange={() => updateProperty('borderRadius', { ...getCurrentElement()!.borderRadius, active: !getCurrentElement()!.borderRadius.active } )} />
+        <div className={!currentElement.borderRadius.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={currentElement.borderRadius.active} onChange={() => updateProperty('borderRadius', { ...currentElement.borderRadius, active: !currentElement.borderRadius.active } )} />
 
           <label htmlFor="border-radius" className="option-name">border-radius</label>
           <UnitSelect
             id="border-radius"
-            value={getCurrentElement()!.borderRadius.value}
-            unit={getCurrentElement()!.borderRadius.unit} 
-            valueOnChange={(event) => updateProperty('borderRadius', { ...getCurrentElement()!.borderRadius, value: Number(event.target.value) })}
-            unitOnChange={(event) => updateProperty('borderRadius', { ...getCurrentElement()!.borderRadius, unit: event.target.value as Unit })}
+            value={currentElement.borderRadius.value}
+            unit={currentElement.borderRadius.unit} 
+            valueOnChange={(event) => updateProperty('borderRadius', { ...currentElement.borderRadius, value: Number(event.target.value) })}
+            unitOnChange={(event) => updateProperty('borderRadius', { ...currentElement.borderRadius, unit: event.target.value as Unit })}
           />
         </div>
 
-        <div className={!getCurrentElement()!.margin.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={getCurrentElement()!.margin.active} onChange={() => updateProperty('margin', { ...getCurrentElement()!.margin, active: !getCurrentElement()!.margin.active } )}  />
+        <div className={!currentElement.margin.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={currentElement.margin.active} onChange={() => updateProperty('margin', { ...currentElement.margin, active: !currentElement.margin.active } )}  />
 
           <label htmlFor="padding" className="option-name">margin</label>
           <UnitSelect
             id="padding"
-            value={getCurrentElement()!.margin.value}
-            unit={getCurrentElement()!.margin.unit} 
-            valueOnChange={(event) => updateProperty('margin', { ...getCurrentElement()!.margin, value: Number(event.target.value) })}
-            unitOnChange={(event) => updateProperty('margin', { ...getCurrentElement()!.margin, unit: event.target.value as Unit })}
+            value={currentElement.margin.value}
+            unit={currentElement.margin.unit} 
+            valueOnChange={(event) => updateProperty('margin', { ...currentElement.margin, value: Number(event.target.value) })}
+            unitOnChange={(event) => updateProperty('margin', { ...currentElement.margin, unit: event.target.value as Unit })}
           />
         </div>
 
-        <div className={!getCurrentElement()!.padding.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={getCurrentElement()!.padding.active} onChange={() => updateProperty('padding', { ...getCurrentElement()!.padding, active: !getCurrentElement()!.padding.active } )}  />
+        <div className={!currentElement.padding.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={currentElement.padding.active} onChange={() => updateProperty('padding', { ...currentElement.padding, active: !currentElement.padding.active } )}  />
 
           <label htmlFor="padding" className="option-name">padding</label>
           <UnitSelect
             id="padding"
-            value={getCurrentElement()!.padding.value}
-            unit={getCurrentElement()!.padding.unit} 
-            valueOnChange={(event) => updateProperty('padding', { ...getCurrentElement()!.padding, value: Number(event.target.value) })}
-            unitOnChange={(event) => updateProperty('padding', { ...getCurrentElement()!.padding, unit: event.target.value as Unit })}
+            value={currentElement.padding.value}
+            unit={currentElement.padding.unit} 
+            valueOnChange={(event) => updateProperty('padding', { ...currentElement.padding, value: Number(event.target.value) })}
+            unitOnChange={(event) => updateProperty('padding', { ...currentElement.padding, unit: event.target.value as Unit })}
           />
         </div>
 
-        <div className={!getCurrentElement()!.cursor.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={getCurrentElement()!.cursor.active} onChange={() => updateProperty('cursor', { ...getCurrentElement()!.cursor, active: !getCurrentElement()!.cursor.active } )} />
+        <div className={!currentElement.cursor.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={currentElement.cursor.active} onChange={() => updateProperty('cursor', { ...currentElement.cursor, active: !currentElement.cursor.active } )} />
 
           <label htmlFor="cursor" className="option-name">cursor</label>
           <Select
             id="cursor"
-            value={getCurrentElement()!.cursor.keyword}
+            value={currentElement.cursor.keyword}
             options={cursorKeywords.slice()}
-            onChange={(event) => updateProperty('cursor', { ...getCurrentElement()!.cursor, keyword: event.target.value as CursorKeyword } )}
+            onChange={(event) => updateProperty('cursor', { ...currentElement.cursor, keyword: event.target.value as CursorKeyword } )}
           />
         </div>
       </div>
