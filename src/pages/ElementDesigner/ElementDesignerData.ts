@@ -68,7 +68,7 @@ export const buttonElement: Element = {
     active: true,
   },
   padding: {
-    value: 2,
+    value: 4,
     unit: 'px',
     active: true,
   },

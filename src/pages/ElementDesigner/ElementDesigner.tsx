@@ -43,53 +43,53 @@ function ElementDesigner() {
     return [
        {
         property: 'height',
+        value: `${element.height.value + element.height.unit}`,
         condition: element.height.active,
-        value: `${element.height.value + element.height.unit}`
       },
       {
         property: 'width',
+        value: `${element.width.value + element.width.unit}`,
         condition: element.width.active,
-        value: `${element.width.value + element.width.unit}`
       },
       {
         property: 'background',
+        value: `${getBackgroundStyling(element)}`,
         condition: element.background.active,
-        value: `${getBackgroundStyling(element)}` 
       },
       {
         property: 'color',
+        value: `${element.color.hex}`,
         condition: element.color.active && currentSelectionHasText(element),
-        value: `${element.color.hex}`
       },
       {
         property: 'fontSize',
+        value: `${element.fontSize.value + element.fontSize.unit}`,
         condition: element.fontSize.active && currentSelectionHasText(element),
-        value: `${element.fontSize.value + element.fontSize.unit}`
       },
       {
         property: 'fontWeight',
+        value: `${element.fontWeight.value}`,
         condition: element.fontWeight.active && currentSelectionHasText(element),
-        value: `${element.fontWeight.value}`
       },
       {
         property: 'border',
+        value: `${element.border.width.value + element.border.width.unit} ${element.border.style} ${element.border.color}`,
         condition: element.border.active,
-        value: `${element.border.width.value + element.border.width.unit} ${element.border.style} ${element.border.color}`
       },
       {
         property: 'borderRadius',
+        value: `${element.borderRadius.value + element.borderRadius.unit}`,
         condition: element.borderRadius.active,
-        value: `${element.borderRadius.value + element.borderRadius.unit}`
       },
       {
         property: 'padding',
+        value: `${element.padding.value + element.padding.unit}`,
         condition: element.padding.active,
-        value: `${element.padding.value + element.padding.unit}`
       },
       {
         property: 'cursor',
+        value: `${element.cursor.keyword}`,
         condition: element.padding.active,
-        value: `${element.cursor.keyword}`
       },
     ];
   }
@@ -103,23 +103,23 @@ function ElementDesigner() {
     return [
       {
         property: 'id',
-        condition: true,
         value: element.id,
+        condition: true
       },
       {
         property: 'type',
-        condition: element.element === 'input' || element.element === 'button',
         value: element.type,
+        condition: element.element === 'input' || element.element === 'button'
       },
       {
         property: 'value',
-        condition: (element.element === 'input' && element.type !== 'checkbox') || element.element === 'textarea',
         value: getCurrentValue(element),
+        condition: (element.element === 'input' && element.type !== 'checkbox') || element.element === 'textarea'
       },
       {
         property: 'checked',
-        condition: element.element === 'input',
         value: isChecked(element),
+        condition: element.element === 'input'
       }
     ]
   }
@@ -313,18 +313,17 @@ function ElementDesigner() {
 
   /**
    * Get a string of valid HTML of the current state of the element
-   * @param {TreeNode[]} nodes Nodes to generate HTML for (defaults to the indent)
+   * @param {TreeNode[]} nodes Nodes to generate HTML for (defaults to the tree)
    * @param {number} indent Indentation level of the HTML (defaults to 0)
    * @returns {string} Returns a string of valid HTML of the current state of the element
    */
   const generateHTML = (nodes: TreeNode[] = tree, indent: number = 0): string => {
-    const spaces = ' '.repeat(indent);
-
     return nodes.reduce((acc, node) => {
       const { element, children } = node;
       const attributeProperties = getAttributeConditions(element);
       const selfClosingElements = ['input', 'textarea'];
       const isSelfClosing = selfClosingElements.includes(element.element);
+      const spaces = ' '.repeat(indent);
 
       const attributes = attributeProperties
         .map(attribute => {
@@ -364,36 +363,31 @@ function ElementDesigner() {
 
   /**
    * Get a string of valid CSS of the current state of the element
+   * @param {TreeNode[]} nodes Nodes to generate CSS for (defaults to the tree)
    * @returns {string} Returns a string of valid CSS of the current state of the element
    */
-  const generateCSS = (): string => {
-    let css = '';
-
-    const getStylingForNode = (nodes: TreeNode[]): void => {
-      nodes.forEach(node => {
-        const { element, children } = node;
+  const generateCSS = (nodes: TreeNode[] = tree): string => {
+    return nodes.reduce((css, node) => {
+      const { element, children } = node;
+      const propertyConditions = getStylingConditions(element);
   
-        css += `#${element.id} {\n`;
+      css += `#${element.id} {\n`;
+    
+      propertyConditions.forEach(propetyCondition => {
+        const { property, condition, value } = propetyCondition;
   
-        const propertyConditions = getStylingConditions(node.element);
-
-        propertyConditions.forEach(condition => {
-          const { property, condition: propertyCondition, value: style } = condition;
+        if (condition)
+          css += `  ${toKebabCase(property)}: ${value};\n`;
+      });
   
-          if (propertyCondition)
-            css += `  ${toKebabCase(property)}: ${style};\n`;
-        });
+      css += `}\n\n`;
   
-        css += `}\n\n`;
+      if (children)
+        css += generateCSS(children);
   
-        if (children)
-          getStylingForNode(children);
-      }
-    )};
-  
-    getStylingForNode(tree);
-    return css;
-  }
+      return css;
+    }, '');
+  };
 
   return (
     <div id="element-designer">

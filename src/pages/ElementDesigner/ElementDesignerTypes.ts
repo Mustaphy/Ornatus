@@ -135,7 +135,7 @@ type BackgroundLinearGradient = {
 };
 
 export type ConditionalValue = {
-  property: keyof Element | 'checked';
-  condition: boolean;
+  property: string;
   value: string | boolean;
+  condition: boolean;
 };
