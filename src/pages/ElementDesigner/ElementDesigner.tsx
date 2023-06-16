@@ -409,7 +409,7 @@ function ElementDesigner() {
 
       <div id="element-hierarchy">
         <TreeView
-          data={tree}
+          tree={tree}
           onChange={(tree: TreeNode[]) => setTree(tree)}
           toast={toast}
           selectedElementId={currentElementId}

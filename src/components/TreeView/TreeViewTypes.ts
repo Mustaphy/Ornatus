@@ -8,7 +8,7 @@ export type TreeNode = {
 }
 
 export type TreeViewProps = {
-  data: TreeNode[];
+  tree: TreeNode[];
   selectedElementId: string;
   toast: typeof toast,
   onChange: (tree: TreeNode[]) => void;

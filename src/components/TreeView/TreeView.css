@@ -1,3 +1,4 @@
+/* Tree View */
 .tree-view {
   position: relative;
   font-family: monospace;
@@ -24,7 +25,7 @@
 }
 
 .tree-view li span {
-  cursor: pointer;
+  cursor: grab;
   color: #CBE4DE;
 }
 
@@ -36,6 +37,7 @@
   background: linear-gradient(#006666, #000000) fixed;
 }
 
+/* Delete Zone */
 #delete-zone {
   position: absolute;
   top: 0;

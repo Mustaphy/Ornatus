@@ -1,24 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './TreeView.css';
 import { TreeNode, TreeViewProps } from './TreeViewTypes';
 import { BsFillTrash3Fill } from 'react-icons/all';
 
-function TreeView({ data, selectedElementId, toast, onChange }: TreeViewProps) {
-  const [tree, setTree] = useState<TreeNode[]>(data);
+function TreeView({ tree, selectedElementId, toast, onChange }: TreeViewProps) {
   const [draggingNodeId, setDraggingNodeId] = useState<string | null>(null);
-  const [dragOverNodeId, setDragOverNodeId] = useState<string | null>(null);
-
-  // Whenever the data prop changes, update the treeData state
-  useEffect(() => {
-    setTree(data);
-  }, [data]);
+  const [targetNodeId, setTargetNodeId] = useState<string | null>(null);
 
   /**
    * Handles the drag end event
    */
   const handleDragEnd = () => {
     setDraggingNodeId(null);
-    setDragOverNodeId(null);
+    setTargetNodeId(null);
   }
 
   /**
@@ -28,7 +22,7 @@ function TreeView({ data, selectedElementId, toast, onChange }: TreeViewProps) {
    */
   const handleDragOver = (event: React.DragEvent, nodeId: string) => {
     event.preventDefault();
-    setDragOverNodeId(nodeId);
+    setTargetNodeId(nodeId);
   };
 
   /**
@@ -36,44 +30,54 @@ function TreeView({ data, selectedElementId, toast, onChange }: TreeViewProps) {
    * @param {string} parentId The id of the node that is being dragged over
    */
   const handleDrop = (parentId: string) => {
-    if (!draggingNodeId) return;
+    if (!draggingNodeId)
+      return;
 
-    if (parentId === 'delete-zone') {
-      const updatedTree = removeNode(tree, draggingNodeId);
-
-      if (draggingNodeId === selectedElementId)
-        updatedTree[0].onClick();
-
-      setTree(updatedTree);
-      onChange(updatedTree);
-
-      toast.success(`Element has been successfully deleted`, {
-        position: 'bottom-right',
-        autoClose: 2000
-      });
-    } else {
-      const draggedNode = findNode(tree, draggingNodeId);
-      const parentNode = findNode(tree, parentId);
-
-      if (draggedNode && parentNode && isParentValidForChildren(parentNode)) {
-        const isDescendant = isNodeDescendant(draggedNode, parentId);
-
-        if (!isDescendant) {
-          const updatedTree = removeNode(tree, draggingNodeId);
-          const newTree = insertNode(updatedTree, draggedNode, parentId);
-          setTree(newTree);
-          onChange(newTree);
-        }
-      } else {
-        toast.error(`<${parentNode?.element.selector}> can't have child elements`, {
-          position: 'bottom-right',
-        });
-      }
-    }
+    const draggedNode = findNode(tree, draggingNodeId);
+    const parentNode = findNode(tree, parentId);
 
     setDraggingNodeId(null);
-    setDragOverNodeId(null);
+    setTargetNodeId(null);
+
+    if (!draggedNode || !parentNode || !isParentValidForChildren(parentNode)) {
+      toast.error(`<${parentNode?.element.selector}> can't have child elements`, {
+        position: 'bottom-right',
+      });
+      return;
+    }
+
+    if (isNodeDescendant(draggedNode, parentId)) {
+      toast.error(`You can't make the parent element a child of its child`, {
+        position: 'bottom-right',
+      });
+      return;
+    }
+
+    const updatedTree = removeNode(tree, draggingNodeId);
+    const newTree = insertNode(updatedTree, draggedNode, parentId);
+
+    onChange(newTree);
   };
+
+  const onDeleteZoneDropped = () => {
+    if (!draggingNodeId)
+      return;
+
+    const updatedTree = removeNode(tree, draggingNodeId);
+
+    if (draggingNodeId === selectedElementId)
+      updatedTree[0].onClick();
+
+    onChange(updatedTree);
+
+    toast.success(`Element has been successfully deleted`, {
+      position: 'bottom-right',
+      autoClose: 2000
+    });
+
+    setDraggingNodeId(null);
+    setTargetNodeId(null);
+  }
 
   /**
    * Get the node with the given id from the tree, undefined if not found
@@ -82,18 +86,19 @@ function TreeView({ data, selectedElementId, toast, onChange }: TreeViewProps) {
    * @returns {TreeNode | undefined} The node if found, undefined otherwise
    */
   const findNode = (tree: TreeNode[], nodeId: string): TreeNode | undefined => {
-    for (const node of tree) {
-      if (node.element.uuid === nodeId) {
-        return node;
+    const node = tree.find((node) => node.element.uuid === nodeId);
+
+    if (node)
+      return node;
+
+    const childNodes = tree.reduce<TreeNode[]>((acc, parentNode) => {
+      if (parentNode.children) {
+        return acc.concat(parentNode.children);
       }
-      if (node.children) {
-        const foundNode = findNode(node.children, nodeId);
-        if (foundNode) {
-          return foundNode;
-        }
-      }
-    }
-    return undefined;
+      return acc;
+    }, []);
+
+    return childNodes.length ? findNode(childNodes, nodeId) : undefined;
   };
 
   /**
@@ -103,17 +108,10 @@ function TreeView({ data, selectedElementId, toast, onChange }: TreeViewProps) {
    * @returns {boolean}
    */
   const isNodeDescendant = (node: TreeNode, targetId: string): boolean => {
-    if (node.element.uuid === targetId) {
+    if (node.element.uuid === targetId)
       return true;
-    }
-    if (node.children) {
-      for (const childNode of node.children) {
-        if (isNodeDescendant(childNode, targetId)) {
-          return true;
-        }
-      }
-    }
-    return false;
+
+    return node.children?.some((childNode) => isNodeDescendant(childNode, targetId)) ?? false;
   };
 
   /**
@@ -132,6 +130,7 @@ function TreeView({ data, selectedElementId, toast, onChange }: TreeViewProps) {
           children: removeNode(node.children, nodeId),
         };
       }
+
       return node;
     });
   };
@@ -151,12 +150,14 @@ function TreeView({ data, selectedElementId, toast, onChange }: TreeViewProps) {
           children: node.children ? [...node.children, nodeToInsert] : [nodeToInsert],
         };
       }
+
       if (node.children) {
         return {
           ...node,
           children: insertNode(node.children, nodeToInsert, parentId),
         };
       }
+
       return node;
     });
   };
@@ -195,9 +196,8 @@ function TreeView({ data, selectedElementId, toast, onChange }: TreeViewProps) {
    * @returns {Element[] | null} The tree as a list of JSX elements
    */
   const renderTreeNodes = (tree: TreeNode[], indentLevel = 0): JSX.Element[] | null => {
-    if (!tree) {
+    if (!tree)
       return null;
-    }
 
     return tree.map((node) => (
       <React.Fragment key={node.element.uuid}>
@@ -206,11 +206,11 @@ function TreeView({ data, selectedElementId, toast, onChange }: TreeViewProps) {
           onDragStart={() => setDraggingNodeId(node.element.uuid)}
           onDragEnd={() => handleDragEnd()}
           onDragOver={(event) => handleDragOver(event, node.element.uuid)}
-          onDragLeave={() => setDragOverNodeId(null)}
+          onDragLeave={() => setTargetNodeId(null)}
           onDrop={() => handleDrop(node.element.uuid)}
           onClick={node.onClick}
           className={`
-            ${dragOverNodeId === node.element.uuid ? 'drag-over' : ''}
+            ${targetNodeId === node.element.uuid ? 'drag-over' : ''}
             ${selectedElementId === node.element.uuid ? 'selected' : ''}
           `}
           style={{ marginLeft: `${indentLevel * 20}px` }}
@@ -231,8 +231,8 @@ function TreeView({ data, selectedElementId, toast, onChange }: TreeViewProps) {
         showDeleteZone() &&
           <div
             id="delete-zone"
-            onDragOver={(event) => handleDragOver(event, 'delete-zone')}
-            onDrop={() => handleDrop('delete-zone')}
+            onDragOver={(event) => event.preventDefault()}
+            onDrop={() => onDeleteZoneDropped()}
           >
             <BsFillTrash3Fill />
           </div>
