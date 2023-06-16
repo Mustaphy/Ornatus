@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './TreeView.css';
 import { TreeNode, TreeViewProps } from './TreeViewTypes';
 
-function TreeView({ data, selectedElementId, onChange }: TreeViewProps) {
+function TreeView({ data, selectedElementId, toast, onChange }: TreeViewProps) {
   const [tree, setTree] = useState<TreeNode[]>(data);
   const [dragOverNodeId, setDragOverNodeId] = useState<string | null>(null);
 
@@ -13,7 +13,7 @@ function TreeView({ data, selectedElementId, onChange }: TreeViewProps) {
 
   /**
    * Handles the drag start event
-   * @param {React.DragEvent<HTMLLIElement>} event Event that is triggered when the user starts dragging an element
+   * @param {DragEvent<HTMLLIElement>} event Event that is triggered when the user starts dragging an element
    * @param {string} nodeId The id of the node that is being dragged
    */
   const handleDragStart = (event: React.DragEvent<HTMLLIElement>, nodeId: string) => {
@@ -22,7 +22,7 @@ function TreeView({ data, selectedElementId, onChange }: TreeViewProps) {
 
     /**
    * Handles the event that occurs when the user drags an element over another element
-   * @param {React.DragEvent<HTMLLIElement>} event Event that is triggered when the the user drags an element over another element
+   * @param {DragEvent<HTMLLIElement>} event Event that is triggered when the user drags an element over another element
    * @param {string} nodeId The id of the node that is being dragged
    */
   const handleDragOver = (event: React.DragEvent<HTMLLIElement>, nodeId: string) => {
@@ -39,14 +39,15 @@ function TreeView({ data, selectedElementId, onChange }: TreeViewProps) {
 
   /**
    * Handles the event that occurs when the user drops an element
-   * @param {React.DragEvent<HTMLLIElement>} event Event that is triggered when the user drops an element
+   * @param {DragEvent<HTMLLIElement>} event Event that is triggered when the user drops an element
    * @param {string} parentId The id of the node that is being dragged over
    */
   const handleDrop = (event: React.DragEvent<HTMLLIElement>, parentId: string) => {
     const nodeId = event.dataTransfer.getData('text/plain');
     const draggedNode = findNode(tree, nodeId);
+    const parentNode = findNode(tree, parentId);
 
-    if (draggedNode && isParentValidForChildren(findNode(tree, parentId)!)) {
+    if (draggedNode && parentNode && isParentValidForChildren(parentNode)) {
       const isDescendant = isNodeDescendant(draggedNode, parentId);
 
       if (!isDescendant) {
@@ -55,6 +56,10 @@ function TreeView({ data, selectedElementId, onChange }: TreeViewProps) {
         setTree(newTree);
         onChange(newTree);
       }
+    } else {
+      toast.error(`<${parentNode?.element.element}> can't have child elements`, {
+        position: 'bottom-right'
+      });
     }
 
     setDragOverNodeId(null);
@@ -163,9 +168,9 @@ function TreeView({ data, selectedElementId, onChange }: TreeViewProps) {
    * Render the tree as a list of JSX elements
    * @param {TreeNode[]} tree Tree to render
    * @param {number} indentLevel Indent level of the current node
-   * @returns {JSX.Element[] | null} The tree as a list of JSX elements
+   * @returns {Element[] | null} The tree as a list of JSX elements
    */
-  const renderTreeNodes = (tree: TreeNode[], indentLevel: number = 0): JSX.Element[] | null => {
+  const renderTreeNodes = (tree: TreeNode[], indentLevel = 0): JSX.Element[] | null => {
     if (!tree) {
       return null;
     }
@@ -173,7 +178,7 @@ function TreeView({ data, selectedElementId, onChange }: TreeViewProps) {
     return tree.map(node => (
       <React.Fragment key={node.element.uuid}>
         <li
-          draggable
+          draggable="true"
           onDragStart={(event) => handleDragStart(event, node.element.uuid)}
           onDragOver={(event) => handleDragOver(event, node.element.uuid)}
           onDragLeave={handleDragLeave}
@@ -199,10 +204,10 @@ function TreeView({ data, selectedElementId, onChange }: TreeViewProps) {
   };
 
   return (
-    <ul className="treeview">
+    <ul className="tree-view">
       {renderTreeNodes(tree)}
     </ul>
   );
-};
+}
 
 export default TreeView;

@@ -23,6 +23,8 @@ import TreeView from '../../components/TreeView/TreeView';
 import ElementPreview from '../../components/ElementPreview.tsx/ElementPreview';
 import { TreeNode } from '../../components/TreeView/TreeViewTypes';
 import { defaultElement } from './ElementDesignerData';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function ElementDesigner() {
   const initialElement: Element = defaultElement;
@@ -129,27 +131,26 @@ function ElementDesigner() {
     ]
   }
 
-
   /**
    * Get the current element
    * @param {TreeNode[]} nodes Nodes to search for the current element
    * @returns {Element | undefined} The current element, or undefined if not found
    */
-  const getCurrentElement = (nodes: TreeNode[] = tree): Element | undefined => {
-    return nodes.reduce((element: Element | undefined, node) => {
+  const getCurrentNode = (nodes: TreeNode[] = tree): TreeNode | undefined => {
+    return nodes.reduce((element: TreeNode | undefined, node) => {
       if (element)
         return element;
   
       if (node.element.uuid === currentElementId)
-        return node.element;
+        return node;
   
       if (node.children)
-        return getCurrentElement(node.children);
+        return getCurrentNode(node.children);
   
       return undefined;
     }, undefined);
   };
-  const currentElement = getCurrentElement()!;
+  const currentElement = getCurrentNode()!.element;
 
   /**
    * Update a property of the current element
@@ -194,6 +195,11 @@ function ElementDesigner() {
   const addElement = (element: Element): void => {
     setTree([...tree, { element: { ...element }, onClick: () => setCurrentElementId(element.uuid) } ]);
     setCurrentElementId(element.uuid);
+
+    toast.success('Element has been created!', {
+      position: 'bottom-right',
+      autoClose: 2000
+    })
   }
 
   /**
@@ -402,7 +408,12 @@ function ElementDesigner() {
       </div>
 
       <div id="element-hierarchy">
-        <TreeView data={tree} onChange={(tree: TreeNode[]) => setTree(tree)} selectedElementId={currentElementId} />
+        <TreeView
+          data={tree}
+          onChange={(tree: TreeNode[]) => setTree(tree)}
+          toast={toast}
+          selectedElementId={currentElementId}
+        />
 
         <div
           id="add-element-container"
@@ -423,7 +434,20 @@ function ElementDesigner() {
             id="element"
             value={currentElement.element}
             options={elementSelectors.slice()}
-            onChange={(event) => updateProperty('element', event.target.value as ElementSelector)}
+            onChange={(event) => {
+              const selector = event.target.value as ElementSelector;
+              const selfClosingElements = ['input', 'textarea'];
+              const currentNode = getCurrentNode();
+
+              if (selfClosingElements.includes(selector) && (currentNode?.children?.length ?? 0)) {
+                toast.error(`You can't change this element to a <${selector}>, since it can't have child elements`, {
+                  position: 'bottom-right' }
+                );
+                return;
+              }
+
+              updateProperty('element', selector);
+            }}
           />
         </div>
 
@@ -681,6 +705,8 @@ function ElementDesigner() {
           <MdContentCopy className="copy-button" onClick={() => navigator.clipboard.writeText(generateCSS())} />
         </pre>
       </div>
+
+      <ToastContainer />
     </div>
   )
 }

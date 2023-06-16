@@ -1,4 +1,4 @@
-.treeview {
+.tree-view {
   font-family: monospace;
   background: #000000;
   color: #ffffff;
@@ -8,7 +8,7 @@
   box-shadow: 1px 1px 2px #0E8388;
 }
 
-.treeview li {
+.tree-view li {
   position: relative;
   background: linear-gradient(#006666, #0E8388);
   border-radius: 4px;
@@ -17,20 +17,20 @@
   width: fit-content;
 }
 
-.treeview li:hover {
+.tree-view li:hover {
   transition: 0.2s filter;
   filter: brightness(1.2);
 }
 
-.treeview li span {
+.tree-view li span {
   cursor: pointer;
   color: #CBE4DE;
 }
 
-.treeview li.drag-over {
+.tree-view li.drag-over {
   border-bottom: 2px dashed #CBE4DE;
 }
 
-.treeview li.selected {
+.tree-view li.selected {
   background: linear-gradient(#006666, #000000) fixed;
 }

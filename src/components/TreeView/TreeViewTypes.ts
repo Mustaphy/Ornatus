@@ -1,4 +1,5 @@
 import { Element } from "../../pages/ElementDesigner/ElementDesignerTypes";
+import { toast } from 'react-toastify';
 
 export type TreeNode = {
   element: Element;
@@ -9,5 +10,6 @@ export type TreeNode = {
 export type TreeViewProps = {
   data: TreeNode[];
   selectedElementId: string;
+  toast: typeof toast,
   onChange: (tree: TreeNode[]) => void;
 }
