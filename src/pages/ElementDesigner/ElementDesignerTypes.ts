@@ -3,7 +3,7 @@ import { Unit } from "../../components/UnitSelect/UnitSelectTypes";
 
 export type Element = {
   uuid: string,
-  element: ElementSelector,
+  selector: Selector,
   id: string,
   type: Type,
   value: Value
@@ -22,13 +22,13 @@ export type Element = {
 };
 
 /* Values that can be selected */
-export const elementSelectors = [
+export const selectors = [
   'a', 'abbr', 'address', 'article', 'aside', 'b', 'bdi', 'bdo', 'blockquote', 'button', 'cite', 'code', 'div', 'em',
   'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'i', 'input', 'ins', 'kbd', 'label', 'main', 'mark',  'nav',
   'output', 'p', 'pre', 'q', 's', 'samp', 'section', 'small', 'span', 'strong', 'sub', 'sup', 'textarea',  'time',  'u',
   'var'
 ] as const;
-export type ElementSelector = typeof elementSelectors[number];
+export type Selector = typeof selectors[number];
 
 export const backgroundProperties = [
   'color', 'linear-gradient'

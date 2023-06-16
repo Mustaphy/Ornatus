@@ -3,7 +3,7 @@ import { Element } from "./ElementDesignerTypes";
 
 export const defaultElement: Element = {
   uuid: generateUUID(),
-  element: 'div',
+  selector: 'div',
   id: generateId('element'),
   type: 'text',
   innerText: 'Design your own element!',

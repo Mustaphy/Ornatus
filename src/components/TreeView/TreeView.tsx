@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import './TreeView.css';
 import { TreeNode, TreeViewProps } from './TreeViewTypes';
+import { BsFillTrash3Fill } from 'react-icons/all';
 
 function TreeView({ data, selectedElementId, toast, onChange }: TreeViewProps) {
   const [tree, setTree] = useState<TreeNode[]>(data);
+  const [draggingNodeId, setDraggingNodeId] = useState<string | null>(null);
   const [dragOverNodeId, setDragOverNodeId] = useState<string | null>(null);
 
   // Whenever the data prop changes, update the treeData state
@@ -12,56 +14,64 @@ function TreeView({ data, selectedElementId, toast, onChange }: TreeViewProps) {
   }, [data]);
 
   /**
-   * Handles the drag start event
-   * @param {DragEvent<HTMLLIElement>} event Event that is triggered when the user starts dragging an element
-   * @param {string} nodeId The id of the node that is being dragged
+   * Handles the drag end event
    */
-  const handleDragStart = (event: React.DragEvent<HTMLLIElement>, nodeId: string) => {
-    event.dataTransfer.setData('text/plain', String(nodeId));
-  };
+  const handleDragEnd = () => {
+    setDraggingNodeId(null);
+    setDragOverNodeId(null);
+  }
 
-    /**
+  /**
    * Handles the event that occurs when the user drags an element over another element
-   * @param {DragEvent<HTMLLIElement>} event Event that is triggered when the user drags an element over another element
+   * @param {DragEvent} event Event that is triggered when the user drags an element over another element
    * @param {string} nodeId The id of the node that is being dragged
    */
-  const handleDragOver = (event: React.DragEvent<HTMLLIElement>, nodeId: string) => {
+  const handleDragOver = (event: React.DragEvent, nodeId: string) => {
     event.preventDefault();
     setDragOverNodeId(nodeId);
   };
 
   /**
-   * Handles the event that occurs when the user drags an element out of another element
-   */
-  const handleDragLeave = () => {
-    setDragOverNodeId(null);
-  };
-
-  /**
    * Handles the event that occurs when the user drops an element
-   * @param {DragEvent<HTMLLIElement>} event Event that is triggered when the user drops an element
    * @param {string} parentId The id of the node that is being dragged over
    */
-  const handleDrop = (event: React.DragEvent<HTMLLIElement>, parentId: string) => {
-    const nodeId = event.dataTransfer.getData('text/plain');
-    const draggedNode = findNode(tree, nodeId);
-    const parentNode = findNode(tree, parentId);
+  const handleDrop = (parentId: string) => {
+    if (!draggingNodeId) return;
 
-    if (draggedNode && parentNode && isParentValidForChildren(parentNode)) {
-      const isDescendant = isNodeDescendant(draggedNode, parentId);
+    if (parentId === 'delete-zone') {
+      const updatedTree = removeNode(tree, draggingNodeId);
 
-      if (!isDescendant) {
-        const updatedTree = removeNode(tree, nodeId);
-        const newTree = insertNode(updatedTree, draggedNode, parentId);
-        setTree(newTree);
-        onChange(newTree);
-      }
-    } else {
-      toast.error(`<${parentNode?.element.element}> can't have child elements`, {
-        position: 'bottom-right'
+      if (draggingNodeId === selectedElementId)
+        updatedTree[0].onClick();
+
+      setTree(updatedTree);
+      onChange(updatedTree);
+
+      toast.success(`Element has been successfully deleted`, {
+        position: 'bottom-right',
+        autoClose: 2000
       });
+    } else {
+      const draggedNode = findNode(tree, draggingNodeId);
+      const parentNode = findNode(tree, parentId);
+
+      if (draggedNode && parentNode && isParentValidForChildren(parentNode)) {
+        const isDescendant = isNodeDescendant(draggedNode, parentId);
+
+        if (!isDescendant) {
+          const updatedTree = removeNode(tree, draggingNodeId);
+          const newTree = insertNode(updatedTree, draggedNode, parentId);
+          setTree(newTree);
+          onChange(newTree);
+        }
+      } else {
+        toast.error(`<${parentNode?.element.selector}> can't have child elements`, {
+          position: 'bottom-right',
+        });
+      }
     }
 
+    setDraggingNodeId(null);
     setDragOverNodeId(null);
   };
 
@@ -90,7 +100,7 @@ function TreeView({ data, selectedElementId, toast, onChange }: TreeViewProps) {
    * Get whether the given node is a descendant of the node with the given id
    * @param {TreeNode} node Node to check
    * @param {string} targetId Id of the node to check if it is a descendant of the given node
-   * @returns 
+   * @returns {boolean}
    */
   const isNodeDescendant = (node: TreeNode, targetId: string): boolean => {
     if (node.element.uuid === targetId) {
@@ -113,9 +123,9 @@ function TreeView({ data, selectedElementId, toast, onChange }: TreeViewProps) {
    * @returns {TreeNode[]} The tree with the node with the given id removed
    */
   const removeNode = (tree: TreeNode[], nodeId: string): TreeNode[] => {
-    const updatedTree = tree.filter(node => node.element.uuid !== nodeId);
+    const updatedTree = tree.filter((node) => node.element.uuid !== nodeId);
 
-    return updatedTree.map(node => {
+    return updatedTree.map((node) => {
       if (node.children) {
         return {
           ...node,
@@ -131,10 +141,10 @@ function TreeView({ data, selectedElementId, toast, onChange }: TreeViewProps) {
    * @param {TreeNode[]} tree Tree to add the node to
    * @param {TreeNode} nodeToInsert Node to insert
    * @param {string} parentId Id of the parent node
-   * @returns 
+   * @returns {TreeNode[]}
    */
   const insertNode = (tree: TreeNode[], nodeToInsert: TreeNode, parentId: string): TreeNode[] => {
-    return tree.map(node => {
+    return tree.map((node) => {
       if (node.element.uuid === parentId) {
         return {
           ...node,
@@ -160,8 +170,22 @@ function TreeView({ data, selectedElementId, toast, onChange }: TreeViewProps) {
     const selfClosing = ['input', 'textarea'];
     const noChildren = ['button'];
 
-    return !selfClosing.includes(parentNode.element.element) &&
-           !noChildren.includes(parentNode.element.element);
+    return (
+      !selfClosing.includes(parentNode.element.selector) &&
+      !noChildren.includes(parentNode.element.selector)
+    );
+  };
+
+  /**
+   * Get whether the delete zone should be shown
+   * @returns {boolean} Whether the delete zone should be shown
+   */
+  const showDeleteZone = (): boolean => {
+    const isDragging = draggingNodeId !== null;
+    const moreNodesAvailable = tree.length > 1 || tree[0].children !== undefined;
+    const isLastAvailableNode = !(tree.length === 1 && draggingNodeId === tree[0].element.uuid)
+
+    return isDragging && moreNodesAvailable && isLastAvailableNode;
   }
 
   /**
@@ -175,30 +199,26 @@ function TreeView({ data, selectedElementId, toast, onChange }: TreeViewProps) {
       return null;
     }
 
-    return tree.map(node => (
+    return tree.map((node) => (
       <React.Fragment key={node.element.uuid}>
         <li
           draggable="true"
-          onDragStart={(event) => handleDragStart(event, node.element.uuid)}
+          onDragStart={() => setDraggingNodeId(node.element.uuid)}
+          onDragEnd={() => handleDragEnd()}
           onDragOver={(event) => handleDragOver(event, node.element.uuid)}
-          onDragLeave={handleDragLeave}
-          onDrop={(event) => handleDrop(event, node.element.uuid)}
-          className={
-            `${dragOverNodeId === node.element.uuid ? 'drag-over' : ''} ${selectedElementId === node.element.uuid ? 'selected' : ''}`
-          }
-          style={{ marginLeft: `${indentLevel * 20}px` }}
+          onDragLeave={() => setDragOverNodeId(null)}
+          onDrop={() => handleDrop(node.element.uuid)}
           onClick={node.onClick}
+          className={`
+            ${dragOverNodeId === node.element.uuid ? 'drag-over' : ''}
+            ${selectedElementId === node.element.uuid ? 'selected' : ''}
+          `}
+          style={{ marginLeft: `${indentLevel * 20}px` }}
         >
-          {node.children && (
-            <span />
-          )}
-          <span>{node.element.element}</span>
+          {node.children && <span />}
+          <span>{node.element.selector}</span>
         </li>
-        { node.children && (
-          <ul>
-            {renderTreeNodes(node.children, indentLevel + 1)}
-          </ul>
-        )}
+        {node.children && <ul>{renderTreeNodes(node.children, indentLevel + 1)}</ul>}
       </React.Fragment>
     ));
   };
@@ -206,6 +226,17 @@ function TreeView({ data, selectedElementId, toast, onChange }: TreeViewProps) {
   return (
     <ul className="tree-view">
       {renderTreeNodes(tree)}
+
+      {
+        showDeleteZone() &&
+          <div
+            id="delete-zone"
+            onDragOver={(event) => handleDragOver(event, 'delete-zone')}
+            onDrop={() => handleDrop('delete-zone')}
+          >
+            <BsFillTrash3Fill />
+          </div>
+      }
     </ul>
   );
 }

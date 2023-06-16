@@ -37,7 +37,7 @@ function ElementPreview({ tree: hierarchy, getPropertyConditions }: ElementPrevi
    * @returns {boolean} Returns true if the checkbox is checked, false otherwise
    */
   const isChecked = (element: Element): boolean => {
-    return element.element === 'input' && element.type === 'checkbox' && element.value.checkbox;
+    return element.selector === 'input' && element.type === 'checkbox' && element.value.checkbox;
   }
 
   /**
@@ -47,9 +47,9 @@ function ElementPreview({ tree: hierarchy, getPropertyConditions }: ElementPrevi
   const renderTreeNode = (node: TreeNode) => {
     const { element, children } = node;
     const elementStyles = getStyles(element);
-    const Element = element.element;
+    const Element = element.selector;
 
-    switch (element.element) {
+    switch (element.selector) {
       case 'input':
         return (
           <input

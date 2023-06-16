@@ -4,11 +4,11 @@ import {
   BackgroundProperty,
   BorderStyle,
   CursorKeyword,
-  ElementSelector,
+  Selector,
   backgroundProperties,
   borderStyles,
   cursorKeywords,
-  elementSelectors,
+  selectors,
   Element,
   ConditionalValue,
 } from './ElementDesignerTypes';
@@ -116,17 +116,17 @@ function ElementDesigner() {
       {
         property: 'type',
         value: element.type,
-        condition: element.element === 'input' || element.element === 'button'
+        condition: element.selector === 'input' || element.selector === 'button'
       },
       {
         property: 'value',
         value: getCurrentValue(element),
-        condition: (element.element === 'input' && element.type !== 'checkbox') || element.element === 'textarea'
+        condition: (element.selector === 'input' && element.type !== 'checkbox') || element.selector === 'textarea'
       },
       {
         property: 'checked',
         value: isChecked(element),
-        condition: element.element === 'input'
+        condition: element.selector === 'input'
       }
     ]
   }
@@ -268,7 +268,7 @@ function ElementDesigner() {
   const getTypeOptions = (element: Element): Type[] => {
     const typeOptions = types.slice();
 
-    switch (element.element) {
+    switch (element.selector) {
       case 'button':
         return typeOptions.filter(type => type === 'button' || type === 'reset' || type === 'submit');
       case 'input':
@@ -284,7 +284,7 @@ function ElementDesigner() {
    * @returns {boolean} Returns if the type option is visible for the user
    */
   const isTypeVisible = (element: Element): boolean => {
-    return element.element == 'input' || element.element  == 'button';
+    return element.selector == 'input' || element.selector  == 'button';
   }
 
   /**
@@ -293,7 +293,7 @@ function ElementDesigner() {
    * @returns {boolean} Returns if the 'innerText' option is visible for the user
    */
   const isInnerTextVisible = (element: Element): boolean => {
-    return element.element  !== 'input' && element.element  !== 'textarea';
+    return element.selector  !== 'input' && element.selector  !== 'textarea';
   }
 
   /**
@@ -302,7 +302,7 @@ function ElementDesigner() {
    * @returns {boolean} Returns if the 'value' option is visible for the user
    */
   const isValueVisible = (element: Element): boolean => {
-    return element.element  === 'input' || element.element  === 'textarea';
+    return element.selector  === 'input' || element.selector  === 'textarea';
   }
 
   /**
@@ -311,7 +311,7 @@ function ElementDesigner() {
    * @returns {boolean} Returns true if the checkbox is checked, false otherwise
    */
   const isChecked = (element: Element): boolean => {
-    return element.element === 'input' && element.type === 'checkbox' && element.value.checkbox;
+    return element.selector === 'input' && element.type === 'checkbox' && element.value.checkbox;
   }
 
   /**
@@ -320,7 +320,7 @@ function ElementDesigner() {
    * @returns {boolean} Returns if the current state of the element has text on it
    */
   const currentSelectionHasText = (element: Element): boolean => {
-    return element.element  !== 'input' || (element.type !== 'color' && element.type !== 'checkbox');
+    return element.selector  !== 'input' || (element.type !== 'color' && element.type !== 'checkbox');
   }
 
   /**
@@ -334,7 +334,7 @@ function ElementDesigner() {
       const { element, children } = node;
       const attributeProperties = getAttributeConditions(element);
       const selfClosingElements = ['input', 'textarea'];
-      const isSelfClosing = selfClosingElements.includes(element.element);
+      const isSelfClosing = selfClosingElements.includes(element.selector);
       const spaces = ' '.repeat(indent);
 
       const attributes = attributeProperties
@@ -358,16 +358,16 @@ function ElementDesigner() {
 
       // Self-closing elements cannot have children or innerText
       if (attributeProperties.length > 0 && isSelfClosing)
-        return `${acc}${spaces}<${element.element} ${attributesString} />\n`;
+        return `${acc}${spaces}<${element.selector} ${attributesString} />\n`;
 
-      let result = `${spaces}<${element.element} ${attributesString}>\n`;
+      let result = `${spaces}<${element.selector} ${attributesString}>\n`;
 
       if (element.innerText)
         result += `${spaces}  ${element.innerText}\n`;
       if (children)
         result += generateHTML(children, indent + 2);
 
-      result += `${spaces}</${element.element}>\n`;
+      result += `${spaces}</${element.selector}>\n`;
 
       return `${acc}${result}`;
     }, '');
@@ -429,13 +429,13 @@ function ElementDesigner() {
         <hr />
 
         <div>
-          <label htmlFor="element" className="option-name">element</label>
+          <label htmlFor="element" className="option-name">selector</label>
           <Select
-            id="element"
-            value={currentElement.element}
-            options={elementSelectors.slice()}
+            id="selector"
+            value={currentElement.selector}
+            options={selectors.slice()}
             onChange={(event) => {
-              const selector = event.target.value as ElementSelector;
+              const selector = event.target.value as Selector;
               const selfClosingElements = ['input', 'textarea'];
               const currentNode = getCurrentNode();
 
@@ -446,7 +446,7 @@ function ElementDesigner() {
                 return;
               }
 
-              updateProperty('element', selector);
+              updateProperty('selector', selector);
             }}
           />
         </div>
@@ -493,8 +493,8 @@ function ElementDesigner() {
               <label htmlFor="value" className="option-name">value</label>
               <Input
                 id="value"
-                type={currentElement.element === 'input' ? getTypeForUserInput(currentElement) : 'text'}
-                value={currentElement.element === 'input' ? getCurrentValue(currentElement) : currentElement.value.text}
+                type={currentElement.selector === 'input' ? getTypeForUserInput(currentElement) : 'text'}
+                value={currentElement.selector === 'input' ? getCurrentValue(currentElement) : currentElement.value.text}
                 checked={isChecked(currentElement)}
                 onChange={(event) => {
                   const value = currentElement.type === 'checkbox' ? event.target.checked : event.target.value;

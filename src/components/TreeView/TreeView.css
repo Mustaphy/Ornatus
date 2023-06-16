@@ -1,4 +1,5 @@
 .tree-view {
+  position: relative;
   font-family: monospace;
   background: #000000;
   color: #ffffff;
@@ -33,4 +34,18 @@
 
 .tree-view li.selected {
   background: linear-gradient(#006666, #000000) fixed;
+}
+
+#delete-zone {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #c91f1f;
+  border-radius: 4px;
+  padding: 8px;
+  transition: 0.2s filter;
+}
+
+#delete-zone:hover {
+  filter: brightness(1.2);
 }
