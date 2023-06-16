@@ -1,9 +1,9 @@
 import { generateId, generateUUID } from "../../utilities";
 import { Element } from "./ElementDesignerTypes";
 
-export const buttonElement: Element = {
+export const defaultElement: Element = {
   uuid: generateUUID(),
-  element: 'button',
+  element: 'div',
   id: generateId('element'),
   type: 'text',
   innerText: 'Design your own element!',

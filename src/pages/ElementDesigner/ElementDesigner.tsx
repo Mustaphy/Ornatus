@@ -16,21 +16,21 @@ import Input from '../../components/Input/Input'
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
 import Select from "../../components/Select/Select";
 import { MdContentCopy, MdAddCircle } from "react-icons/all";
-import { generateId, generateUUID, toCamelCase } from '../../utilities';
+import { deepCopy, generateId, generateUUID, toCamelCase } from '../../utilities';
 import { Type as Type, types } from '../../components/Input/InputTypes';
 import { Unit } from '../../components/UnitSelect/UnitSelectTypes';
 import TreeView from '../../components/TreeView/TreeView';
 import ElementPreview from '../../components/ElementPreview.tsx/ElementPreview';
 import { TreeNode } from '../../components/TreeView/TreeViewTypes';
-import { buttonElement } from './ElementDesignerData';
+import { defaultElement } from './ElementDesignerData';
 
 function ElementDesigner() {
-  const initialElement: Element = buttonElement;
+  const initialElement: Element = defaultElement;
   const [currentElementId, setCurrentElementId] = useState(initialElement.uuid);
   const [tree, setTree] = useState<TreeNode[]>([
     {
       element: initialElement,
-      onClick: () => setCurrentElementId(initialElement.uuid!),
+      onClick: () => setCurrentElementId(initialElement.uuid),
     }
   ]);
 
@@ -102,7 +102,7 @@ function ElementDesigner() {
   /**
    * Get the conditions when an attribute should be used for an element, and what the value should be
    * @param {Element} element Element to get its attribute conditions
-   * @returns {AttributeCondition[]} conditions when an attribute should be used for an element, and what the value should be
+   * @returns {ConditionalValue[]} conditions when an attribute should be used for an element, and what the value should be
    */
   const getAttributeConditions = (element: Element): ConditionalValue[] => {
     return [
@@ -156,33 +156,33 @@ function ElementDesigner() {
    * @param {keyof Element} property Property to update
    * @param {any} value Value to update the property to
    */
-  const updateProperty = (property: keyof Element, value: any): void => {
+  const updateProperty = (property: keyof Element, value: unknown): void => {
     setTree(prevHierarchy => {
-      const updatePropertyRecursively: any = (nodes: any): void => {
-        return nodes.map((node: any) => {
+      const updatePropertyRecursively = (nodes: TreeNode[]): TreeNode[] => {
+        return nodes.map(node => {
           if (node.element.uuid === currentElementId) {
-            const updatedElement = {
+            const updatedElement: Element = {
               ...node.element,
               [property]: value
             };
-  
+
             return {
               ...node,
               element: updatedElement
             };
           }
-  
+
           if (node.children) {
             return {
               ...node,
               children: updatePropertyRecursively(node.children)
             };
           }
-  
+
           return node;
         });
       };
-  
+
       return updatePropertyRecursively(prevHierarchy);
     });
   };
@@ -192,14 +192,14 @@ function ElementDesigner() {
    * @param {Element} element Element to add to the nodes
    */
   const addElement = (element: Element): void => {
-    setTree([...tree, { element: { ...element }, onClick: () => setCurrentElementId(element.uuid!) } ]);
-    setCurrentElementId(element.uuid!);
+    setTree([...tree, { element: { ...element }, onClick: () => setCurrentElementId(element.uuid) } ]);
+    setCurrentElementId(element.uuid);
   }
 
   /**
    * Change the linear-gradient background when the selected colors are changed
    * @param {ChangeEvent<HTMLInputElement>} event Event that fires when the selected colors are changed
-   * @param {number} index The index of the color that is changed, since the linear-gradient consists of mulitple colors
+   * @param {number} index The index of the color that is changed, since the linear-gradient consists of multiple colors
    */
   const handleLinearGradientBackgroundChanged = (event: ChangeEvent<HTMLInputElement>, index: number): void => {
     const colors = currentElement.background.linearGradient.colors;
@@ -323,7 +323,7 @@ function ElementDesigner() {
    * @param {number} indent Indentation level of the HTML (defaults to 0)
    * @returns {string} Returns a string of valid HTML of the current state of the element
    */
-  const generateHTML = (nodes: TreeNode[] = tree, indent: number = 0): string => {
+  const generateHTML = (nodes: TreeNode[] = tree, indent = 0): string => {
     return nodes.reduce((acc, node) => {
       const { element, children } = node;
       const attributeProperties = getAttributeConditions(element);
@@ -343,14 +343,14 @@ function ElementDesigner() {
         })
         .filter(attribute => attribute !== '');
 
-      let attributesString = '';
+      let attributesString: string;
 
-      // If there is only one attribute, we can put it on the same line. Otherwise we put all of them below each other
+      // If there is only one attribute, we can put it on the same line. Otherwise, we put all of them below each other
       attributes.length === 1
         ? attributesString = `${attributes[0]}`
         : attributesString = `\n${spaces}  ${attributes.join(`\n${spaces}  `)}\n${spaces}`
 
-      // Self closing elements cannot have children or innerText
+      // Self-closing elements cannot have children or innerText
       if (attributeProperties.length > 0 && isSelfClosing)
         return `${acc}${spaces}<${element.element} ${attributesString} />\n`;
 
@@ -379,8 +379,8 @@ function ElementDesigner() {
   
       css += `#${element.id} {\n`;
     
-      propertyConditions.forEach(propetyCondition => {
-        const { property, condition, value } = propetyCondition;
+      propertyConditions.forEach(propertyCondition => {
+        const { property, condition, value } = propertyCondition;
   
         if (condition)
           css += `  ${property}: ${value};\n`;
@@ -406,7 +406,7 @@ function ElementDesigner() {
 
         <div
           id="add-element-container"
-          onClick={() => addElement({ ...initialElement, uuid: generateUUID(), id: generateId('element') }) }
+          onClick={() => addElement({ ...deepCopy(defaultElement), uuid: generateUUID(), id: generateId('element') }) }
         >
           <MdAddCircle />
           <p>Add a new element</p>

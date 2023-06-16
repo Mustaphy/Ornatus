@@ -2,8 +2,8 @@ export const toCamelCase = (text: string): string => {
   return text.replace(/[-_]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ''));
 }
 
-export const toKebabCase = (text: string): string => {
-  return text.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+export function deepCopy<T>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj)) as unknown as T;
 }
 
 export const generateUUID = (): string => {
