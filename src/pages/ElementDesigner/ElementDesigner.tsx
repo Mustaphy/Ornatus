@@ -11,13 +11,14 @@ import {
   selectors,
   Element,
   ConditionalValue,
+  textAlignKeywords,
 } from './ElementDesignerTypes';
 import Input from '../../components/Input/Input'
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
 import Select from "../../components/Select/Select";
 import { MdContentCopy, MdAddCircle } from "react-icons/all";
 import { deepCopy, generateId, generateUUID, toCamelCase } from '../../utilities';
-import { Type as Type, types } from '../../components/Input/InputTypes';
+import { Type, types } from '../../components/Input/InputTypes';
 import { Unit } from '../../components/UnitSelect/UnitSelectTypes';
 import TreeView from '../../components/TreeView/TreeView';
 import ElementPreview from '../../components/ElementPreview.tsx/ElementPreview';
@@ -72,6 +73,11 @@ function ElementDesigner() {
         property: 'font-weight',
         value: `${element.fontWeight.value}`,
         condition: element.fontWeight.active && currentSelectionHasText(element),
+      },
+      {
+        property: 'text-align',
+        value: `${element.textAlign.keyword}`,
+        condition: element.textAlign.active && currentSelectionHasText(element),
       },
       {
         property: 'border',
@@ -617,6 +623,21 @@ function ElementDesigner() {
                 step={100}
                 onChange={(event) => updateProperty('fontWeight', { ...currentElement.cursor, value: Number(event.target.value) } )}
                 />
+            </div>
+        }
+
+        {
+          currentSelectionHasText(currentElement) &&
+            <div className={!currentElement.textAlign.active ? 'hidden' : ''}>
+              <Input type="checkbox" checked={currentElement.textAlign.active} onChange={() => updateProperty('textAlign', { ...currentElement.textAlign, active: !currentElement.textAlign.active } )} />
+
+              <label htmlFor="cursor" className="option-name">text-align</label>
+              <Select
+                id="cursor"
+                value={currentElement.textAlign.keyword}
+                options={textAlignKeywords.slice()}
+                onChange={(event) => updateProperty('textAlign', { ...currentElement.textAlign, keyword: event.target.value } )}
+              />
             </div>
         }
 

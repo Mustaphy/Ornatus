@@ -14,6 +14,7 @@ export type Element = {
   color: Color,
   fontSize: FontSize,
   fontWeight: FontWeight,
+  textAlign: TextAlign,
   border: Border,
   borderRadius: BorderRadius,
   padding: Padding,
@@ -34,6 +35,11 @@ export const backgroundProperties = [
   'color', 'linear-gradient'
 ] as const;
 export type BackgroundProperty = typeof backgroundProperties[number];
+
+export const textAlignKeywords = [
+  'start', 'end', 'left', 'right', 'center', 'justify', 'justify-all', 'match-parent'
+] as const;
+export type TextAlignKeyword = typeof textAlignKeywords[number];
 
 export const borderStyles = [
   'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset'
@@ -94,6 +100,14 @@ export type FontSize = {
   unit: Unit
 } & Property;
 
+export type FontWeight = {
+  value: number,
+} & Property;
+
+export type TextAlign = {
+  keyword: TextAlignKeyword,
+} & Property;
+
 export type Border = {
   width: BorderWidth,
   style: BorderStyle,
@@ -121,10 +135,6 @@ export type Color = {
 
 export type Cursor = {
   keyword: CursorKeyword,
-} & Property;
-
-export type FontWeight = {
-  value: number,
 } & Property;
 
 type BorderWidth = {

@@ -56,6 +56,10 @@ export const defaultElement: Element = {
     value: 400,
     active: true,
   },
+  textAlign: {
+    keyword: 'left',
+    active: true,
+  },
   border: {
     width: { value: 1, unit: 'px' },
     style: 'solid',
