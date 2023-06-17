@@ -9,6 +9,7 @@ export type Element = {
   value: Value
   innerText: string,
   display: Display,
+  gridAutoFlow: GridAutoFlow,
   height: Height,
   width: Width,
   background: Background,
@@ -30,6 +31,11 @@ export const displayKeywords = [
   'block flow-root', 'table', 'table-row', 'table-cell', 'list-item'
 ] as const;
 export type DisplayKeyword = typeof displayKeywords[number];
+
+export const gridAutoFlowKeywords = [
+  'row', 'column', 'dense', 'row dense', 'column dense'
+] as const;
+export type GridAutoFlowKeyword = typeof gridAutoFlowKeywords[number];
 
 export const selectors = [
   'a', 'abbr', 'address', 'article', 'aside', 'b', 'bdi', 'bdo', 'blockquote', 'button', 'cite', 'code', 'div', 'em',
@@ -68,7 +74,12 @@ export type Property = {
 }
 
 export type Display = {
-  keyword: DisplayKeyword
+  keyword: DisplayKeyword,
+  active: false
+} & Property;
+
+export type GridAutoFlow = {
+  keyword: GridAutoFlowKeyword
 } & Property;
 
 export type Height = {

@@ -10,6 +10,7 @@ import {
   ConditionalValue,
   textAlignKeywords,
   displayKeywords,
+  gridAutoFlowKeywords,
 } from './ElementDesignerTypes';
 import Input from '../../components/Input/Input'
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
@@ -45,6 +46,11 @@ function ElementDesigner() {
         property: 'display',
         value: element.display.keyword,
         condition: element.display.active,
+      },
+      {
+        property: 'grid-auto-flow',
+        value: element.gridAutoFlow.keyword,
+        condition: element.gridAutoFlow.active && element.display.active && element.display.keyword.includes('grid')
       },
       {
         property: 'height',
@@ -286,6 +292,10 @@ function ElementDesigner() {
     }
   }
 
+  const isGridAutoFlowVisible = (element: Element): boolean => {
+    return element.display.keyword.includes('grid') && element.display.active;
+  }
+
   /**
    * Get if the 'type' option is visible for the user based on the selected element
    * @param {Element} element Element to get the type option visibility for
@@ -414,7 +424,7 @@ function ElementDesigner() {
       <div id="element-preview">
         <ElementPreview
           tree={tree}
-          getPropertyConditions={getStylingConditions}
+          getStylingConditions={getStylingConditions}
           getCurrentValue={getCurrentValue}
           isChecked={isChecked}
         />
@@ -534,6 +544,21 @@ function ElementDesigner() {
             onChange={(event) => updateProperty('display', { ...selectedElement.display, keyword: event.target.value } )}
           />
         </div>
+
+        {
+          isGridAutoFlowVisible(selectedElement) &&
+            <div className={!selectedElement.gridAutoFlow.active ? 'hidden' : ''}>
+              <Input type="checkbox" checked={selectedElement.gridAutoFlow.active} onChange={() => updateProperty('gridAutoFlow', { ...selectedElement.gridAutoFlow, active: !selectedElement.gridAutoFlow.active } )} />
+
+              <label htmlFor="gridAutoFlow" className="option-name">grid-auto-flow</label>
+              <Select
+                id="gridAutoFlow"
+                value={selectedElement.gridAutoFlow.keyword}
+                options={gridAutoFlowKeywords.slice()}
+                onChange={(event) => updateProperty('gridAutoFlow', { ...selectedElement.gridAutoFlow, keyword: event.target.value } )}
+              />
+            </div>
+        }
 
         <div className={!selectedElement.height.active ? 'hidden' : ''}>
           <Input type="checkbox" checked={selectedElement.height.active} onChange={() => updateProperty('height', { ...selectedElement.height, active: !selectedElement.height.active } )} />

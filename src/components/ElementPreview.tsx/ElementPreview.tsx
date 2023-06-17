@@ -3,20 +3,19 @@ import { toCamelCase } from '../../utilities';
 import { TreeNode } from '../TreeView/TreeViewTypes';
 import { ElementPreviewProps } from './ElementPreviewTypes';
 
-function ElementPreview({ tree, getPropertyConditions, getCurrentValue, isChecked }: ElementPreviewProps) {
+function ElementPreview({ tree, getStylingConditions, getCurrentValue, isChecked }: ElementPreviewProps) {
   /**
    * Get the styles for the element based on the property conditions
    * @param {Element} element The element to get the styles for
    * @returns {Record<string, string>} Returns the styles for the element
    */
   const getStyles = (element: Element): Record<string, string> => {
-    const propertyConditions = getPropertyConditions(element);
+    const propertyConditions = getStylingConditions(element);
     const styles: Record<string, string> = {};
 
     propertyConditions.forEach((condition: ConditionalValue) => {
-      if (condition.condition) {
+      if (condition.condition)
         styles[toCamelCase(condition.property)] = condition.value.toString();
-      }
     });
 
     return styles;
@@ -57,11 +56,11 @@ function ElementPreview({ tree, getPropertyConditions, getCurrentValue, isChecke
           <Element key={element.id} style={elementStyles}>
             {element.innerText}
             {
-              children && children?.length > 0 && (
-                <div>
+              children && children.length > 0 &&
+                <>
                   {children.map((childNode) => renderTreeNode(childNode))}
-                </div>
-            )}
+                </>
+            }
           </Element>
         );
     }

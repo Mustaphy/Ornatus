@@ -9,6 +9,10 @@ export const defaultElement: Element = {
   innerText: 'Design your own element!',
   display: {
     keyword: 'grid',
+    active: false
+  },
+  gridAutoFlow: {
+    keyword: 'row',
     active: false,
   },
   value: {
