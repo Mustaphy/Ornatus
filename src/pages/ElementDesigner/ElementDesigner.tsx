@@ -1,9 +1,6 @@
 import { ChangeEvent, useState } from 'react';
 import './ElementDesigner.css';
 import {
-  BackgroundProperty,
-  BorderStyle,
-  CursorKeyword,
   Selector,
   backgroundProperties,
   borderStyles,
@@ -12,6 +9,7 @@ import {
   Element,
   ConditionalValue,
   textAlignKeywords,
+  displayKeywords,
 } from './ElementDesignerTypes';
 import Input from '../../components/Input/Input'
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
@@ -19,7 +17,6 @@ import Select from "../../components/Select/Select";
 import { MdContentCopy, MdAddCircle } from "react-icons/all";
 import { deepCopy, generateId, generateUUID, toCamelCase } from '../../utilities';
 import { Type, types } from '../../components/Input/InputTypes';
-import { Unit } from '../../components/UnitSelect/UnitSelectTypes';
 import TreeView from '../../components/TreeView/TreeView';
 import ElementPreview from '../../components/ElementPreview.tsx/ElementPreview';
 import { TreeNode } from '../../components/TreeView/TreeViewTypes';
@@ -44,39 +41,44 @@ function ElementDesigner() {
    */
   const getStylingConditions = (element: Element): ConditionalValue[] => {
     return [
-       {
+      {
+        property: 'display',
+        value: element.display.keyword,
+        condition: element.display.active,
+      },
+      {
         property: 'height',
-        value: `${element.height.value + element.height.unit}`,
+        value: element.height.value + element.height.unit,
         condition: element.height.active,
       },
       {
         property: 'width',
-        value: `${element.width.value + element.width.unit}`,
+        value: element.width.value + element.width.unit,
         condition: element.width.active,
       },
       {
         property: 'background',
-        value: `${getBackgroundStyling(element)}`,
+        value: getBackgroundStyling(element),
         condition: element.background.active,
       },
       {
         property: 'color',
-        value: `${element.color.hex}`,
+        value: element.color.hex,
         condition: element.color.active && currentSelectionHasText(element),
       },
       {
         property: 'font-size',
-        value: `${element.fontSize.value + element.fontSize.unit}`,
+        value: element.fontSize.value + element.fontSize.unit,
         condition: element.fontSize.active && currentSelectionHasText(element),
       },
       {
         property: 'font-weight',
-        value: `${element.fontWeight.value}`,
+        value: element.fontWeight.value.toString(),
         condition: element.fontWeight.active && currentSelectionHasText(element),
       },
       {
         property: 'text-align',
-        value: `${element.textAlign.keyword}`,
+        value: element.textAlign.keyword,
         condition: element.textAlign.active && currentSelectionHasText(element),
       },
       {
@@ -86,22 +88,22 @@ function ElementDesigner() {
       },
       {
         property: 'border-radius',
-        value: `${element.borderRadius.value + element.borderRadius.unit}`,
+        value: element.borderRadius.value + element.borderRadius.unit,
         condition: element.borderRadius.active,
       },
       {
         property: 'margin',
-        value: `${element.margin.value + element.margin.unit}`,
+        value: element.margin.value + element.margin.unit,
         condition: element.margin.active,
       },
       {
         property: 'padding',
-        value: `${element.padding.value + element.padding.unit}`,
+        value: element.padding.value + element.padding.unit,
         condition: element.padding.active,
       },
       {
         property: 'cursor',
-        value: `${element.cursor.keyword}`,
+        value: element.cursor.keyword,
         condition: element.padding.active,
       },
     ];
@@ -480,7 +482,7 @@ function ElementDesigner() {
                 id="type"
                 value={selectedElement.type}
                 options={getTypeOptions(selectedElement)}
-                onChange={(event) => updateProperty('type', event.target.value as Type)}
+                onChange={(event) => updateProperty('type', event.target.value)}
                 />
             </div>
         }
@@ -521,6 +523,18 @@ function ElementDesigner() {
         <h2 className="section-title">Styling (CSS)</h2>
         <hr />
 
+        <div className={!selectedElement.display.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={selectedElement.display.active} onChange={() => updateProperty('display', { ...selectedElement.display, active: !selectedElement.display.active } )} />
+
+          <label htmlFor="display" className="option-name">display</label>
+          <Select
+            id="display"
+            value={selectedElement.display.keyword}
+            options={displayKeywords.slice()}
+            onChange={(event) => updateProperty('display', { ...selectedElement.display, keyword: event.target.value } )}
+          />
+        </div>
+
         <div className={!selectedElement.height.active ? 'hidden' : ''}>
           <Input type="checkbox" checked={selectedElement.height.active} onChange={() => updateProperty('height', { ...selectedElement.height, active: !selectedElement.height.active } )} />
           <label htmlFor="height" className="option-name">height</label>
@@ -529,7 +543,7 @@ function ElementDesigner() {
             value={selectedElement.height.value}
             unit={selectedElement.height.unit} 
             valueOnChange={(event) => updateProperty('height', { ...selectedElement.height, value: Number(event.target.value) })}
-            unitOnChange={(event) => updateProperty('height', { ...selectedElement.height, value: Number(event.target.value) })}
+            unitOnChange={(event) => updateProperty('height', { ...selectedElement.height, unit: event.target.value })}
           />
         </div>
 
@@ -542,7 +556,7 @@ function ElementDesigner() {
             value={selectedElement.width.value}
             unit={selectedElement.width.unit} 
             valueOnChange={(event) => updateProperty('width', { ...selectedElement.height, value: Number(event.target.value) })}
-            unitOnChange={(event) => updateProperty('width', { ...selectedElement.height, unit: event.target.value as Unit })}
+            unitOnChange={(event) => updateProperty('width', { ...selectedElement.height, unit: event.target.value })}
           />
         </div>
 
@@ -554,7 +568,7 @@ function ElementDesigner() {
             id="background-property"
             value={selectedElement.background.selected}
             options={backgroundProperties.slice()}
-            onChange={(event) => updateProperty('background', { ...selectedElement.background, selected: event.target.value as BackgroundProperty })}
+            onChange={(event) => updateProperty('background', { ...selectedElement.background, selected: event.target.value })}
           />
   
           {
@@ -608,7 +622,7 @@ function ElementDesigner() {
                 value={selectedElement.fontSize.value}
                 unit={selectedElement.fontSize.unit} 
                 valueOnChange={(event) => updateProperty('fontSize', { ...selectedElement.fontSize, value: Number(event.target.value) })}
-                unitOnChange={(event) => updateProperty('fontSize', { ...selectedElement.fontSize, unit: event.target.value as Unit })}
+                unitOnChange={(event) => updateProperty('fontSize', { ...selectedElement.fontSize, unit: event.target.value })}
               />
             </div>
         }
@@ -654,12 +668,12 @@ function ElementDesigner() {
             value={selectedElement.border.width.value}
             unit={selectedElement.border.width.unit} 
             valueOnChange={(event) => updateProperty('border', { ...selectedElement.border, width: { ...selectedElement.border.width, value: Number(event.target.value) } })}
-            unitOnChange={(event) => updateProperty('border', { ...selectedElement.border, width: { ...selectedElement.border.width, unit: event.target.value as Unit } })}
+            unitOnChange={(event) => updateProperty('border', { ...selectedElement.border, width: { ...selectedElement.border.width, unit: event.target.value } })}
           />
           <Select
             value={selectedElement.border.style}
             options={borderStyles.slice()}
-            onChange={(event) => updateProperty('border', { ...selectedElement.border, style: event.target.value as BorderStyle } )}
+            onChange={(event) => updateProperty('border', { ...selectedElement.border, style: event.target.value } )}
           />
           <Input
             type="color"
@@ -677,7 +691,7 @@ function ElementDesigner() {
             value={selectedElement.borderRadius.value}
             unit={selectedElement.borderRadius.unit} 
             valueOnChange={(event) => updateProperty('borderRadius', { ...selectedElement.borderRadius, value: Number(event.target.value) })}
-            unitOnChange={(event) => updateProperty('borderRadius', { ...selectedElement.borderRadius, unit: event.target.value as Unit })}
+            unitOnChange={(event) => updateProperty('borderRadius', { ...selectedElement.borderRadius, unit: event.target.value })}
           />
         </div>
 
@@ -690,7 +704,7 @@ function ElementDesigner() {
             value={selectedElement.margin.value}
             unit={selectedElement.margin.unit} 
             valueOnChange={(event) => updateProperty('margin', { ...selectedElement.margin, value: Number(event.target.value) })}
-            unitOnChange={(event) => updateProperty('margin', { ...selectedElement.margin, unit: event.target.value as Unit })}
+            unitOnChange={(event) => updateProperty('margin', { ...selectedElement.margin, unit: event.target.value })}
           />
         </div>
 
@@ -703,7 +717,7 @@ function ElementDesigner() {
             value={selectedElement.padding.value}
             unit={selectedElement.padding.unit} 
             valueOnChange={(event) => updateProperty('padding', { ...selectedElement.padding, value: Number(event.target.value) })}
-            unitOnChange={(event) => updateProperty('padding', { ...selectedElement.padding, unit: event.target.value as Unit })}
+            unitOnChange={(event) => updateProperty('padding', { ...selectedElement.padding, unit: event.target.value })}
           />
         </div>
 
@@ -715,7 +729,7 @@ function ElementDesigner() {
             id="cursor"
             value={selectedElement.cursor.keyword}
             options={cursorKeywords.slice()}
-            onChange={(event) => updateProperty('cursor', { ...selectedElement.cursor, keyword: event.target.value as CursorKeyword } )}
+            onChange={(event) => updateProperty('cursor', { ...selectedElement.cursor, keyword: event.target.value } )}
           />
         </div>
       </div>

@@ -7,6 +7,10 @@ export const defaultElement: Element = {
   id: generateId('element'),
   type: 'text',
   innerText: 'Design your own element!',
+  display: {
+    keyword: 'grid',
+    active: false,
+  },
   value: {
     button: 'Click here!',
     color: '#000000',

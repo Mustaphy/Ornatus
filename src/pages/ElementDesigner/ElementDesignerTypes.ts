@@ -8,6 +8,7 @@ export type Element = {
   type: Type,
   value: Value
   innerText: string,
+  display: Display,
   height: Height,
   width: Width,
   background: Background,
@@ -23,6 +24,13 @@ export type Element = {
 };
 
 /* Values that can be selected */
+export const displayKeywords = [
+  'block', 'inline', 'inline-block', 'flex', 'inline-flex', 'grid', 'inline-grid', 'flow-root', 'none', 'contents',
+  'block flow', 'inline flow', 'inline flow-root', 'block flex', 'inline flex', 'block grid', 'inline grid',
+  'block flow-root', 'table', 'table-row', 'table-cell', 'list-item'
+] as const;
+export type DisplayKeyword = typeof displayKeywords[number];
+
 export const selectors = [
   'a', 'abbr', 'address', 'article', 'aside', 'b', 'bdi', 'bdo', 'blockquote', 'button', 'cite', 'code', 'div', 'em',
   'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'i', 'input', 'ins', 'kbd', 'label', 'main', 'mark',  'nav',
@@ -59,6 +67,20 @@ export type Property = {
   active: boolean
 }
 
+export type Display = {
+  keyword: DisplayKeyword
+} & Property;
+
+export type Height = {
+  value: number,
+  unit: Unit
+} & Property;
+
+export type Width = {
+  value: number,
+  unit: Unit
+} & Property;
+
 export type Value = {
   button: string,
   color: string,
@@ -79,20 +101,14 @@ export type Value = {
   week: string,
 } & Property;
 
-export type Height = {
-  value: number,
-  unit: Unit
-} & Property;
-
-export type Width = {
-  value: number,
-  unit: Unit
-} & Property;
-
 export type Background = {
   selected: BackgroundProperty,
   color: BackgroundColor,
   linearGradient: BackgroundLinearGradient
+} & Property;
+
+export type Color = {
+  hex: string,
 } & Property;
 
 export type FontSize = {
@@ -127,10 +143,6 @@ export type Margin = {
 export type Padding = {
   value: number,
   unit: Unit
-} & Property;
-
-export type Color = {
-  hex: string,
 } & Property;
 
 export type Cursor = {
