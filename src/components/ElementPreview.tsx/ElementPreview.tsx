@@ -3,7 +3,7 @@ import { toCamelCase } from '../../utilities';
 import { TreeNode } from '../TreeView/TreeViewTypes';
 import { ElementPreviewProps } from './ElementPreviewTypes';
 
-function ElementPreview({ tree: hierarchy, getPropertyConditions }: ElementPreviewProps) {
+function ElementPreview({ tree, getPropertyConditions, getCurrentValue, isChecked }: ElementPreviewProps) {
   /**
    * Get the styles for the element based on the property conditions
    * @param {Element} element The element to get the styles for
@@ -21,24 +21,6 @@ function ElementPreview({ tree: hierarchy, getPropertyConditions }: ElementPrevi
 
     return styles;
   };
-
-  /**
-   * Get the value that is used currently, based on the selected input type (e.g. text, number)
-   * @returns {string} Returns the current value based on the selected input type
-   */
-  const getCurrentValue = (element: Element): string => {
-    const formattedType = toCamelCase(element.type) as keyof typeof element.value;
-    return element.value[formattedType].toString();
-  }
-
-  /**
-   * Get if the checkbox is checked or not
-   * @param {Element} element The element to check if it is checked 
-   * @returns {boolean} Returns true if the checkbox is checked, false otherwise
-   */
-  const isChecked = (element: Element): boolean => {
-    return element.selector === 'input' && element.type === 'checkbox' && element.value.checkbox;
-  }
 
   /**
    * Render a specfic node in the tree as a JSX element
@@ -74,17 +56,22 @@ function ElementPreview({ tree: hierarchy, getPropertyConditions }: ElementPrevi
         return (
           <Element key={element.id} style={elementStyles}>
             {element.innerText}
-            {children && children.length > 0 && (
-              <div>
-                {children.map((childNode) => renderTreeNode(childNode))}
-              </div>
+            {
+              children && children?.length > 0 && (
+                <div>
+                  {children.map((childNode) => renderTreeNode(childNode))}
+                </div>
             )}
           </Element>
         );
     }
   };
 
-  return <div>{hierarchy.map((node) => renderTreeNode(node))}</div>;
+  return (
+    <>
+      {tree.map((node) => renderTreeNode(node))}
+    </>
+  );
 };
 
 export default ElementPreview;
