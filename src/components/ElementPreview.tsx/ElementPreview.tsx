@@ -34,8 +34,8 @@ function ElementPreview({ tree, getStylingConditions, getCurrentValue, isChecked
       case 'input':
         return (
           <input
-            key={element.id}
-            type={element.type}
+            key={element.uuid}
+            type={element.attributes.type}
             value={getCurrentValue(element)}
             style={elementStyles}
             checked={isChecked(element)}
@@ -45,15 +45,15 @@ function ElementPreview({ tree, getStylingConditions, getCurrentValue, isChecked
       case 'textarea':
         return (
           <textarea
-            key={element.id}
-            value={element.value.text}
+            key={element.uuid}
+            value={element.attributes.value.text}
             style={elementStyles}
             readOnly
           />
         )
       default: 
         return (
-          <Element key={element.id} style={elementStyles}>
+          <Element key={element.uuid} style={elementStyles}>
             {element.innerText}
             {
               children && children.length > 0 &&

@@ -2,8 +2,20 @@ export const toCamelCase = (text: string): string => {
   return text.replace(/[-_]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ''));
 }
 
-export function deepCopy<T>(obj: T): T {
-  return JSON.parse(JSON.stringify(obj)) as unknown as T;
+export function deepCopy<T>(source: T): T {
+  if (source === null || typeof source !== 'object' || source instanceof Function) {
+    return source;
+  }
+
+  const copy = Array.isArray(source) ? [] : {} as any;
+
+  for (const key in source) {
+    if (Object.prototype.hasOwnProperty.call(source, key)) {
+      copy[key as keyof T] = deepCopy(source[key as keyof T]);
+    }
+  }
+
+  return copy as T;
 }
 
 export const generateUUID = (): string => {

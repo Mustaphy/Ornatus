@@ -4,24 +4,28 @@ import { Unit } from "../../components/UnitSelect/UnitSelectTypes";
 export type Element = {
   uuid: string,
   selector: Selector,
-  id: string,
-  type: Type,
-  value: Value
   innerText: string,
-  display: Display,
-  gridAutoFlow: GridAutoFlow,
-  height: Height,
-  width: Width,
-  background: Background,
-  color: Color,
-  fontSize: FontSize,
-  fontWeight: FontWeight,
-  textAlign: TextAlign,
-  border: Border,
-  borderRadius: BorderRadius,
-  padding: Padding,
-  margin: Margin,
-  cursor: Cursor,
+  attributes: {
+    id: string,
+    type: Type,
+    value: Value
+  },
+  properties: {
+    display: Display,
+    gridAutoFlow: GridAutoFlow,
+    height: Height,
+    width: Width,
+    background: Background,
+    color: Color,
+    fontSize: FontSize,
+    fontWeight: FontWeight,
+    textAlign: TextAlign,
+    border: Border,
+    borderRadius: BorderRadius,
+    padding: Padding,
+    margin: Margin,
+    cursor: Cursor,
+  }
 };
 
 /* Values that can be selected */
