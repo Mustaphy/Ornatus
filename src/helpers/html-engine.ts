@@ -18,7 +18,7 @@ export class HtmlEngine {
       case 'value':
         return (element.selector === 'input' && element.attributes.type !== 'checkbox') || element.selector === 'textarea';
       case 'checked':
-        return element.selector === 'input';
+        return this.isChecked(element);
       default:
         return false;
     }
@@ -38,9 +38,9 @@ export class HtmlEngine {
       case 'type':
         return properties[property];
       case 'value':
-        return HtmlEngine.getCurrentValue(element);
+        return this.getCurrentValue(element);
       case 'checked':
-        return HtmlEngine.isChecked(element);
+        return this.isChecked(element);
       default:
         return '';
     }
@@ -70,8 +70,8 @@ export class HtmlEngine {
    * @param {Element} element Element to get the attributes for
    * @returns {string[]} Returns the attributes of the element
    */
-  static getAttributes = (element: Element): (keyof Element['attributes'])[] => {
-    return Object.keys(element.attributes) as (keyof Element['attributes'])[];
+  static getAttributes = (element: Element): (keyof Element['attributes'] | 'checked')[] => {
+    return [...Object.keys(element.attributes), 'checked'] as (keyof Element['attributes'] | 'checked')[];
   }
 
   /**
@@ -83,16 +83,16 @@ export class HtmlEngine {
   static getString = (nodes: TreeNode[], indent: number = 0): string => {
     return nodes.reduce((acc, node) => {
       const { element, children } = node;
-      const attributeKeys = HtmlEngine.getAttributes(element);
+      const attributeKeys = this.getAttributes(element);
       const selfClosingElements = ['input', 'textarea'];
       const isSelfClosing = selfClosingElements.includes(element.selector);
       const spaces = ' '.repeat(indent);
 
-      const value = HtmlEngine.getValue(element, 'value');
-
       const attributes = attributeKeys
-        .filter(attribute => HtmlEngine.isBeingUsed(element, attribute))
+        .filter(attribute => this.isBeingUsed(element, attribute))
         .map(attribute => {
+          const value = this.getValue(element, attribute);
+
           return typeof value === 'string'
             ? `${attribute}="${value}"`
             : attribute
@@ -114,7 +114,7 @@ export class HtmlEngine {
       if (element.innerText)
         result += `${spaces}  ${element.innerText}\n`;
       if (children)
-        result += HtmlEngine.getString(children, indent + 2);
+        result += this.getString(children, indent + 2);
 
       result += `${spaces}</${element.selector}>\n`;
 

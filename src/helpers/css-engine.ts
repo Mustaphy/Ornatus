@@ -19,7 +19,7 @@ export class CssEngine {
         case 'fontSize':
         case 'fontWeight':
         case 'textAlign':
-          return properties[property].active && CssEngine.currentSelectionHasText(element);
+          return properties[property].active && this.currentSelectionHasText(element);
       case 'display':
       case 'height':
       case 'width':
@@ -114,7 +114,7 @@ export class CssEngine {
   static getString = (nodes: TreeNode[]): string => {
     return nodes.reduce((css, node) => {
       const { element, children } = node;
-      const properties = CssEngine.getProperties(element);
+      const properties = this.getProperties(element);
   
       css += `#${element.attributes.id} {\n`;
     
@@ -126,7 +126,7 @@ export class CssEngine {
       css += `}\n\n`;
   
       if (children)
-        css += CssEngine.getString(children);
+        css += this.getString(children);
   
       return css;
     }, '');
@@ -138,7 +138,7 @@ export class CssEngine {
    * @returns {Record<string, string>} Returns the styles for the element
    */
   static getJSX = (element: Element): Record<string, string> => {
-    const properties = CssEngine.getProperties(element);
+    const properties = this.getProperties(element);
     const styles: Record<string, string> = {};
 
     properties.forEach(property => {
