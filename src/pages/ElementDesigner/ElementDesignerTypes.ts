@@ -176,9 +176,3 @@ type BackgroundColor = {
 type BackgroundLinearGradient = {
   colors: string[]
 };
-
-export type ConditionalValue = {
-  property: string;
-  value: string | boolean;
-  condition: boolean;
-};

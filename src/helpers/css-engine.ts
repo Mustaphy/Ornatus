@@ -1,7 +1,7 @@
 import { TreeNode } from "../components/TreeView/TreeViewTypes";
 import { Element } from "../pages/ElementDesigner/ElementDesignerTypes";
 
-export class StyleEngine {
+export class CssEngine {
   /**
    * Get if the property is being used on the element
    * @param {Element} element Element to check if the property is being used
@@ -18,7 +18,7 @@ export class StyleEngine {
         case 'fontSize':
         case 'fontWeight':
         case 'textAlign':
-          return properties[property].active && StyleEngine.currentSelectionHasText(element);
+          return properties[property].active && CssEngine.currentSelectionHasText(element);
       case 'display':
       case 'height':
       case 'width':
@@ -113,7 +113,7 @@ export class StyleEngine {
   static getString = (nodes: TreeNode[]): string => {
     return nodes.reduce((css, node) => {
       const { element, children } = node;
-      const properties = StyleEngine.getProperties(element);
+      const properties = CssEngine.getProperties(element);
   
       css += `#${element.attributes.id} {\n`;
     
@@ -125,7 +125,7 @@ export class StyleEngine {
       css += `}\n\n`;
   
       if (children)
-        css += StyleEngine.getString(children);
+        css += CssEngine.getString(children);
   
       return css;
     }, '');
@@ -137,7 +137,7 @@ export class StyleEngine {
    * @returns {Record<string, string>} Returns the styles for the element
    */
   static getJSX = (element: Element): Record<string, string> => {
-    const properties = StyleEngine.getProperties(element);
+    const properties = CssEngine.getProperties(element);
     const styles: Record<string, string> = {};
 
     properties.forEach(property => {

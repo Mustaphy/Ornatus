@@ -1,15 +1,16 @@
-import { StyleEngine } from '../../helpers/style-engine';
+import { CssEngine } from '../../helpers/css-engine';
+import { HtmlEngine } from '../../helpers/html-engine';
 import { TreeNode } from '../TreeView/TreeViewTypes';
 import { ElementPreviewProps } from './ElementPreviewTypes';
 
-function ElementPreview({ tree, getCurrentValue, isChecked }: ElementPreviewProps) {
+function ElementPreview({ tree }: ElementPreviewProps) {
   /**
    * Render a specfic node in the tree as a JSX element
    * @param {TreeNode} node The node to render
    */
   const renderTreeNode = (node: TreeNode) => {
     const { element, children } = node;
-    const elementStyles = StyleEngine.getJSX(element);
+    const elementStyles = CssEngine.getJSX(element);
     const Element = element.selector;
 
     switch (element.selector) {
@@ -18,9 +19,9 @@ function ElementPreview({ tree, getCurrentValue, isChecked }: ElementPreviewProp
           <input
             key={element.uuid}
             type={element.attributes.type}
-            value={getCurrentValue(element)}
+            value={HtmlEngine.getCurrentValue(element)}
             style={elementStyles}
-            checked={isChecked(element)}
+            checked={HtmlEngine.isChecked(element)}
             readOnly
           />
         )

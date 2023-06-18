@@ -7,7 +7,6 @@ import {
   cursorKeywords,
   selectors,
   Element,
-  ConditionalValue,
   textAlignKeywords,
   displayKeywords,
   gridAutoFlowKeywords,
@@ -16,7 +15,7 @@ import Input from '../../components/Input/Input'
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
 import Select from "../../components/Select/Select";
 import { MdContentCopy, MdAddCircle } from "react-icons/all";
-import { deepCopy, generateId, generateUUID, toCamelCase } from '../../utilities';
+import { deepCopy, generateId, generateUUID } from '../../utilities';
 import { Type, types } from '../../components/Input/InputTypes';
 import TreeView from '../../components/TreeView/TreeView';
 import ElementPreview from '../../components/ElementPreview.tsx/ElementPreview';
@@ -24,7 +23,8 @@ import { TreeNode } from '../../components/TreeView/TreeViewTypes';
 import { defaultElement } from './ElementDesignerData';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { StyleEngine } from '../../helpers/style-engine';
+import { CssEngine } from '../../helpers/css-engine';
+import { HtmlEngine } from '../../helpers/html-engine';
 
 function ElementDesigner() {
   const initialElement: Element = defaultElement;
@@ -35,36 +35,6 @@ function ElementDesigner() {
       onClick: () => setSelectedElementId(initialElement.uuid),
     }
   ]);
-
-  /**
-   * Get the conditions when an attribute should be used for an element, and what the value should be
-   * @param {Element} element Element to get its attribute conditions
-   * @returns {ConditionalValue[]} conditions when an attribute should be used for an element, and what the value should be
-   */
-  const getAttributeConditions = (element: Element): ConditionalValue[] => {
-    return [
-      {
-        property: 'id',
-        value: element.attributes.id,
-        condition: true
-      },
-      {
-        property: 'type',
-        value: element.attributes.type,
-        condition: element.selector === 'input' || element.selector === 'button'
-      },
-      {
-        property: 'value',
-        value: getCurrentValue(element),
-        condition: (element.selector === 'input' && element.attributes.type !== 'checkbox') || element.selector === 'textarea'
-      },
-      {
-        property: 'checked',
-        value: isChecked(element),
-        condition: element.selector === 'input'
-      }
-    ]
-  }
 
   /**
    * Get the current element
@@ -82,24 +52,24 @@ function ElementDesigner() {
       if (node.children)
         return getSelectedNode(node.children);
       }, undefined);
-  };
+  }
   const selectedElement = getSelectedNode()!.element;
   const currentProperties = selectedElement.properties;
   const currentAttributes = selectedElement.attributes;
 
   /**
-   * Update a property of the current element
-   * @param {keyof Element} property Property to update
-   * @param {any} value Value to update the property to
+   * Update a field of the current element
+   * @param {keyof Element} field Field to update
+   * @param {any} value Value to update the field to
    */
-  const updateField = (property: keyof Element, value: unknown): void => {
+  const updateField = (field: keyof Element, value: unknown): void => {
     setTree(prevHierarchy => {
       const updatePropertyRecursively = (nodes: TreeNode[]): TreeNode[] => {
         return nodes.map(node => {
           if (node.element.uuid === selectedElementId) {
             const updatedElement: Element = {
               ...node.element,
-              [property]: value
+              [field]: value
             };
 
             return {
@@ -123,13 +93,23 @@ function ElementDesigner() {
     });
   };
 
+  /**
+   * Update a CSS property of the current element
+   * @param {keyof Element['properties']} property Property to update
+   * @param {unknown} value Value to update the property to
+   */
   const updateProperty = (property: keyof Element['properties'], value: unknown): void => {
     updateField('properties', { ...currentProperties, [property]: value });
-  };
+  }
 
+    /**
+   * Update a HTML attribute of the current element
+   * @param {keyof Element['attributes']} property Attribute to update
+   * @param {unknown} value Value to update the attribute to
+   */
   const updateAttribute = (attribute: keyof Element['attributes'], value: unknown): void => {
     updateField('attributes', { ...currentAttributes, [attribute]: value });
-  };
+  }
 
   /**
    * Add an element to the nodes
@@ -176,16 +156,6 @@ function ElementDesigner() {
   }
 
   /**
-   * Get the value that is used currently, based on the selected input type (e.g. text, number)
-   * @param {Element} element Element to get the current value for
-   * @returns {string} Returns the current value based on the selected input type
-   */
-  const getCurrentValue = (element: Element): string => {
-    const formattedType = toCamelCase(element.attributes.type) as keyof typeof element.attributes.value;
-    return element.attributes.value[formattedType].toString();
-  }
-
-  /**
    * Get the type options that are available for the selected element
    * @param {Element} element Element to get the type options for
    * @returns {Type[]} Returns which input types are available for the selected element
@@ -203,6 +173,11 @@ function ElementDesigner() {
     }
   }
 
+  /**
+   * Get if the 'display' option is visible for the user based on the selected element
+   * @param {Element} element Element to get the 'display' option visibility for
+   * @returns {boolean} Returns if the 'display' option is visible for the user
+   */
   const isGridAutoFlowVisible = (element: Element): boolean => {
     return element.properties.display.keyword.includes('grid') && element.properties.display.active;
   }
@@ -234,73 +209,10 @@ function ElementDesigner() {
     return element.selector  === 'input' || element.selector  === 'textarea';
   }
 
-  /**
-   * Get if the checkbox is checked or not
-   * @param {Element} element The element to check if it is checked 
-   * @returns {boolean} Returns true if the checkbox is checked, false otherwise
-   */
-  const isChecked = (element: Element): boolean => {
-    return element.selector === 'input' && element.attributes.type === 'checkbox' && element.attributes.value.checkbox;
-  }
-
-  /**
-   * Get a string of valid HTML of the current state of the element
-   * @param {TreeNode[]} nodes Nodes to generate HTML for (defaults to the tree)
-   * @param {number} indent Indentation level of the HTML (defaults to 0)
-   * @returns {string} Returns a string of valid HTML of the current state of the element
-   */
-  const generateHTML = (nodes: TreeNode[] = tree, indent = 0): string => {
-    return nodes.reduce((acc, node) => {
-      const { element, children } = node;
-      const attributeProperties = getAttributeConditions(element);
-      const selfClosingElements = ['input', 'textarea'];
-      const isSelfClosing = selfClosingElements.includes(element.selector);
-      const spaces = ' '.repeat(indent);
-
-      const attributes = attributeProperties
-        .map(attribute => {
-          if (!attribute.condition)
-            return '';
-
-          // When there is a boolean attribute, we don't need to set the value explicitly (for example with 'checked')
-          return typeof attribute.value === 'string'
-            ? `${attribute.property}="${attribute.value}"`
-            : attribute.property
-        })
-        .filter(attribute => attribute !== '');
-
-      let attributesString: string;
-
-      // If there is only one attribute, we can put it on the same line. Otherwise, we put all of them below each other
-      attributes.length === 1
-        ? attributesString = `${attributes[0]}`
-        : attributesString = `\n${spaces}  ${attributes.join(`\n${spaces}  `)}\n${spaces}`
-
-      // Self-closing elements cannot have children or innerText
-      if (attributeProperties.length > 0 && isSelfClosing)
-        return `${acc}${spaces}<${element.selector} ${attributesString} />\n`;
-
-      let result = `${spaces}<${element.selector} ${attributesString}>\n`;
-
-      if (element.innerText)
-        result += `${spaces}  ${element.innerText}\n`;
-      if (children)
-        result += generateHTML(children, indent + 2);
-
-      result += `${spaces}</${element.selector}>\n`;
-
-      return `${acc}${result}`;
-    }, '');
-  };
-
   return (
     <div id="element-designer">
       <div id="element-preview">
-        <ElementPreview
-          tree={tree}
-          getCurrentValue={getCurrentValue}
-          isChecked={isChecked}
-        />
+        <ElementPreview tree={tree} />
       </div>
 
       <div id="element-hierarchy">
@@ -390,8 +302,8 @@ function ElementDesigner() {
               <Input
                 id="value"
                 type={selectedElement.selector === 'input' ? getTypeForUserInput(selectedElement) : 'text'}
-                value={selectedElement.selector === 'input' ? getCurrentValue(selectedElement) : currentAttributes?.value.text}
-                checked={isChecked(selectedElement)}
+                value={selectedElement.selector === 'input' ? HtmlEngine.getCurrentValue(selectedElement) : currentAttributes?.value.text}
+                checked={HtmlEngine.isChecked(selectedElement)}
                 onChange={(event) => {
                   const value = currentAttributes?.type === 'checkbox' ? event.target.checked : event.target.value;
 
@@ -495,7 +407,7 @@ function ElementDesigner() {
         </div>
 
         {
-          StyleEngine.currentSelectionHasText(selectedElement) &&
+          CssEngine.currentSelectionHasText(selectedElement) &&
             <div className={!currentProperties?.color.active ? 'hidden' : ''}>
               <Input type="checkbox" checked={currentProperties?.color.active} onChange={() => updateProperty('color', { ...currentProperties?.color, active: !currentProperties?.color.active } )} />
 
@@ -510,7 +422,7 @@ function ElementDesigner() {
         }
 
         {
-          StyleEngine.currentSelectionHasText(selectedElement) &&
+          CssEngine.currentSelectionHasText(selectedElement) &&
             <div className={!currentProperties?.fontSize.active ? 'hidden' : ''}>
               <Input type="checkbox" checked={currentProperties?.fontSize.active} onChange={() => updateProperty('fontSize', { ...currentProperties?.fontSize, active: !currentProperties?.fontSize.active } )} />
 
@@ -526,7 +438,7 @@ function ElementDesigner() {
         }
 
         {
-          StyleEngine.currentSelectionHasText(selectedElement) &&
+          CssEngine.currentSelectionHasText(selectedElement) &&
             <div className={!currentProperties?.fontWeight.active ? 'hidden' : ''}>
               <Input type="checkbox" checked={currentProperties?.fontWeight.active} onChange={() => updateProperty('fontWeight', { ...currentProperties?.fontWeight, active: !currentProperties?.fontWeight.active } )} />
 
@@ -544,7 +456,7 @@ function ElementDesigner() {
         }
 
         {
-          StyleEngine.currentSelectionHasText(selectedElement) &&
+          CssEngine.currentSelectionHasText(selectedElement) &&
             <div className={!currentProperties?.textAlign.active ? 'hidden' : ''}>
               <Input type="checkbox" checked={currentProperties?.textAlign.active} onChange={() => updateProperty('textAlign', { ...currentProperties?.textAlign, active: !currentProperties?.textAlign.active } )} />
 
@@ -634,13 +546,13 @@ function ElementDesigner() {
 
       <div id="element-code">
         <pre id="button-html" className="code-container">
-          {generateHTML()}
-          <MdContentCopy className="copy-button" onClick={() => navigator.clipboard.writeText(generateHTML())} />
+          {HtmlEngine.getString(tree)}
+          <MdContentCopy className="copy-button" onClick={() => navigator.clipboard.writeText(HtmlEngine.getString(tree))} />
         </pre>
 
         <pre id="button-css" className="code-container">
-          {StyleEngine.getString(tree)}
-          <MdContentCopy className="copy-button" onClick={() => navigator.clipboard.writeText(StyleEngine.getString(tree))} />
+          {CssEngine.getString(tree)}
+          <MdContentCopy className="copy-button" onClick={() => navigator.clipboard.writeText(CssEngine.getString(tree))} />
         </pre>
       </div>
 
