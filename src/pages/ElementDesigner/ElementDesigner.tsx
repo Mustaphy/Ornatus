@@ -15,19 +15,18 @@ import Input from '../../components/Input/Input'
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
 import Select from "../../components/Select/Select";
 import { MdContentCopy, MdAddCircle } from "react-icons/all";
-import { deepCopy, generateId, generateUUID } from '../../helpers/utilities';
 import { Type, types } from '../../components/Input/InputTypes';
 import TreeView from '../../components/TreeView/TreeView';
 import ElementPreview from '../../components/ElementPreview.tsx/ElementPreview';
 import { TreeNode } from '../../components/TreeView/TreeViewTypes';
-import { defaultElement } from './ElementDesignerData';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { CssEngine } from '../../helpers/css-engine';
 import { HtmlEngine } from '../../helpers/html-engine';
+import { getDefaultElement } from './ElementDesignerData';
 
 function ElementDesigner() {
-  const initialElement: Element = defaultElement;
+  const initialElement: Element = getDefaultElement();
   const [selectedElementId, setSelectedElementId] = useState(initialElement.uuid);
   const [tree, setTree] = useState<TreeNode[]>([
     {
@@ -225,7 +224,7 @@ function ElementDesigner() {
 
         <div
           id="add-element-container"
-          onClick={() => addElement({ ...deepCopy(defaultElement), uuid: generateUUID(), attributes: { ...deepCopy(defaultElement.attributes), id: generateId('element') } }) }
+          onClick={() => addElement(getDefaultElement()) }
         >
           <MdAddCircle />
           <p>Add a new element</p>
