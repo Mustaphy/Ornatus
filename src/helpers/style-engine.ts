@@ -2,6 +2,12 @@ import { TreeNode } from "../components/TreeView/TreeViewTypes";
 import { Element } from "../pages/ElementDesigner/ElementDesignerTypes";
 
 export class StyleEngine {
+  /**
+   * Get if the property is being used on the element
+   * @param {Element} element Element to check if the property is being used
+   * @param {keyof Element['properties']} property Property to check if it is being used
+   * @returns {boolean} Returns if the property is being used on the element
+   */
   static isBeingUsed = (element: Element, property: keyof Element['properties']): boolean => {
     const properties = element.properties;
 
@@ -28,6 +34,12 @@ export class StyleEngine {
     }
   }
 
+  /**
+   * Get the value of a property that should be used in the CSS
+   * @param {Element} element Element to get the value for
+   * @param {keyof Element['properties']} property Property to get the value for
+   * @returns {string} Returns the value of the property for the element
+   */
   static getValue = (element: Element, property: keyof Element['properties']): string => {
     const properties = element.properties;
 
@@ -58,32 +70,6 @@ export class StyleEngine {
   }
 
   /**
-   * Get a string of valid CSS of the current state of the element
-   * @param {TreeNode[]} nodes Nodes to generate CSS for (defaults to the tree)
-   * @returns {string} Returns a string of valid CSS of the current state of the element
-   */
-  static generateCSS = (nodes: TreeNode[]): string => {
-    return nodes.reduce((css, node) => {
-      const { element, children } = node;
-      const properties = Object.keys(element.properties) as (keyof Element['properties'])[];
-  
-      css += `#${element.attributes.id} {\n`;
-    
-      properties.forEach(property => {  
-        if (this.isBeingUsed(element, property))
-          css += `  ${property}: ${this.getValue(element, property)};\n`;
-      });
-  
-      css += `}\n\n`;
-  
-      if (children)
-        css += StyleEngine.generateCSS(children);
-  
-      return css;
-    }, '');
-  };
-
-  /**
    * Get if the current state of the element has text on it
    * @param {Element} element Element to check if it has text on it
    * @returns {boolean} Returns if the current state of the element has text on it
@@ -93,7 +79,7 @@ export class StyleEngine {
   }
 
   /**
-   * Get the value of the background property based on the current state
+   * Get the value of the background property based on the element
    * @param {Element} element Element to get the background styling for
    * @returns {string} Returns the string that is used for the background property in the CSS
    */
@@ -109,4 +95,56 @@ export class StyleEngine {
         return '';
     }
   }
+
+  /**
+   * Get the names of the properties of the element
+   * @param {Element} element Element to get the properties for
+   * @returns {string[]} Returns the properties of the element
+   */
+  static getProperties = (element: Element): (keyof Element['properties'])[] => {
+    return Object.keys(element.properties) as (keyof Element['properties'])[];
+  }
+
+  /**
+   * Get a string of valid CSS of the current state of the element
+   * @param {TreeNode[]} nodes Nodes to generate CSS for (defaults to the tree)
+   * @returns {string} Returns a string of valid CSS of the current state of the element
+   */
+  static getString = (nodes: TreeNode[]): string => {
+    return nodes.reduce((css, node) => {
+      const { element, children } = node;
+      const properties = StyleEngine.getProperties(element);
+  
+      css += `#${element.attributes.id} {\n`;
+    
+      properties.forEach(property => {  
+        if (this.isBeingUsed(element, property))
+          css += `  ${property}: ${this.getValue(element, property)};\n`;
+      });
+  
+      css += `}\n\n`;
+  
+      if (children)
+        css += StyleEngine.getString(children);
+  
+      return css;
+    }, '');
+  };
+
+  /**
+   * Get the styles that can be used for a JSX element
+   * @param {Element} element The element to get the styles for
+   * @returns {Record<string, string>} Returns the styles for the element
+   */
+  static getJSX = (element: Element): Record<string, string> => {
+    const properties = StyleEngine.getProperties(element);
+    const styles: Record<string, string> = {};
+
+    properties.forEach(property => {
+      if (this.isBeingUsed(element, property))
+        styles[property] = this.getValue(element, property);
+    });
+
+    return styles;
+  };
 }

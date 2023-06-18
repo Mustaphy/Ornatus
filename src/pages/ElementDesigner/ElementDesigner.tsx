@@ -37,86 +37,6 @@ function ElementDesigner() {
   ]);
 
   /**
-   * Get the conditions when a property should be applied, and what the styling should be
-   * @param {Element} element Element to get its property conditions
-   * @returns {ConditionalValue[]} conditions when a property should be applied, and what the styling should be
-   */
-  const getStylingConditions = (element: Element): ConditionalValue[] => {
-    return [
-      {
-        property: 'display',
-        value: element.properties.display.keyword,
-        condition: element.properties.display.active,
-      },
-      {
-        property: 'grid-auto-flow',
-        value: element.properties.gridAutoFlow.keyword,
-        condition: element.properties.gridAutoFlow.active && element.properties.display.active && element.properties.display.keyword.includes('grid')
-      },
-      {
-        property: 'height',
-        value: element.properties.height.value + element.properties.height.unit,
-        condition: element.properties.height.active,
-      },
-      {
-        property: 'width',
-        value: element.properties.width.value + element.properties.width.unit,
-        condition: element.properties.width.active,
-      },
-      {
-        property: 'background',
-        value: getBackgroundStyling(element),
-        condition: element.properties.background.active,
-      },
-      {
-        property: 'color',
-        value: element.properties.color.hex,
-        condition: element.properties.color.active && currentSelectionHasText(element),
-      },
-      {
-        property: 'font-size',
-        value: element.properties.fontSize.value + element.properties.fontSize.unit,
-        condition: element.properties.fontSize.active && currentSelectionHasText(element),
-      },
-      {
-        property: 'font-weight',
-        value: element.properties.fontWeight.value.toString(),
-        condition: element.properties.fontWeight.active && currentSelectionHasText(element),
-      },
-      {
-        property: 'text-align',
-        value: element.properties.textAlign.keyword,
-        condition: element.properties.textAlign.active && currentSelectionHasText(element),
-      },
-      {
-        property: 'border',
-        value: `${element.properties.border.width.value + element.properties.border.width.unit} ${element.properties.border.style} ${element.properties.border.color}`,
-        condition: element.properties.border.active,
-      },
-      {
-        property: 'border-radius',
-        value: element.properties.borderRadius.value + element.properties.borderRadius.unit,
-        condition: element.properties.borderRadius.active,
-      },
-      {
-        property: 'margin',
-        value: element.properties.margin.value + element.properties.margin.unit,
-        condition: element.properties.margin.active,
-      },
-      {
-        property: 'padding',
-        value: element.properties.padding.value + element.properties.padding.unit,
-        condition: element.properties.padding.active,
-      },
-      {
-        property: 'cursor',
-        value: element.properties.cursor.keyword,
-        condition: element.properties.padding.active,
-      },
-    ];
-  }
-
-  /**
    * Get the conditions when an attribute should be used for an element, and what the value should be
    * @param {Element} element Element to get its attribute conditions
    * @returns {ConditionalValue[]} conditions when an attribute should be used for an element, and what the value should be
@@ -237,24 +157,6 @@ function ElementDesigner() {
   }
 
   /**
-   * Get the value of the background property based on the current state
-   * @param {Element} element Element to get the background styling for
-   * @returns {string} Returns the string that is used for the background property in the CSS
-   */
-  const getBackgroundStyling = (element: Element): string => {
-    const background = element.properties.background;
-
-    switch (background.selected) {
-      case 'color':
-        return background.color.color;
-      case 'linear-gradient':
-        return `linear-gradient(${background.linearGradient.colors[0]}, ${background.linearGradient.colors[1]})`;
-      default:
-        return '';
-    }
-  }
-
-  /**
    * Get the input type that should be used to input the value attribute
    * @param {Element} element Element to get the input type for
    * @returns {Type} Returns which type the input field is used for the value input
@@ -342,15 +244,6 @@ function ElementDesigner() {
   }
 
   /**
-   * Get if the current state of the element has text on it
-   * @param {Element} element Element to check if it has text on it
-   * @returns {boolean} Returns if the current state of the element has text on it
-   */
-  const currentSelectionHasText = (element: Element): boolean => {
-    return element.selector  !== 'input' || (element.attributes.type !== 'color' && element.attributes.type !== 'checkbox');
-  }
-
-  /**
    * Get a string of valid HTML of the current state of the element
    * @param {TreeNode[]} nodes Nodes to generate HTML for (defaults to the tree)
    * @param {number} indent Indentation level of the HTML (defaults to 0)
@@ -405,7 +298,6 @@ function ElementDesigner() {
       <div id="element-preview">
         <ElementPreview
           tree={tree}
-          getStylingConditions={getStylingConditions}
           getCurrentValue={getCurrentValue}
           isChecked={isChecked}
         />
@@ -603,7 +495,7 @@ function ElementDesigner() {
         </div>
 
         {
-          currentSelectionHasText(selectedElement) &&
+          StyleEngine.currentSelectionHasText(selectedElement) &&
             <div className={!currentProperties?.color.active ? 'hidden' : ''}>
               <Input type="checkbox" checked={currentProperties?.color.active} onChange={() => updateProperty('color', { ...currentProperties?.color, active: !currentProperties?.color.active } )} />
 
@@ -618,8 +510,8 @@ function ElementDesigner() {
         }
 
         {
-          currentSelectionHasText(selectedElement) &&
-          <div className={!currentProperties?.fontSize.active ? 'hidden' : ''}>
+          StyleEngine.currentSelectionHasText(selectedElement) &&
+            <div className={!currentProperties?.fontSize.active ? 'hidden' : ''}>
               <Input type="checkbox" checked={currentProperties?.fontSize.active} onChange={() => updateProperty('fontSize', { ...currentProperties?.fontSize, active: !currentProperties?.fontSize.active } )} />
 
               <label htmlFor="font-size" className="option-name">font-size</label>
@@ -634,7 +526,7 @@ function ElementDesigner() {
         }
 
         {
-          currentSelectionHasText(selectedElement) &&
+          StyleEngine.currentSelectionHasText(selectedElement) &&
             <div className={!currentProperties?.fontWeight.active ? 'hidden' : ''}>
               <Input type="checkbox" checked={currentProperties?.fontWeight.active} onChange={() => updateProperty('fontWeight', { ...currentProperties?.fontWeight, active: !currentProperties?.fontWeight.active } )} />
 
@@ -652,7 +544,7 @@ function ElementDesigner() {
         }
 
         {
-          currentSelectionHasText(selectedElement) &&
+          StyleEngine.currentSelectionHasText(selectedElement) &&
             <div className={!currentProperties?.textAlign.active ? 'hidden' : ''}>
               <Input type="checkbox" checked={currentProperties?.textAlign.active} onChange={() => updateProperty('textAlign', { ...currentProperties?.textAlign, active: !currentProperties?.textAlign.active } )} />
 
@@ -747,8 +639,8 @@ function ElementDesigner() {
         </pre>
 
         <pre id="button-css" className="code-container">
-          {StyleEngine.generateCSS(tree)}
-          <MdContentCopy className="copy-button" onClick={() => navigator.clipboard.writeText(StyleEngine.generateCSS(tree))} />
+          {StyleEngine.getString(tree)}
+          <MdContentCopy className="copy-button" onClick={() => navigator.clipboard.writeText(StyleEngine.getString(tree))} />
         </pre>
       </div>
 

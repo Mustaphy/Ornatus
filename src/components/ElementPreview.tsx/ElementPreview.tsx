@@ -1,33 +1,15 @@
-import { Element, ConditionalValue } from '../../pages/ElementDesigner/ElementDesignerTypes';
-import { toCamelCase } from '../../utilities';
+import { StyleEngine } from '../../helpers/style-engine';
 import { TreeNode } from '../TreeView/TreeViewTypes';
 import { ElementPreviewProps } from './ElementPreviewTypes';
 
-function ElementPreview({ tree, getStylingConditions, getCurrentValue, isChecked }: ElementPreviewProps) {
-  /**
-   * Get the styles for the element based on the property conditions
-   * @param {Element} element The element to get the styles for
-   * @returns {Record<string, string>} Returns the styles for the element
-   */
-  const getStyles = (element: Element): Record<string, string> => {
-    const propertyConditions = getStylingConditions(element);
-    const styles: Record<string, string> = {};
-
-    propertyConditions.forEach((condition: ConditionalValue) => {
-      if (condition.condition)
-        styles[toCamelCase(condition.property)] = condition.value.toString();
-    });
-
-    return styles;
-  };
-
+function ElementPreview({ tree, getCurrentValue, isChecked }: ElementPreviewProps) {
   /**
    * Render a specfic node in the tree as a JSX element
    * @param {TreeNode} node The node to render
    */
   const renderTreeNode = (node: TreeNode) => {
     const { element, children } = node;
-    const elementStyles = getStyles(element);
+    const elementStyles = StyleEngine.getJSX(element);
     const Element = element.selector;
 
     switch (element.selector) {
