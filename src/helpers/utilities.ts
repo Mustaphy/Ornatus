@@ -2,6 +2,10 @@ export const toCamelCase = (text: string): string => {
   return text.replace(/[-_]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ''));
 }
 
+export const toKebabCase = (text: string): string => {
+  return text.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+}
+
 export function deepCopy<T>(source: T): T {
   if (source === null || typeof source !== 'object' || source instanceof Function) {
     return source;

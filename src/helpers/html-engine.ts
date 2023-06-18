@@ -1,6 +1,6 @@
 import { TreeNode } from "../components/TreeView/TreeViewTypes";
 import { Element } from "../pages/ElementDesigner/ElementDesignerTypes";
-import { toCamelCase } from "../utilities";
+import { toCamelCase } from "./utilities";
 
 export class HtmlEngine {
   /**

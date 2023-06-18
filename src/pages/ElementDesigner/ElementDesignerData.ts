@@ -1,4 +1,4 @@
-import { generateId, generateUUID } from "../../utilities";
+import { generateId, generateUUID } from "../../helpers/utilities";
 import { Element } from "./ElementDesignerTypes";
 
 export const defaultElement: Element = {

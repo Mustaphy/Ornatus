@@ -70,9 +70,9 @@ function TreeView({ tree, selectedElementId, toast, onChange }: TreeViewProps) {
 
     onChange(updatedTree);
 
-    toast.success(`Element has been successfully deleted`, {
+    toast.success(`Element has been deleted!`, {
       position: 'bottom-right',
-      autoClose: 2000
+      autoClose: 3000
     });
 
     setDraggingNodeId(null);

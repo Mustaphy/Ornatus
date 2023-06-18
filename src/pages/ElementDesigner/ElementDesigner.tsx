@@ -15,7 +15,7 @@ import Input from '../../components/Input/Input'
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
 import Select from "../../components/Select/Select";
 import { MdContentCopy, MdAddCircle } from "react-icons/all";
-import { deepCopy, generateId, generateUUID } from '../../utilities';
+import { deepCopy, generateId, generateUUID } from '../../helpers/utilities';
 import { Type, types } from '../../components/Input/InputTypes';
 import TreeView from '../../components/TreeView/TreeView';
 import ElementPreview from '../../components/ElementPreview.tsx/ElementPreview';
@@ -121,7 +121,7 @@ function ElementDesigner() {
 
     toast.success('Element has been created!', {
       position: 'bottom-right',
-      autoClose: 2000
+      autoClose: 3000
     })
   }
 

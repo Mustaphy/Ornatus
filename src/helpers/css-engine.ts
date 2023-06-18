@@ -1,5 +1,6 @@
 import { TreeNode } from "../components/TreeView/TreeViewTypes";
 import { Element } from "../pages/ElementDesigner/ElementDesignerTypes";
+import { toKebabCase } from "./utilities";
 
 export class CssEngine {
   /**
@@ -119,7 +120,7 @@ export class CssEngine {
     
       properties.forEach(property => {  
         if (this.isBeingUsed(element, property))
-          css += `  ${property}: ${this.getValue(element, property)};\n`;
+          css += `  ${toKebabCase(property)}: ${this.getValue(element, property)};\n`;
       });
   
       css += `}\n\n`;
