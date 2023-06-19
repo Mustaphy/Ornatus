@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './TreeView.css';
 import { TreeNode, TreeViewProps } from './TreeViewTypes';
 import { BsFillTrash3Fill } from 'react-icons/all';
+import { HtmlEngine } from '../../helpers/html-engine';
 
 function TreeView({ tree, currentElementId, toast, onChange }: TreeViewProps) {
   const [draggingNodeId, setDraggingNodeId] = useState<string | null>(null);
@@ -39,8 +40,8 @@ function TreeView({ tree, currentElementId, toast, onChange }: TreeViewProps) {
     setDraggingNodeId(null);
     setTargetNodeId(null);
 
-    if (!draggedNode || !parentNode || !isParentValidForChildren(parentNode)) {
-      toast.error(`<${parentNode?.element.selector}> can't have child elements`, {
+    if (!draggedNode || !parentNode || !HtmlEngine.getAllowedChildren(parentNode.element).includes(draggedNode.element.selector)) {
+      toast.error(`<${parentNode?.element.selector}> can't be a parent of <${draggedNode?.element.selector}>`, {
         position: 'bottom-right',
       });
       return;
@@ -59,6 +60,9 @@ function TreeView({ tree, currentElementId, toast, onChange }: TreeViewProps) {
     onChange(newTree);
   };
 
+  /**
+   * Handles the node being dropped on the delete zone
+   */
   const onDeleteZoneDropped = (): void => {
     if (!draggingNodeId)
       return;
@@ -160,21 +164,6 @@ function TreeView({ tree, currentElementId, toast, onChange }: TreeViewProps) {
 
       return node;
     });
-  };
-
-  /**
-   * Get if the parent node can have children elements
-   * @param {TreeNode} parentNode Parent node to check
-   * @returns {boolean} Whether the parent node is valid for children
-   */
-  const isParentValidForChildren = (parentNode: TreeNode): boolean => {
-    const selfClosing = ['input', 'textarea'];
-    const noChildren = ['button'];
-
-    return (
-      !selfClosing.includes(parentNode.element.selector) &&
-      !noChildren.includes(parentNode.element.selector)
-    );
   };
 
   /**

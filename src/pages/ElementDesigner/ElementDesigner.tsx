@@ -18,7 +18,7 @@ import Select from "../../components/Select/Select";
 import { MdContentCopy, MdAddCircle } from "react-icons/all";
 import { Type, types } from '../../components/Input/InputTypes';
 import TreeView from '../../components/TreeView/TreeView';
-import ElementPreview from '../../components/ElementPreview.tsx/ElementPreview';
+import ElementPreview from '../../components/ElementPreview/ElementPreview';
 import { TreeNode } from '../../components/TreeView/TreeViewTypes';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -543,17 +543,20 @@ function ElementDesigner() {
           />
         </div>
 
-        <div className={!currentProperties?.textTransform.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={currentProperties?.textTransform.active} onChange={() => updateProperty('textTransform', { ...currentProperties?.textTransform, active: !currentProperties?.textTransform.active } )} />
+        {
+          CssEngine.currentSelectionHasText(currentElement) &&
+            <div className={!currentProperties?.textTransform.active ? 'hidden' : ''}>
+              <Input type="checkbox" checked={currentProperties?.textTransform.active} onChange={() => updateProperty('textTransform', { ...currentProperties?.textTransform, active: !currentProperties?.textTransform.active } )} />
 
-          <label htmlFor="text-transform" className="option-name">text-transform</label>
-          <Select
-            id="text-transform"
-            value={currentProperties?.textTransform.keyword}
-            options={textTransformKeywords.slice()}
-            onChange={(event) => updateProperty('textTransform', { ...currentProperties?.textTransform, keyword: event.target.value } )}
-          />
-        </div>
+              <label htmlFor="text-transform" className="option-name">text-transform</label>
+              <Select
+                id="text-transform"
+                value={currentProperties?.textTransform.keyword}
+                options={textTransformKeywords.slice()}
+                onChange={(event) => updateProperty('textTransform', { ...currentProperties?.textTransform, keyword: event.target.value } )}
+              />
+            </div>
+        }
       </div>
 
       <div id="element-code">

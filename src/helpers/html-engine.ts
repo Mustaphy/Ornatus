@@ -1,5 +1,5 @@
 import { TreeNode } from "../components/TreeView/TreeViewTypes";
-import { Element } from "../pages/ElementDesigner/ElementDesignerTypes";
+import { Element, Selector, selectors } from "../pages/ElementDesigner/ElementDesignerTypes";
 import { toCamelCase } from "./utilities";
 
 export class HtmlEngine {
@@ -120,5 +120,27 @@ export class HtmlEngine {
 
       return `${acc}${result}`;
     }, '');
-  };
+  }
+
+  /**
+   * Get the selectors of the elements that are allowed to be children of the element
+   * @param {Element} element Element to get the allowed children for
+   * @returns {Selector[]} Returns the selectors allowed children for the element
+   */
+  static getAllowedChildren = (element: Element): Selector[] => {
+    const selector = element.selector;
+
+    switch (selector) {
+      case 'ul':
+      case 'ol':
+        return ['li'];
+      case 'input':
+      case 'textarea':
+      case 'button':
+      case 'li':
+          return [];
+      default:
+        return selectors.slice();
+    }
+  }
 }

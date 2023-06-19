@@ -78,7 +78,7 @@ export class CssEngine {
    * @returns {boolean} Returns if the current state of the element has text on it
    */
   static currentSelectionHasText = (element: Element): boolean => {
-    return element.selector  !== 'input' || (element.attributes.type !== 'color' && element.attributes.type !== 'checkbox');
+    return element.selector !== 'input' || (element.attributes.type !== 'color' && element.attributes.type !== 'checkbox');
   }
 
   /**

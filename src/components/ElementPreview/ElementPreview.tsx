@@ -2,6 +2,7 @@ import { CssEngine } from '../../helpers/css-engine';
 import { HtmlEngine } from '../../helpers/html-engine';
 import { TreeNode } from '../TreeView/TreeViewTypes';
 import { ElementPreviewProps } from './ElementPreviewTypes';
+import './ElementPreview.css';
 
 function ElementPreview({ tree }: ElementPreviewProps) {
   /**
@@ -21,6 +22,7 @@ function ElementPreview({ tree }: ElementPreviewProps) {
             type={element.attributes.type}
             value={HtmlEngine.getCurrentValue(element)}
             style={elementStyles}
+            className="default-styling"
             checked={HtmlEngine.isChecked(element)}
             readOnly
           />
@@ -31,12 +33,13 @@ function ElementPreview({ tree }: ElementPreviewProps) {
             key={element.uuid}
             value={element.attributes.value.text}
             style={elementStyles}
+            className="default-styling"
             readOnly
           />
         )
       default: 
         return (
-          <Element key={element.uuid} style={elementStyles}>
+          <Element key={element.uuid} style={elementStyles} className="default-styling">
             {element.innerText}
             {
               children && children.length > 0 &&
