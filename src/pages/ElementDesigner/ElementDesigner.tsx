@@ -10,6 +10,7 @@ import {
   textAlignKeywords,
   displayKeywords,
   gridAutoFlowKeywords,
+  textTransformKeywords,
 } from './ElementDesignerTypes';
 import Input from '../../components/Input/Input'
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
@@ -27,11 +28,11 @@ import { getDefaultElement } from './ElementDesignerData';
 
 function ElementDesigner() {
   const initialElement: Element = getDefaultElement();
-  const [selectedElementId, setSelectedElementId] = useState(initialElement.uuid);
+  const [currentElementId, setCurrentElementId] = useState(initialElement.uuid);
   const [tree, setTree] = useState<TreeNode[]>([
     {
       element: initialElement,
-      onClick: () => setSelectedElementId(initialElement.uuid),
+      onClick: () => setCurrentElementId(initialElement.uuid),
     }
   ]);
 
@@ -40,21 +41,21 @@ function ElementDesigner() {
    * @param {TreeNode[]} nodes Nodes to search for the current element
    * @returns {Element | undefined} The current element, or undefined if not found
    */
-  const getSelectedNode = (nodes: TreeNode[] = tree): TreeNode | undefined => {
+  const getCurrentNode = (nodes: TreeNode[] = tree): TreeNode | undefined => {
     return nodes.reduce((element: TreeNode | undefined, node) => {
       if (element)
         return element;
   
-      if (node.element.uuid === selectedElementId)
+      if (node.element.uuid === currentElementId)
         return node;
   
       if (node.children)
-        return getSelectedNode(node.children);
+        return getCurrentNode(node.children);
       }, undefined);
   }
-  const selectedElement = getSelectedNode()!.element;
-  const currentProperties = selectedElement.properties;
-  const currentAttributes = selectedElement.attributes;
+  const currentElement = getCurrentNode()!.element;
+  const currentProperties = currentElement.properties;
+  const currentAttributes = currentElement.attributes;
 
   /**
    * Update a field of the current element
@@ -65,7 +66,7 @@ function ElementDesigner() {
     setTree(prevHierarchy => {
       const updatePropertyRecursively = (nodes: TreeNode[]): TreeNode[] => {
         return nodes.map(node => {
-          if (node.element.uuid === selectedElementId) {
+          if (node.element.uuid === currentElementId) {
             const updatedElement: Element = {
               ...node.element,
               [field]: value
@@ -115,8 +116,8 @@ function ElementDesigner() {
    * @param {Element} element Element to add to the nodes
    */
   const addElement = (element: Element): void => {
-    setTree([...tree, { element: { ...element }, onClick: () => setSelectedElementId(element.uuid) } ]);
-    setSelectedElementId(element.uuid);
+    setTree([...tree, { element: { ...element }, onClick: () => setCurrentElementId(element.uuid) } ]);
+    setCurrentElementId(element.uuid);
 
     toast.success('Element has been created!', {
       position: 'bottom-right',
@@ -130,9 +131,9 @@ function ElementDesigner() {
    * @param {number} index The index of the color that is changed, since the linear-gradient consists of multiple colors
    */
   const handleLinearGradientBackgroundChanged = (event: ChangeEvent<HTMLInputElement>, index: number): void => {
-    const colors = selectedElement.properties.background.linearGradient.colors;
+    const colors = currentElement.properties.background.linearGradient.colors;
     colors[index] = event.target.value;
-    updateProperty('background', { ...selectedElement.properties.background, linearGradient: { colors: colors } });
+    updateProperty('background', { ...currentElement.properties.background, linearGradient: { colors: colors } });
   }
 
   /**
@@ -219,7 +220,7 @@ function ElementDesigner() {
           tree={tree}
           onChange={(tree: TreeNode[]) => setTree(tree)}
           toast={toast}
-          selectedElementId={selectedElementId}
+          currentElementId={currentElementId}
         />
 
         <div
@@ -239,12 +240,12 @@ function ElementDesigner() {
           <label htmlFor="element" className="option-name">selector</label>
           <Select
             id="selector"
-            value={selectedElement.selector}
+            value={currentElement.selector}
             options={selectors.slice()}
             onChange={(event) => {
               const selector = event.target.value as Selector;
               const selfClosingElements = ['input', 'textarea'];
-              const currentNode = getSelectedNode();
+              const currentNode = getCurrentNode();
 
               if (selfClosingElements.includes(selector) && (currentNode?.children?.length ?? 0)) {
                 toast.error(`You can't change this element to a <${selector}>, since it can't have child elements`, {
@@ -269,40 +270,40 @@ function ElementDesigner() {
         </div>
 
         {
-          isTypeVisible(selectedElement) &&
+          isTypeVisible(currentElement) &&
             <div>
               <label htmlFor="type" className="option-name">type</label>
               <Select
                 id="type"
                 value={currentAttributes?.type}
-                options={getTypeOptions(selectedElement)}
+                options={getTypeOptions(currentElement)}
                 onChange={(event) => updateAttribute('type', event.target.value)}
                 />
             </div>
         }
       
         {
-          isInnerTextVisible(selectedElement) &&
+          isInnerTextVisible(currentElement) &&
             <div>
               <label htmlFor="innerText" className="option-name">innerText</label>
               <Input
                 id="innerText"
                 type="text"
-                value={selectedElement.innerText}
+                value={currentElement.innerText}
                 onChange={(event) => updateField('innerText', event.target.value)}
               />
             </div>
         }
 
         {
-          isValueVisible(selectedElement) &&
-            <div className={!currentAttributes?.value.active ? 'hidden' : ''}>
+          isValueVisible(currentElement) &&
+            <div>
               <label htmlFor="value" className="option-name">value</label>
               <Input
                 id="value"
-                type={selectedElement.selector === 'input' ? getTypeForUserInput(selectedElement) : 'text'}
-                value={selectedElement.selector === 'input' ? HtmlEngine.getCurrentValue(selectedElement) : currentAttributes?.value.text}
-                checked={HtmlEngine.isChecked(selectedElement)}
+                type={currentElement.selector === 'input' ? getTypeForUserInput(currentElement) : 'text'}
+                value={currentElement.selector === 'input' ? HtmlEngine.getCurrentValue(currentElement) : currentAttributes?.value.text}
+                checked={HtmlEngine.isChecked(currentElement)}
                 onChange={(event) => {
                   const value = currentAttributes?.type === 'checkbox' ? event.target.checked : event.target.value;
 
@@ -330,7 +331,7 @@ function ElementDesigner() {
         </div>
 
         {
-          isGridAutoFlowVisible(selectedElement) &&
+          isGridAutoFlowVisible(currentElement) &&
             <div className={!currentProperties?.gridAutoFlow.active ? 'hidden' : ''}>
               <Input type="checkbox" checked={currentProperties?.gridAutoFlow.active} onChange={() => updateProperty('gridAutoFlow', { ...currentProperties?.gridAutoFlow, active: !currentProperties?.gridAutoFlow.active } )} />
 
@@ -406,7 +407,7 @@ function ElementDesigner() {
         </div>
 
         {
-          CssEngine.currentSelectionHasText(selectedElement) &&
+          CssEngine.currentSelectionHasText(currentElement) &&
             <div className={!currentProperties?.color.active ? 'hidden' : ''}>
               <Input type="checkbox" checked={currentProperties?.color.active} onChange={() => updateProperty('color', { ...currentProperties?.color, active: !currentProperties?.color.active } )} />
 
@@ -421,7 +422,7 @@ function ElementDesigner() {
         }
 
         {
-          CssEngine.currentSelectionHasText(selectedElement) &&
+          CssEngine.currentSelectionHasText(currentElement) &&
             <div className={!currentProperties?.fontSize.active ? 'hidden' : ''}>
               <Input type="checkbox" checked={currentProperties?.fontSize.active} onChange={() => updateProperty('fontSize', { ...currentProperties?.fontSize, active: !currentProperties?.fontSize.active } )} />
 
@@ -437,7 +438,7 @@ function ElementDesigner() {
         }
 
         {
-          CssEngine.currentSelectionHasText(selectedElement) &&
+          CssEngine.currentSelectionHasText(currentElement) &&
             <div className={!currentProperties?.fontWeight.active ? 'hidden' : ''}>
               <Input type="checkbox" checked={currentProperties?.fontWeight.active} onChange={() => updateProperty('fontWeight', { ...currentProperties?.fontWeight, active: !currentProperties?.fontWeight.active } )} />
 
@@ -455,7 +456,7 @@ function ElementDesigner() {
         }
 
         {
-          CssEngine.currentSelectionHasText(selectedElement) &&
+          CssEngine.currentSelectionHasText(currentElement) &&
             <div className={!currentProperties?.textAlign.active ? 'hidden' : ''}>
               <Input type="checkbox" checked={currentProperties?.textAlign.active} onChange={() => updateProperty('textAlign', { ...currentProperties?.textAlign, active: !currentProperties?.textAlign.active } )} />
 
@@ -539,6 +540,18 @@ function ElementDesigner() {
             value={currentProperties?.cursor.keyword}
             options={cursorKeywords.slice()}
             onChange={(event) => updateProperty('cursor', { ...currentProperties?.cursor, keyword: event.target.value } )}
+          />
+        </div>
+
+        <div className={!currentProperties?.textTransform.active ? 'hidden' : ''}>
+          <Input type="checkbox" checked={currentProperties?.textTransform.active} onChange={() => updateProperty('textTransform', { ...currentProperties?.textTransform, active: !currentProperties?.textTransform.active } )} />
+
+          <label htmlFor="text-transform" className="option-name">text-transform</label>
+          <Select
+            id="text-transform"
+            value={currentProperties?.textTransform.keyword}
+            options={textTransformKeywords.slice()}
+            onChange={(event) => updateProperty('textTransform', { ...currentProperties?.textTransform, keyword: event.target.value } )}
           />
         </div>
       </div>

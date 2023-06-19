@@ -25,6 +25,7 @@ export type Element = {
     padding: Padding,
     margin: Margin,
     cursor: Cursor,
+    textTransform: TextTransform,
   }
 };
 
@@ -72,29 +73,15 @@ export const cursorKeywords = [
 ] as const;
 export type CursorKeyword = typeof cursorKeywords[number];
 
+export const textTransformKeywords = [
+  'none', 'capitalize', 'uppercase', 'lowercase', 'full-width', 'full-size-kana'
+] as const;
+export type TextTransformKeyword = typeof textTransformKeywords[number];
+
 /* Input fields */
 export type Property = {
   active: boolean
 }
-
-export type Display = {
-  keyword: DisplayKeyword,
-  active: false
-} & Property;
-
-export type GridAutoFlow = {
-  keyword: GridAutoFlowKeyword
-} & Property;
-
-export type Height = {
-  value: number,
-  unit: Unit
-} & Property;
-
-export type Width = {
-  value: number,
-  unit: Unit
-} & Property;
 
 export type Value = {
   button: string,
@@ -114,6 +101,25 @@ export type Value = {
   time: string,
   url: string,
   week: string,
+};
+
+export type Display = {
+  keyword: DisplayKeyword,
+  active: false
+} & Property;
+
+export type GridAutoFlow = {
+  keyword: GridAutoFlowKeyword
+} & Property;
+
+export type Height = {
+  value: number,
+  unit: Unit
+} & Property;
+
+export type Width = {
+  value: number,
+  unit: Unit
 } & Property;
 
 export type Background = {
@@ -162,6 +168,10 @@ export type Padding = {
 
 export type Cursor = {
   keyword: CursorKeyword,
+} & Property;
+
+export type TextTransform = {
+  keyword: TextTransformKeyword,
 } & Property;
 
 type BorderWidth = {

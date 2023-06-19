@@ -27,7 +27,6 @@ export const getDefaultElement = (): Element => {
         time: "00:00",
         url: 'https://example.com',
         week: '1',
-        active: true,
       },
     },
     properties: {
@@ -96,7 +95,11 @@ export const getDefaultElement = (): Element => {
       cursor: {
         keyword: 'pointer',
         active: true,
-      }
+      },
+      textTransform: {
+        keyword: 'none',
+        active: false,
+      },
     }
   }
 }

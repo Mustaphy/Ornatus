@@ -16,10 +16,11 @@ export class CssEngine {
       case 'gridAutoFlow':
         return properties.gridAutoFlow.active && properties.display.active && properties.display.keyword.includes('grid');
       case 'color':
-        case 'fontSize':
-        case 'fontWeight':
-        case 'textAlign':
-          return properties[property].active && this.currentSelectionHasText(element);
+      case 'fontSize':
+      case 'fontWeight':
+      case 'textAlign':
+      case 'textTransform':
+        return properties[property].active && this.currentSelectionHasText(element);
       case 'display':
       case 'height':
       case 'width':
@@ -57,6 +58,7 @@ export class CssEngine {
       case 'gridAutoFlow':
       case 'textAlign':
       case 'cursor':
+      case 'textTransform':
         return properties[property].keyword;
       case 'height':
       case 'width':

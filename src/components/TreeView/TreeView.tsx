@@ -3,14 +3,14 @@ import './TreeView.css';
 import { TreeNode, TreeViewProps } from './TreeViewTypes';
 import { BsFillTrash3Fill } from 'react-icons/all';
 
-function TreeView({ tree, selectedElementId, toast, onChange }: TreeViewProps) {
+function TreeView({ tree, currentElementId, toast, onChange }: TreeViewProps) {
   const [draggingNodeId, setDraggingNodeId] = useState<string | null>(null);
   const [targetNodeId, setTargetNodeId] = useState<string | null>(null);
 
   /**
    * Handles the drag end event
    */
-  const handleDragEnd = () => {
+  const handleDragEnd = (): void => {
     setDraggingNodeId(null);
     setTargetNodeId(null);
   }
@@ -20,7 +20,7 @@ function TreeView({ tree, selectedElementId, toast, onChange }: TreeViewProps) {
    * @param {DragEvent} event Event that is triggered when the user drags an element over another element
    * @param {string} nodeId The id of the node that is being dragged
    */
-  const handleDragOver = (event: React.DragEvent, nodeId: string) => {
+  const handleDragOver = (event: React.DragEvent, nodeId: string): void => {
     event.preventDefault();
     setTargetNodeId(nodeId);
   };
@@ -29,7 +29,7 @@ function TreeView({ tree, selectedElementId, toast, onChange }: TreeViewProps) {
    * Handles the event that occurs when the user drops an element
    * @param {string} parentId The id of the node that is being dragged over
    */
-  const handleDrop = (parentId: string) => {
+  const handleDrop = (parentId: string): void => {
     if (!draggingNodeId)
       return;
 
@@ -59,13 +59,13 @@ function TreeView({ tree, selectedElementId, toast, onChange }: TreeViewProps) {
     onChange(newTree);
   };
 
-  const onDeleteZoneDropped = () => {
+  const onDeleteZoneDropped = (): void => {
     if (!draggingNodeId)
       return;
 
     const updatedTree = removeNode(tree, draggingNodeId);
 
-    if (draggingNodeId === selectedElementId)
+    if (draggingNodeId === currentElementId)
       updatedTree[0].onClick();
 
     onChange(updatedTree);
@@ -211,7 +211,7 @@ function TreeView({ tree, selectedElementId, toast, onChange }: TreeViewProps) {
           onClick={node.onClick}
           className={`
             ${targetNodeId === node.element.uuid ? 'drag-over' : ''}
-            ${selectedElementId === node.element.uuid ? 'selected' : ''}
+            ${currentElementId === node.element.uuid ? 'selected' : ''}
           `}
           style={{ marginLeft: `${indentLevel * 20}px` }}
         >
