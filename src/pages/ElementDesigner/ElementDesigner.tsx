@@ -16,7 +16,7 @@ import Input from '../../components/Input/Input'
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
 import Select from "../../components/Select/Select";
 import { MdContentCopy, MdAddCircle } from "react-icons/all";
-import { Type, types } from '../../components/Input/InputTypes';
+import { Type } from '../../components/Input/InputTypes';
 import TreeView from '../../components/TreeView/TreeView';
 import ElementPreview from '../../components/ElementPreview/ElementPreview';
 import { TreeNode } from '../../components/TreeView/TreeViewTypes';
@@ -156,24 +156,6 @@ function ElementDesigner() {
   }
 
   /**
-   * Get the type options that are available for the selected element
-   * @param {Element} element Element to get the type options for
-   * @returns {Type[]} Returns which input types are available for the selected element
-   */
-  const getTypeOptions = (element: Element): Type[] => {
-    const typeOptions = types.slice();
-
-    switch (element.selector) {
-      case 'button':
-        return typeOptions.filter(type => type === 'button' || type === 'reset' || type === 'submit');
-      case 'input':
-        return typeOptions;
-      default:
-        return [];
-    }
-  }
-
-  /**
    * Get if the 'display' option is visible for the user based on the selected element
    * @param {Element} element Element to get the 'display' option visibility for
    * @returns {boolean} Returns if the 'display' option is visible for the user
@@ -223,10 +205,7 @@ function ElementDesigner() {
           currentElementId={currentElementId}
         />
 
-        <div
-          id="add-element-container"
-          onClick={() => addElement(getDefaultElement()) }
-        >
+        <div id="add-element-container" onClick={() => addElement(getDefaultElement())}>
           <MdAddCircle />
           <p>Add a new element</p>
         </div>
@@ -244,14 +223,20 @@ function ElementDesigner() {
             options={selectors.slice()}
             onChange={(event) => {
               const selector = event.target.value as Selector;
-              const selfClosingElements = ['input', 'textarea'];
+              const types = HtmlEngine.getTypes(selector);
+              const allowedChildren = HtmlEngine.getAllowedChildren(currentElement.selector);
               const currentNode = getCurrentNode();
 
-              if (selfClosingElements.includes(selector) && (currentNode?.children?.length ?? 0)) {
+              if (!allowedChildren.includes(selector) && (currentNode?.children?.length ?? 0)) {
                 toast.error(`You can't change this element to a <${selector}>, since it can't have child elements`, {
                   position: 'bottom-right' }
                 );
                 return;
+              }
+
+              // If the current type is set to a type that is not allowed for the new selector, change it to the first allowed type
+              if (types.length > 0 && !types.includes(currentAttributes.type)) {
+                updateAttribute('type', types[0]);
               }
 
               updateField('selector', selector);
@@ -276,7 +261,7 @@ function ElementDesigner() {
               <Select
                 id="type"
                 value={currentAttributes?.type}
-                options={getTypeOptions(currentElement)}
+                options={HtmlEngine.getTypes(currentElement.selector)}
                 onChange={(event) => updateAttribute('type', event.target.value)}
                 />
             </div>
@@ -306,7 +291,6 @@ function ElementDesigner() {
                 checked={HtmlEngine.isChecked(currentElement)}
                 onChange={(event) => {
                   const value = currentAttributes?.type === 'checkbox' ? event.target.checked : event.target.value;
-
                   updateAttribute('value', { ...currentAttributes?.value, [currentAttributes?.type]: value });
                 }}
               />

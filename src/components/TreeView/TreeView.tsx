@@ -40,7 +40,7 @@ function TreeView({ tree, currentElementId, toast, onChange }: TreeViewProps) {
     setDraggingNodeId(null);
     setTargetNodeId(null);
 
-    if (!draggedNode || !parentNode || !HtmlEngine.getAllowedChildren(parentNode.element).includes(draggedNode.element.selector)) {
+    if (!draggedNode || !parentNode || !HtmlEngine.getAllowedChildren(parentNode.element.selector).includes(draggedNode.element.selector)) {
       toast.error(`<${parentNode?.element.selector}> can't be a parent of <${draggedNode?.element.selector}>`, {
         position: 'bottom-right',
       });
@@ -144,7 +144,7 @@ function TreeView({ tree, currentElementId, toast, onChange }: TreeViewProps) {
    * @param {TreeNode[]} tree Tree to add the node to
    * @param {TreeNode} nodeToInsert Node to insert
    * @param {string} parentId Id of the parent node
-   * @returns {TreeNode[]}
+   * @returns {TreeNode[]} The tree with the node inserted
    */
   const insertNode = (tree: TreeNode[], nodeToInsert: TreeNode, parentId: string): TreeNode[] => {
     return tree.map((node) => {
@@ -184,7 +184,7 @@ function TreeView({ tree, currentElementId, toast, onChange }: TreeViewProps) {
    * @param {number} indentLevel Indent level of the current node
    * @returns {Element[] | null} The tree as a list of JSX elements
    */
-  const renderTreeNodes = (tree: TreeNode[], indentLevel = 0): JSX.Element[] | null => {
+  const renderTreeNodes = (tree: TreeNode[], indentLevel: number = 0): JSX.Element[] | null => {
     if (!tree)
       return null;
 

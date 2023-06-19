@@ -1,3 +1,4 @@
+import { Type, types } from "../components/Input/InputTypes";
 import { TreeNode } from "../components/TreeView/TreeViewTypes";
 import { Element, Selector, selectors } from "../pages/ElementDesigner/ElementDesignerTypes";
 import { toCamelCase } from "./utilities";
@@ -123,13 +124,11 @@ export class HtmlEngine {
   }
 
   /**
-   * Get the selectors of the elements that are allowed to be children of the element
-   * @param {Element} element Element to get the allowed children for
+   * Get the selectors of the elements that are allowed to be children of the elements of the given selector
+   * @param {Selector} selector Selector to get the allowed children for
    * @returns {Selector[]} Returns the selectors allowed children for the element
    */
-  static getAllowedChildren = (element: Element): Selector[] => {
-    const selector = element.selector;
-
+  static getAllowedChildren = (selector: Selector): Selector[] => {
     switch (selector) {
       case 'ul':
       case 'ol':
@@ -141,6 +140,22 @@ export class HtmlEngine {
           return [];
       default:
         return selectors.slice();
+    }
+  }
+
+  /**
+   * Get the valid keywords for the 'type' attribute for an element with a specfic selector
+   * @param
+   * @returns {Type[]} Returns the types allowed for the element
+   */
+  static getTypes = (selector: Selector): Type[] => {
+    switch (selector) {
+      case 'input':
+        return types.slice();
+      case 'button':
+        return ['button', 'reset', 'submit'];
+      default:
+        return [];
     }
   }
 }
