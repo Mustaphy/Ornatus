@@ -11,7 +11,7 @@ function ElementPreview({ tree }: ElementPreviewProps) {
    */
   const renderTreeNode = (node: TreeNode) => {
     const { element, children } = node;
-    const elementStyles = CssEngine.getJSX(element);
+    const styles = CssEngine.getJSX(element);
     const Element = element.selector;
 
     switch (element.selector) {
@@ -21,7 +21,7 @@ function ElementPreview({ tree }: ElementPreviewProps) {
             key={element.uuid}
             type={element.attributes.type}
             value={HtmlEngine.getCurrentValue(element)}
-            style={elementStyles}
+            style={styles}
             className="default-styling"
             checked={HtmlEngine.isChecked(element)}
             readOnly
@@ -32,14 +32,14 @@ function ElementPreview({ tree }: ElementPreviewProps) {
           <textarea
             key={element.uuid}
             value={element.attributes.value.text}
-            style={elementStyles}
+            style={styles}
             className="default-styling"
             readOnly
           />
         )
       default: 
         return (
-          <Element key={element.uuid} style={elementStyles} className="default-styling">
+          <Element key={element.uuid} style={styles} className="default-styling" readOnly>
             {element.innerText}
             {
               children && children.length > 0 &&

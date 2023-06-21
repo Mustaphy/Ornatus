@@ -38,6 +38,22 @@ export const getDefaultElement = (): Element => {
         keyword: 'row',
         active: false,
       },
+      alignItems: {
+        keyword: 'center',
+        active: false,
+      },
+      alignContent: {
+        keyword: 'center',
+        active: false,
+      },
+      justifyItems: {
+        keyword: 'center',
+        active: false,
+      },
+      justifyContent: {
+        keyword: 'center',
+        active: false,
+      },
       height: {
         value: 100,
         unit: '%',

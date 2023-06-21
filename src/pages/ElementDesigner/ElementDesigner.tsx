@@ -11,6 +11,10 @@ import {
   displayKeywords,
   gridAutoFlowKeywords,
   textTransformKeywords,
+  alignItemsKeywords,
+  alignContentKeywords,
+  justifyItemsKeywords,
+  justifyContentKeywords,
 } from './ElementDesignerTypes';
 import Input from '../../components/Input/Input'
 import UnitSelect from '../../components/UnitSelect/UnitSelect';
@@ -162,6 +166,17 @@ function ElementDesigner() {
    */
   const isGridAutoFlowVisible = (element: Element): boolean => {
     return element.properties.display.keyword.includes('grid') && element.properties.display.active;
+  }
+
+  /**
+   * Get if the element uses flex or grid
+   * @param {Element} element Element to get if it uses flex or grid
+   * @returns {boolean} Returns if the element uses flex or grid
+   */
+  const isFlexOrGrid = (element: Element): boolean => {
+    return (element.properties.display.keyword.includes('flex') ||
+      element.properties.display.keyword.includes('grid')) &&
+      element.properties.display.active;;
   }
 
   /**
@@ -319,14 +334,67 @@ function ElementDesigner() {
             <div className={!currentProperties?.gridAutoFlow.active ? 'hidden' : ''}>
               <Input type="checkbox" checked={currentProperties?.gridAutoFlow.active} onChange={() => updateProperty('gridAutoFlow', { ...currentProperties?.gridAutoFlow, active: !currentProperties?.gridAutoFlow.active } )} />
 
-              <label htmlFor="gridAutoFlow" className="option-name">grid-auto-flow</label>
+              <label htmlFor="grid-auto-flow" className="option-name">grid-auto-flow</label>
               <Select
-                id="gridAutoFlow"
+                id="grid-auto-flow"
                 value={currentProperties?.gridAutoFlow.keyword}
                 options={gridAutoFlowKeywords.slice()}
                 onChange={(event) => updateProperty('gridAutoFlow', { ...currentProperties?.gridAutoFlow, keyword: event.target.value } )}
               />
             </div>
+        }
+
+        {
+          isFlexOrGrid(currentElement) &&
+            <>
+              <div className={!currentProperties?.alignItems.active ? 'hidden' : ''}>
+                <Input type="checkbox" checked={currentProperties?.alignItems.active} onChange={() => updateProperty('alignItems', { ...currentProperties?.alignItems, active: !currentProperties?.alignItems.active } )} />
+
+                <label htmlFor="align-items" className="option-name">align-items</label>
+                <Select
+                  id="align-items"
+                  value={currentProperties?.alignItems.keyword}
+                  options={alignItemsKeywords.slice()}
+                  onChange={(event) => updateProperty('alignItems', { ...currentProperties?.alignItems, keyword: event.target.value } )}
+                />
+              </div>
+
+              <div className={!currentProperties?.alignContent.active ? 'hidden' : ''}>
+                <Input type="checkbox" checked={currentProperties?.alignContent.active} onChange={() => updateProperty('alignContent', { ...currentProperties?.alignContent, active: !currentProperties?.alignContent.active } )} />
+
+                <label htmlFor="align-content" className="option-name">align-content</label>
+                <Select
+                  id="align-content"
+                  value={currentProperties?.alignContent.keyword}
+                  options={alignContentKeywords.slice()}
+                  onChange={(event) => updateProperty('alignContent', { ...currentProperties?.alignContent, keyword: event.target.value } )}
+                />
+              </div>
+
+              <div className={!currentProperties?.justifyItems.active ? 'hidden' : ''}>
+                <Input type="checkbox" checked={currentProperties?.justifyItems.active} onChange={() => updateProperty('justifyItems', { ...currentProperties?.justifyItems, active: !currentProperties?.justifyItems.active } )} />
+
+                <label htmlFor="justify-items" className="option-name">justify-items</label>
+                <Select
+                  id="justify-items"
+                  value={currentProperties?.justifyItems.keyword}
+                  options={justifyItemsKeywords.slice()}
+                  onChange={(event) => updateProperty('justifyItems', { ...currentProperties?.justifyItems, keyword: event.target.value } )}
+                />
+              </div>
+
+              <div className={!currentProperties?.justifyContent.active ? 'hidden' : ''}>
+                <Input type="checkbox" checked={currentProperties?.justifyContent.active} onChange={() => updateProperty('justifyContent', { ...currentProperties?.justifyContent, active: !currentProperties?.justifyContent.active } )} />
+
+                <label htmlFor="justify-content" className="option-name">justify-content</label>
+                <Select
+                  id="justify-content"
+                  value={currentProperties?.justifyContent.keyword}
+                  options={justifyContentKeywords.slice()}
+                  onChange={(event) => updateProperty('justifyContent', { ...currentProperties?.justifyContent, keyword: event.target.value } )}
+                />
+              </div>
+            </>
         }
 
         <div className={!currentProperties?.height.active ? 'hidden' : ''}>
@@ -392,66 +460,59 @@ function ElementDesigner() {
 
         {
           CssEngine.currentSelectionHasText(currentElement) &&
-            <div className={!currentProperties?.color.active ? 'hidden' : ''}>
-              <Input type="checkbox" checked={currentProperties?.color.active} onChange={() => updateProperty('color', { ...currentProperties?.color, active: !currentProperties?.color.active } )} />
+            <>
+              <div className={!currentProperties?.color.active ? 'hidden' : ''}>
+                <Input type="checkbox" checked={currentProperties?.color.active} onChange={() => updateProperty('color', { ...currentProperties?.color, active: !currentProperties?.color.active } )} />
 
-              <label htmlFor="color" className="option-name">color</label>
-              <Input
-                id="color"
-                type="color"
-                value={currentProperties?.color.hex}
-                onChange={(event) => updateProperty('color', { ...currentProperties?.border, hex: event.target.value } )}
-              />
-            </div>
-        }
-
-        {
-          CssEngine.currentSelectionHasText(currentElement) &&
-            <div className={!currentProperties?.fontSize.active ? 'hidden' : ''}>
-              <Input type="checkbox" checked={currentProperties?.fontSize.active} onChange={() => updateProperty('fontSize', { ...currentProperties?.fontSize, active: !currentProperties?.fontSize.active } )} />
-
-              <label htmlFor="font-size" className="option-name">font-size</label>
-              <UnitSelect
-                id="font-size"
-                value={currentProperties?.fontSize.value}
-                unit={currentProperties?.fontSize.unit} 
-                valueOnChange={(event) => updateProperty('fontSize', { ...currentProperties?.fontSize, value: Number(event.target.value) })}
-                unitOnChange={(event) => updateProperty('fontSize', { ...currentProperties?.fontSize, unit: event.target.value })}
-              />
-            </div>
-        }
-
-        {
-          CssEngine.currentSelectionHasText(currentElement) &&
-            <div className={!currentProperties?.fontWeight.active ? 'hidden' : ''}>
-              <Input type="checkbox" checked={currentProperties?.fontWeight.active} onChange={() => updateProperty('fontWeight', { ...currentProperties?.fontWeight, active: !currentProperties?.fontWeight.active } )} />
-
-              <label htmlFor="font-weight" className="option-name">font-weight</label>
-              <Input
-                id="font-weight"
-                type="number"
-                value={currentProperties?.fontWeight.value}
-                min={100}
-                max={900}
-                step={100}
-                onChange={(event) => updateProperty('fontWeight', { ...currentProperties?.cursor, value: Number(event.target.value) } )}
+                <label htmlFor="color" className="option-name">color</label>
+                <Input
+                  id="color"
+                  type="color"
+                  value={currentProperties?.color.hex}
+                  onChange={(event) => updateProperty('color', { ...currentProperties?.border, hex: event.target.value } )}
                 />
-            </div>
-        }
+              </div>
 
-        {
-          CssEngine.currentSelectionHasText(currentElement) &&
-            <div className={!currentProperties?.textAlign.active ? 'hidden' : ''}>
-              <Input type="checkbox" checked={currentProperties?.textAlign.active} onChange={() => updateProperty('textAlign', { ...currentProperties?.textAlign, active: !currentProperties?.textAlign.active } )} />
+              <div className={!currentProperties?.fontSize.active ? 'hidden' : ''}>
+                <Input type="checkbox" checked={currentProperties?.fontSize.active} onChange={() => updateProperty('fontSize', { ...currentProperties?.fontSize, active: !currentProperties?.fontSize.active } )} />
 
-              <label htmlFor="cursor" className="option-name">text-align</label>
-              <Select
-                id="cursor"
-                value={currentProperties?.textAlign.keyword}
-                options={textAlignKeywords.slice()}
-                onChange={(event) => updateProperty('textAlign', { ...currentProperties?.textAlign, keyword: event.target.value } )}
-              />
-            </div>
+                <label htmlFor="font-size" className="option-name">font-size</label>
+                <UnitSelect
+                  id="font-size"
+                  value={currentProperties?.fontSize.value}
+                  unit={currentProperties?.fontSize.unit} 
+                  valueOnChange={(event) => updateProperty('fontSize', { ...currentProperties?.fontSize, value: Number(event.target.value) })}
+                  unitOnChange={(event) => updateProperty('fontSize', { ...currentProperties?.fontSize, unit: event.target.value })}
+                />
+              </div>
+
+              <div className={!currentProperties?.fontWeight.active ? 'hidden' : ''}>
+                <Input type="checkbox" checked={currentProperties?.fontWeight.active} onChange={() => updateProperty('fontWeight', { ...currentProperties?.fontWeight, active: !currentProperties?.fontWeight.active } )} />
+
+                <label htmlFor="font-weight" className="option-name">font-weight</label>
+                <Input
+                  id="font-weight"
+                  type="number"
+                  value={currentProperties?.fontWeight.value}
+                  min={100}
+                  max={900}
+                  step={100}
+                  onChange={(event) => updateProperty('fontWeight', { ...currentProperties?.cursor, value: Number(event.target.value) } )}
+                  />
+              </div>
+
+              <div className={!currentProperties?.textAlign.active ? 'hidden' : ''}>
+                <Input type="checkbox" checked={currentProperties?.textAlign.active} onChange={() => updateProperty('textAlign', { ...currentProperties?.textAlign, active: !currentProperties?.textAlign.active } )} />
+
+                <label htmlFor="cursor" className="option-name">text-align</label>
+                <Select
+                  id="cursor"
+                  value={currentProperties?.textAlign.keyword}
+                  options={textAlignKeywords.slice()}
+                  onChange={(event) => updateProperty('textAlign', { ...currentProperties?.textAlign, keyword: event.target.value } )}
+                />
+              </div>
+            </>
         }
 
         <div className={!currentProperties?.border.active ? 'hidden' : ''}>

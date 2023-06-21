@@ -13,6 +13,10 @@ export type Element = {
   properties: {
     display: Display,
     gridAutoFlow: GridAutoFlow,
+    alignItems: AlignItems,
+    alignContent: AlignContent,
+    justifyItems: JustifyItems,
+    justifyContent: JustifyContent,
     height: Height,
     width: Width,
     background: Background,
@@ -29,6 +33,26 @@ export type Element = {
   }
 };
 
+export type Value = {
+  button: string,
+  color: string,
+  checkbox: boolean,
+  date: string,
+  datetimeLocal: string,
+  email: string,
+  month: string,
+  number: string,
+  password: string,
+  reset: string,
+  search: string,
+  submit: string,
+  tel: string,
+  text: string,
+  time: string,
+  url: string,
+  week: string,
+};
+
 /* Values that can be selected */
 export const displayKeywords = [
   'block', 'inline', 'inline-block', 'flex', 'inline-flex', 'grid', 'inline-grid', 'flow-root', 'none', 'contents',
@@ -41,6 +65,30 @@ export const gridAutoFlowKeywords = [
   'row', 'column', 'dense', 'row dense', 'column dense'
 ] as const;
 export type GridAutoFlowKeyword = typeof gridAutoFlowKeywords[number];
+
+export const alignItemsKeywords = [
+  'normal', 'stretch', 'center', 'start', 'end', 'flex-start', 'flex-end', 'self-start', 'self-end', 'baseline',
+  'first baseline', 'last baseline', 'safe center', 'unsafe center'
+] as const;
+export type AlignItemsKeyword = typeof alignItemsKeywords[number];
+
+export const alignContentKeywords = [
+  'center', 'start', 'end', 'flex-start', 'flex-end', 'normal', 'baseline', 'first baseline', 'last baseline',
+  'space-between', 'space-around', 'space-evenly', 'stretch', 'safe center', 'unsafe center'
+] as const;
+export type AlignContentKeyword = typeof alignContentKeywords[number];
+
+export const justifyItemsKeywords = [
+  'normal', 'stretch', 'center', 'start', 'end', 'flex-start', 'flex-end', 'left', 'right', 'baseline',
+  'first baseline', 'last baseline', 'safe center', 'unsafe center', 'legacy right', 'legacy left', 'legacy center'
+] as const;
+export type JustifyItemsKeyword = typeof justifyItemsKeywords[number];
+
+export const justifyContentKeywords = [
+  'center', 'start', 'end', 'flex-start', 'flex-end', 'left', 'right', 'normal', 'space between', 'space-around',
+  'space-evenly', 'stretch', 'safe center', 'unsafe center'
+] as const;
+export type JustifyContentKeyword = typeof justifyContentKeywords[number];
 
 export const selectors = [
   'a', 'abbr', 'address', 'article', 'aside', 'b', 'bdi', 'bdo', 'blockquote', 'button', 'cite', 'code', 'div', 'em',
@@ -83,26 +131,6 @@ export type Property = {
   active: boolean
 }
 
-export type Value = {
-  button: string,
-  color: string,
-  checkbox: boolean,
-  date: string,
-  datetimeLocal: string,
-  email: string,
-  month: string,
-  number: string,
-  password: string,
-  reset: string,
-  search: string,
-  submit: string,
-  tel: string,
-  text: string,
-  time: string,
-  url: string,
-  week: string,
-};
-
 export type Display = {
   keyword: DisplayKeyword,
   active: false
@@ -110,6 +138,22 @@ export type Display = {
 
 export type GridAutoFlow = {
   keyword: GridAutoFlowKeyword
+} & Property;
+
+export type AlignItems = {
+  keyword: AlignItemsKeyword
+} & Property;
+
+export type AlignContent = {
+  keyword: AlignContentKeyword
+} & Property;
+
+export type JustifyItems = {
+  keyword: JustifyItemsKeyword
+} & Property;
+
+export type JustifyContent = {
+  keyword: JustifyContentKeyword
 } & Property;
 
 export type Height = {

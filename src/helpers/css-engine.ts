@@ -15,6 +15,11 @@ export class CssEngine {
     switch (property) {
       case 'gridAutoFlow':
         return properties.gridAutoFlow.active && properties.display.active && properties.display.keyword.includes('grid');
+      case 'alignItems':
+      case 'alignContent':
+      case 'justifyItems':
+      case 'justifyContent':
+        return properties[property].active && properties.display.active && (properties.display.keyword.includes('grid') || properties.display.keyword.includes('flex'));
       case 'color':
       case 'fontSize':
       case 'fontWeight':
@@ -54,12 +59,6 @@ export class CssEngine {
         return element.properties.fontWeight.value.toString();
       case 'border':
         return `${element.properties.border.width.value + element.properties.border.width.unit} ${element.properties.border.style} ${element.properties.border.color}`;
-      case 'display':
-      case 'gridAutoFlow':
-      case 'textAlign':
-      case 'cursor':
-      case 'textTransform':
-        return properties[property].keyword;
       case 'height':
       case 'width':
       case 'borderRadius':
@@ -67,6 +66,16 @@ export class CssEngine {
       case 'padding':
       case 'fontSize':
         return `${properties[property].value}${properties[property].unit}`;
+      case 'display':
+      case 'gridAutoFlow':
+      case 'textAlign':
+      case 'cursor':
+      case 'textTransform':
+      case 'alignItems':
+      case 'alignContent':
+      case 'justifyItems':
+      case 'justifyContent':
+        return properties[property].keyword;
       default:
         return '';
     }
