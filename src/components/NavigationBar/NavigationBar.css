@@ -27,7 +27,7 @@
 }
 
 .navigation-text {
-  color: white;
+  color: #ffffff;
   font-weight: 600;
 }
 
@@ -38,13 +38,13 @@
 
 /* Sticky Navigation Bar */
 .styleface-navigation-bar.sticky {
-  height: 64px;
+  height: 56px;
   background: #ffffff;
 }
 
 .styleface-navigation-bar.sticky #navigation-name {
   color: #0E8388;
-  text-shadow: 2px 2px 1px #000000;
+  text-shadow: 2px 2px 1px #CBE4DE;
 }
 
 .styleface-navigation-bar.sticky #navigation-links li .navigation-link .navigation-text {

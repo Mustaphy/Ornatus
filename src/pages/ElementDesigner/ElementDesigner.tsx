@@ -318,9 +318,11 @@ function ElementDesigner() {
         <hr />
 
         <div className={!currentProperties?.display.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={currentProperties?.display.active} onChange={() => updateProperty('display', { ...currentProperties?.display, active: !currentProperties?.display.active } )} />
+          <div>
+            <Input type="checkbox" checked={currentProperties?.display.active} onChange={() => updateProperty('display', { ...currentProperties?.display, active: !currentProperties?.display.active } )} />
+            <label htmlFor="display" className="option-name">display</label>
+          </div>
 
-          <label htmlFor="display" className="option-name">display</label>
           <Select
             id="display"
             value={currentProperties?.display.keyword}
@@ -332,9 +334,11 @@ function ElementDesigner() {
         {
           isGridAutoFlowVisible(currentElement) &&
             <div className={!currentProperties?.gridAutoFlow.active ? 'hidden' : ''}>
-              <Input type="checkbox" checked={currentProperties?.gridAutoFlow.active} onChange={() => updateProperty('gridAutoFlow', { ...currentProperties?.gridAutoFlow, active: !currentProperties?.gridAutoFlow.active } )} />
+              <div>
+                <Input type="checkbox" checked={currentProperties?.gridAutoFlow.active} onChange={() => updateProperty('gridAutoFlow', { ...currentProperties?.gridAutoFlow, active: !currentProperties?.gridAutoFlow.active } )} />
+                <label htmlFor="grid-auto-flow" className="option-name">grid-auto-flow</label>
+              </div>
 
-              <label htmlFor="grid-auto-flow" className="option-name">grid-auto-flow</label>
               <Select
                 id="grid-auto-flow"
                 value={currentProperties?.gridAutoFlow.keyword}
@@ -348,9 +352,11 @@ function ElementDesigner() {
           isFlexOrGrid(currentElement) &&
             <>
               <div className={!currentProperties?.alignItems.active ? 'hidden' : ''}>
-                <Input type="checkbox" checked={currentProperties?.alignItems.active} onChange={() => updateProperty('alignItems', { ...currentProperties?.alignItems, active: !currentProperties?.alignItems.active } )} />
+                <div>
+                  <Input type="checkbox" checked={currentProperties?.alignItems.active} onChange={() => updateProperty('alignItems', { ...currentProperties?.alignItems, active: !currentProperties?.alignItems.active } )} />
+                  <label htmlFor="align-items" className="option-name">align-items</label>
+                </div>
 
-                <label htmlFor="align-items" className="option-name">align-items</label>
                 <Select
                   id="align-items"
                   value={currentProperties?.alignItems.keyword}
@@ -360,9 +366,11 @@ function ElementDesigner() {
               </div>
 
               <div className={!currentProperties?.alignContent.active ? 'hidden' : ''}>
-                <Input type="checkbox" checked={currentProperties?.alignContent.active} onChange={() => updateProperty('alignContent', { ...currentProperties?.alignContent, active: !currentProperties?.alignContent.active } )} />
+                <div>
+                  <Input type="checkbox" checked={currentProperties?.alignContent.active} onChange={() => updateProperty('alignContent', { ...currentProperties?.alignContent, active: !currentProperties?.alignContent.active } )} />
+                  <label htmlFor="align-content" className="option-name">align-content</label>
+                </div>
 
-                <label htmlFor="align-content" className="option-name">align-content</label>
                 <Select
                   id="align-content"
                   value={currentProperties?.alignContent.keyword}
@@ -372,9 +380,11 @@ function ElementDesigner() {
               </div>
 
               <div className={!currentProperties?.justifyItems.active ? 'hidden' : ''}>
-                <Input type="checkbox" checked={currentProperties?.justifyItems.active} onChange={() => updateProperty('justifyItems', { ...currentProperties?.justifyItems, active: !currentProperties?.justifyItems.active } )} />
+                <div>
+                  <Input type="checkbox" checked={currentProperties?.justifyItems.active} onChange={() => updateProperty('justifyItems', { ...currentProperties?.justifyItems, active: !currentProperties?.justifyItems.active } )} />
+                  <label htmlFor="justify-items" className="option-name">justify-items</label>
+                </div>
 
-                <label htmlFor="justify-items" className="option-name">justify-items</label>
                 <Select
                   id="justify-items"
                   value={currentProperties?.justifyItems.keyword}
@@ -384,9 +394,11 @@ function ElementDesigner() {
               </div>
 
               <div className={!currentProperties?.justifyContent.active ? 'hidden' : ''}>
-                <Input type="checkbox" checked={currentProperties?.justifyContent.active} onChange={() => updateProperty('justifyContent', { ...currentProperties?.justifyContent, active: !currentProperties?.justifyContent.active } )} />
+                <div>
+                  <Input type="checkbox" checked={currentProperties?.justifyContent.active} onChange={() => updateProperty('justifyContent', { ...currentProperties?.justifyContent, active: !currentProperties?.justifyContent.active } )} />
+                  <label htmlFor="justify-content" className="option-name">justify-content</label>
+                </div>
 
-                <label htmlFor="justify-content" className="option-name">justify-content</label>
                 <Select
                   id="justify-content"
                   value={currentProperties?.justifyContent.keyword}
@@ -398,8 +410,11 @@ function ElementDesigner() {
         }
 
         <div className={!currentProperties?.height.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={currentProperties?.height.active} onChange={() => updateProperty('height', { ...currentProperties?.height, active: !currentProperties?.height.active } )} />
-          <label htmlFor="height" className="option-name">height</label>
+          <div>
+            <Input type="checkbox" checked={currentProperties?.height.active} onChange={() => updateProperty('height', { ...currentProperties?.height, active: !currentProperties?.height.active } )} />
+            <label htmlFor="height" className="option-name">height</label>
+          </div>
+
           <UnitSelect
             id="height"
             value={currentProperties?.height.value}
@@ -410,9 +425,11 @@ function ElementDesigner() {
         </div>
 
         <div className={!currentProperties?.width.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={currentProperties?.width.active} onChange={() => updateProperty('width', { ...currentProperties?.width, active: !currentProperties?.width.active } )} />
+          <div>
+            <Input type="checkbox" checked={currentProperties?.width.active} onChange={() => updateProperty('width', { ...currentProperties?.width, active: !currentProperties?.width.active } )} />
+            <label htmlFor="width" className="option-name">width</label>
+          </div>
 
-          <label htmlFor="width" className="option-name">width</label>
           <UnitSelect
             id="width"
             value={currentProperties?.width.value}
@@ -423,9 +440,11 @@ function ElementDesigner() {
         </div>
 
         <div className={!currentProperties?.background.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={currentProperties?.background.active} onChange={() => updateProperty('background', { ...currentProperties?.background, active: !currentProperties?.background.active } )} />
+          <div>
+            <Input type="checkbox" checked={currentProperties?.background.active} onChange={() => updateProperty('background', { ...currentProperties?.background, active: !currentProperties?.background.active } )} />
+            <label htmlFor="background-property" className="option-name">background</label>
+          </div>
 
-          <label htmlFor="background-property" className="option-name">background</label>
           <Select
             id="background-property"
             value={currentProperties?.background.selected}
@@ -462,9 +481,11 @@ function ElementDesigner() {
           CssEngine.currentSelectionHasText(currentElement) &&
             <>
               <div className={!currentProperties?.color.active ? 'hidden' : ''}>
-                <Input type="checkbox" checked={currentProperties?.color.active} onChange={() => updateProperty('color', { ...currentProperties?.color, active: !currentProperties?.color.active } )} />
+                <div>
+                  <Input type="checkbox" checked={currentProperties?.color.active} onChange={() => updateProperty('color', { ...currentProperties?.color, active: !currentProperties?.color.active } )} />
+                  <label htmlFor="color" className="option-name">color</label>
+                </div>
 
-                <label htmlFor="color" className="option-name">color</label>
                 <Input
                   id="color"
                   type="color"
@@ -474,9 +495,11 @@ function ElementDesigner() {
               </div>
 
               <div className={!currentProperties?.fontSize.active ? 'hidden' : ''}>
-                <Input type="checkbox" checked={currentProperties?.fontSize.active} onChange={() => updateProperty('fontSize', { ...currentProperties?.fontSize, active: !currentProperties?.fontSize.active } )} />
+                <div>
+                  <Input type="checkbox" checked={currentProperties?.fontSize.active} onChange={() => updateProperty('fontSize', { ...currentProperties?.fontSize, active: !currentProperties?.fontSize.active } )} />
+                  <label htmlFor="font-size" className="option-name">font-size</label>
+                </div>
 
-                <label htmlFor="font-size" className="option-name">font-size</label>
                 <UnitSelect
                   id="font-size"
                   value={currentProperties?.fontSize.value}
@@ -487,9 +510,11 @@ function ElementDesigner() {
               </div>
 
               <div className={!currentProperties?.fontWeight.active ? 'hidden' : ''}>
-                <Input type="checkbox" checked={currentProperties?.fontWeight.active} onChange={() => updateProperty('fontWeight', { ...currentProperties?.fontWeight, active: !currentProperties?.fontWeight.active } )} />
+                <div>
+                  <Input type="checkbox" checked={currentProperties?.fontWeight.active} onChange={() => updateProperty('fontWeight', { ...currentProperties?.fontWeight, active: !currentProperties?.fontWeight.active } )} />
+                  <label htmlFor="font-weight" className="option-name">font-weight</label>
+                </div>
 
-                <label htmlFor="font-weight" className="option-name">font-weight</label>
                 <Input
                   id="font-weight"
                   type="number"
@@ -502,9 +527,11 @@ function ElementDesigner() {
               </div>
 
               <div className={!currentProperties?.textAlign.active ? 'hidden' : ''}>
-                <Input type="checkbox" checked={currentProperties?.textAlign.active} onChange={() => updateProperty('textAlign', { ...currentProperties?.textAlign, active: !currentProperties?.textAlign.active } )} />
+                <div>
+                  <Input type="checkbox" checked={currentProperties?.textAlign.active} onChange={() => updateProperty('textAlign', { ...currentProperties?.textAlign, active: !currentProperties?.textAlign.active } )} />
+                  <label htmlFor="cursor" className="option-name">text-align</label>
+                </div>
 
-                <label htmlFor="cursor" className="option-name">text-align</label>
                 <Select
                   id="cursor"
                   value={currentProperties?.textAlign.keyword}
@@ -516,9 +543,11 @@ function ElementDesigner() {
         }
 
         <div className={!currentProperties?.border.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={currentProperties?.border.active} onChange={() => updateProperty('border', { ...currentProperties?.border, active: !currentProperties?.border.active } )}  />
+          <div>
+            <Input type="checkbox" checked={currentProperties?.border.active} onChange={() => updateProperty('border', { ...currentProperties?.border, active: !currentProperties?.border.active } )}  />
+            <label htmlFor="border" className="option-name">border</label>
+          </div>
 
-          <label htmlFor="border" className="option-name">border</label>
           <UnitSelect
             value={currentProperties?.border.width.value}
             unit={currentProperties?.border.width.unit} 
@@ -538,9 +567,11 @@ function ElementDesigner() {
         </div>
 
         <div className={!currentProperties?.borderRadius.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={currentProperties?.borderRadius.active} onChange={() => updateProperty('borderRadius', { ...currentProperties?.borderRadius, active: !currentProperties?.borderRadius.active } )} />
+          <div>
+            <Input type="checkbox" checked={currentProperties?.borderRadius.active} onChange={() => updateProperty('borderRadius', { ...currentProperties?.borderRadius, active: !currentProperties?.borderRadius.active } )} />
+            <label htmlFor="border-radius" className="option-name">border-radius</label>
+          </div>
 
-          <label htmlFor="border-radius" className="option-name">border-radius</label>
           <UnitSelect
             id="border-radius"
             value={currentProperties?.borderRadius.value}
@@ -551,9 +582,11 @@ function ElementDesigner() {
         </div>
 
         <div className={!currentProperties?.margin.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={currentProperties?.margin.active} onChange={() => updateProperty('margin', { ...currentProperties?.margin, active: !currentProperties?.margin.active } )}  />
+          <div>
+            <Input type="checkbox" checked={currentProperties?.margin.active} onChange={() => updateProperty('margin', { ...currentProperties?.margin, active: !currentProperties?.margin.active } )}  />
+            <label htmlFor="padding" className="option-name">margin</label>
+          </div>
 
-          <label htmlFor="padding" className="option-name">margin</label>
           <UnitSelect
             id="padding"
             value={currentProperties?.margin.value}
@@ -564,9 +597,11 @@ function ElementDesigner() {
         </div>
 
         <div className={!currentProperties?.padding.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={currentProperties?.padding.active} onChange={() => updateProperty('padding', { ...currentProperties?.padding, active: !currentProperties?.padding.active } )}  />
+          <div>
+            <Input type="checkbox" checked={currentProperties?.padding.active} onChange={() => updateProperty('padding', { ...currentProperties?.padding, active: !currentProperties?.padding.active } )}  />
+            <label htmlFor="padding" className="option-name">padding</label>
+          </div>
 
-          <label htmlFor="padding" className="option-name">padding</label>
           <UnitSelect
             id="padding"
             value={currentProperties?.padding.value}
@@ -577,9 +612,11 @@ function ElementDesigner() {
         </div>
 
         <div className={!currentProperties?.cursor.active ? 'hidden' : ''}>
-          <Input type="checkbox" checked={currentProperties?.cursor.active} onChange={() => updateProperty('cursor', { ...currentProperties?.cursor, active: !currentProperties?.cursor.active } )} />
+          <div>
+            <Input type="checkbox" checked={currentProperties?.cursor.active} onChange={() => updateProperty('cursor', { ...currentProperties?.cursor, active: !currentProperties?.cursor.active } )} />
+            <label htmlFor="cursor" className="option-name">cursor</label>
+          </div>
 
-          <label htmlFor="cursor" className="option-name">cursor</label>
           <Select
             id="cursor"
             value={currentProperties?.cursor.keyword}
@@ -591,9 +628,11 @@ function ElementDesigner() {
         {
           CssEngine.currentSelectionHasText(currentElement) &&
             <div className={!currentProperties?.textTransform.active ? 'hidden' : ''}>
-              <Input type="checkbox" checked={currentProperties?.textTransform.active} onChange={() => updateProperty('textTransform', { ...currentProperties?.textTransform, active: !currentProperties?.textTransform.active } )} />
+              <div>
+                <Input type="checkbox" checked={currentProperties?.textTransform.active} onChange={() => updateProperty('textTransform', { ...currentProperties?.textTransform, active: !currentProperties?.textTransform.active } )} />
+                <label htmlFor="text-transform" className="option-name">text-transform</label>
+              </div>
 
-              <label htmlFor="text-transform" className="option-name">text-transform</label>
               <Select
                 id="text-transform"
                 value={currentProperties?.textTransform.keyword}
@@ -604,13 +643,13 @@ function ElementDesigner() {
         }
       </div>
 
-      <div id="element-code">
-        <pre id="button-html" className="code-container">
+      <div id="code-preview">
+        <pre className="code-container">
           {HtmlEngine.getString(tree)}
           <MdContentCopy className="copy-button" onClick={() => navigator.clipboard.writeText(HtmlEngine.getString(tree))} />
         </pre>
 
-        <pre id="button-css" className="code-container">
+        <pre className="code-container">
           {CssEngine.getString(tree)}
           <MdContentCopy className="copy-button" onClick={() => navigator.clipboard.writeText(CssEngine.getString(tree))} />
         </pre>
