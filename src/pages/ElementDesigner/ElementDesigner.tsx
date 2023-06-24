@@ -406,6 +406,21 @@ function ElementDesigner() {
                   onChange={(event) => updateProperty('justifyContent', { ...currentProperties?.justifyContent, keyword: event.target.value } )}
                 />
               </div>
+
+              <div className={!currentProperties?.gap.active ? 'hidden' : ''}>
+                <div>
+                  <Input type="checkbox" checked={currentProperties?.gap.active} onChange={() => updateProperty('gap', { ...currentProperties?.gap, active: !currentProperties?.gap.active } )} />
+                  <label htmlFor="gap" className="option-name">gap</label>
+                </div>
+
+                <UnitSelect
+                  id="gap"
+                  value={currentProperties?.gap.value}
+                  unit={currentProperties?.gap.unit} 
+                  valueOnChange={(event) => updateProperty('gap', { ...currentProperties?.gap, value: Number(event.target.value) })}
+                  unitOnChange={(event) => updateProperty('gap', { ...currentProperties?.gap, unit: event.target.value })}
+                />
+              </div>
             </>
         }
 

@@ -54,6 +54,11 @@ export const getDefaultElement = (): Element => {
         keyword: 'center',
         active: false,
       },
+      gap: {
+        value: 8,
+        unit: 'px',
+        active: false,
+      },
       height: {
         value: 100,
         unit: '%',

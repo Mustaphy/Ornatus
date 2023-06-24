@@ -14,11 +14,12 @@ export class CssEngine {
 
     switch (property) {
       case 'gridAutoFlow':
-        return properties.gridAutoFlow.active && properties.display.active && properties.display.keyword.includes('grid');
+        return properties[property].active && properties.display.active && properties.display.keyword.includes('grid');
       case 'alignItems':
       case 'alignContent':
       case 'justifyItems':
       case 'justifyContent':
+      case 'gap':
         return properties[property].active && properties.display.active && (properties.display.keyword.includes('grid') || properties.display.keyword.includes('flex'));
       case 'color':
       case 'fontSize':
@@ -65,6 +66,7 @@ export class CssEngine {
       case 'margin':
       case 'padding':
       case 'fontSize':
+      case 'gap':
         return `${properties[property].value}${properties[property].unit}`;
       case 'display':
       case 'gridAutoFlow':

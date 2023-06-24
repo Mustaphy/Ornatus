@@ -17,6 +17,7 @@ export type Element = {
     alignContent: AlignContent,
     justifyItems: JustifyItems,
     justifyContent: JustifyContent,
+    gap: Gap,
     height: Height,
     width: Width,
     background: Background,
@@ -154,6 +155,11 @@ export type JustifyItems = {
 
 export type JustifyContent = {
   keyword: JustifyContentKeyword
+} & Property;
+
+export type Gap = {
+  value: number,
+  unit: Unit
 } & Property;
 
 export type Height = {
