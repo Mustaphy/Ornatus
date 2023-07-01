@@ -1,5 +1,5 @@
 /* General */
-.styleface-navigation-bar {
+.ornatus-navigation-bar {
   display: flex;
   position: fixed;
   justify-content: space-between;
@@ -37,21 +37,21 @@
 }
 
 /* Sticky Navigation Bar */
-.styleface-navigation-bar.sticky {
+.ornatus-navigation-bar.sticky {
   height: 56px;
   background: #ffffff;
 }
 
-.styleface-navigation-bar.sticky #navigation-name {
+.ornatus-navigation-bar.sticky #navigation-name {
   color: #0E8388;
   text-shadow: 2px 2px 1px #CBE4DE;
 }
 
-.styleface-navigation-bar.sticky #navigation-links li .navigation-link .navigation-text {
+.ornatus-navigation-bar.sticky #navigation-links li .navigation-link .navigation-text {
   color: #000000;
 }
 
-.styleface-navigation-bar.sticky #navigation-links li .navigation-link .navigation-text:hover {
+.ornatus-navigation-bar.sticky #navigation-links li .navigation-link .navigation-text:hover {
   color: #0E8388;
 }
 

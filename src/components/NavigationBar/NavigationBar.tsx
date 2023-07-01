@@ -8,8 +8,8 @@ function NavigationBar({navigationLinks}: NavigationBarProperties) {
 
   return (
     <>
-      <div className={`styleface-navigation-bar ${scrolledDown ? "sticky" : ""}`}>
-        <Link id="navigation-name" to={"/Styleface"}>Styleface</Link>
+      <div className={`ornatus-navigation-bar ${scrolledDown ? "sticky" : ""}`}>
+        <Link id="navigation-name" to={"/Ornatus"}>Ornatus</Link>
         <nav>
           <ul id="navigation-links">
             {
@@ -25,7 +25,7 @@ function NavigationBar({navigationLinks}: NavigationBarProperties) {
         </nav>
       </div>
 
-      <div className="styleface-navigation-bar filler"></div>
+      <div className="ornatus-navigation-bar filler"></div>
     </>
 );
 }

@@ -4,7 +4,7 @@ import Home from './pages/Home/Home';
 import ElementDesigner from './pages/ElementDesigner/ElementDesigner';
 import NavigationBar from './components/NavigationBar/NavigationBar';
 
-const BASE_URL = "/Styleface";
+const BASE_URL = "/Ornatus";
 
 function App() {
   const navigationLinks = [

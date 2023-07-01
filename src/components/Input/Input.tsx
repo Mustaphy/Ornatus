@@ -5,7 +5,7 @@ function Input({id, type, value, min, max, step, checked, disabled, onChange}: I
   return (
     <input
       id={id}
-      className={'styleface-input'}
+      className={'ornatus-input'}
       type={type}
       value={value}
       min={min}

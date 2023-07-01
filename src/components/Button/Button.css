@@ -1,5 +1,5 @@
 /* General */
-.styleface-button {
+.ornatus-button {
   font-size: 24px;
   background: #0E8388;
   padding: 12px;
@@ -10,6 +10,6 @@
   color: #CBE4DE;
 }
 
-.styleface-button:hover {
+.ornatus-button:hover {
   filter: brightness(1.2);
 }

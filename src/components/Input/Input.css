@@ -1,5 +1,5 @@
 /* General */
-.styleface-input {
+.ornatus-input {
   color: #ffffff;
   background-color: #000000;
   padding: 4px;
@@ -8,12 +8,12 @@
   box-shadow: 1px 1px 2px #0E8388;
 }
 
-.styleface-input[type=color] {
+.ornatus-input[type=color] {
   width: 100%;
   padding: 0;
   cursor: pointer;
 }
 
-.styleface-input[type=checkbox] {
+.ornatus-input[type=checkbox] {
   box-shadow: none;
 }

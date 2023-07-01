@@ -12,7 +12,8 @@ function Home() {
     <>
       <div id="welcome-section">
         <div id="welcome-text">
-          <h1>Styleface</h1>
+          <h1>Ornatus</h1>
+          <em>Latin for 'decorated'</em>
           <h2>
             Your user-friendly user interface to design and generate HTML and CSS code for elements, such as <Typewriter textsToType={textsToType} />
           </h2>

@@ -5,7 +5,7 @@ import { ButtonProperties } from './ButtonTypes';
 function Button({text, path}: ButtonProperties) {
   return (
     <Link to={path}>
-      <button className="styleface-button">
+      <button className="ornatus-button">
         {text}
       </button>
     </Link>
