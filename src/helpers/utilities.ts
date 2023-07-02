@@ -22,5 +22,5 @@ const getRandomNumberString = (length: number): string => {
   const min = Math.pow(10, length - 1); // Minimum value based on the length
   const max = Math.pow(10, length) - 1; // Maximum value based on the length
   const randomNumber = Math.floor(min + Math.random() * (max - min + 1)); // Generate a random number within the range
-  return randomNumber.toString(); // Convert the number to a string
+  return randomNumber.toString();
 };

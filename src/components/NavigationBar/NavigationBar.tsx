@@ -15,8 +15,8 @@ function NavigationBar({navigationLinks}: NavigationBarProperties) {
             {
               navigationLinks.map((navigationLink, index) =>
                 <li key={index}>
-                  <Link className="navigation-link" to={navigationLink.path}>
-                    <p className="navigation-text">{navigationLink.name}</p>
+                  <Link className="navigation-text" to={navigationLink.path}>
+                    {navigationLink.name}
                   </Link>
                 </li>
               )

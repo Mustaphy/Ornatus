@@ -2,32 +2,32 @@
 #welcome-section {
   min-height: 90vh;
   display: grid;
+  align-items: center;
   grid-auto-flow: column;
   grid-template-rows: 1fr;
   grid-template-columns: 1fr 1fr;
-  align-items: center;
   color: #CBE4DE;
+  margin: 16px 80px;
 }
 
 #welcome-text {
-  padding: 80px;
   font-size: 24px;
 }
 
 #welcome-text h1 {
   color: #ffffff;
   font-size: 64px;
-  margin: 16px 0;
   text-shadow: 4px 4px 1px #0E8388;
 }
 
-#welcome-text h2 {
+#welcome-text p {
+  font-size: 32px;
   margin: 16px 0;
 }
 
 #welcome-image-container {
   display: grid;
-  align-items: center;
+  align-items: right;
   justify-content: center;
 }
 
@@ -35,19 +35,38 @@
   height: 600px;
 }
 
+@media only screen and (max-width: 1200px) {
+  #welcome-section {
+    margin: 16px 60px;
+  }
+
+  #welcome-image-container img {
+    height: 500px;
+  }
+}
+
 @media only screen and (max-width: 1000px) {
   #welcome-section {
     grid-auto-flow: row;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr;
+    margin: 16px 48px;
   }
 
   #welcome-text {
     padding: 40px;
   }
+
+  #welcome-image-container {
+    justify-content: center;
+  }
 }
 
 @media only screen and (max-width: 600px) {
+  #welcome-section {
+    margin: 16px 20px;
+  }
+
   #welcome-image-container img {
     height: 400px;
   }

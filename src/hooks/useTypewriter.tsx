@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 
-export const typewriterStatus = [
+const typewriterStatuses = [
   'typing', 'pausing', 'deleting'
 ] as const;
-export type TypewriterStatus = typeof typewriterStatus[number];
+type TypewriterStatus = typeof typewriterStatuses[number];
 
 export const useTypewriter = (textsToType: string[]) => {
   const [selectedIndex, setSelectedIndex] = useState(0);

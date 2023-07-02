@@ -47,11 +47,11 @@
   text-shadow: 2px 2px 1px #CBE4DE;
 }
 
-.ornatus-navigation-bar.sticky #navigation-links li .navigation-link .navigation-text {
+.ornatus-navigation-bar.sticky #navigation-links li .navigation-text {
   color: #000000;
 }
 
-.ornatus-navigation-bar.sticky #navigation-links li .navigation-link .navigation-text:hover {
+.ornatus-navigation-bar.sticky #navigation-links li .navigation-text:hover {
   color: #0E8388;
 }
 
